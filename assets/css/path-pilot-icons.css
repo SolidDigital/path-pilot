@@ -1,0 +1,111 @@
+@font-face {
+  font-family: 'path-pilot-icons';
+  src:
+    url('../fonts/pathpilot.woff') format('woff'),
+    url('../fonts/pathpilot.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+i[class^="icon-"], i[class*=" icon-"] {
+  /* use !important to prevent issues with browser extensions that change fonts */
+  font-family: 'path-pilot-icons' !important;
+  speak: never;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+  
+  /* Better Font Rendering =========== */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-pilot-icon:before {
+  content: "\e900";
+}
+
+/* Temperature Icons */
+.icon-freezing:before {
+  content: "\e901";
+}
+
+.icon-cold:before {
+  content: "\e902";
+}
+
+.icon-cool:before {
+  content: "\e903";
+}
+
+.icon-warm:before {
+  content: "\e904";
+}
+
+.icon-hot:before {
+  content: "\e905";
+}
+
+.icon-fire:before {
+  content: "\e906";
+}
+
+/* Fallback icons using emoji */
+.emoji-freezing:before {
+  content: "❄️";
+}
+
+.emoji-cold:before {
+  content: "🧊";
+}
+
+.emoji-cool:before {
+  content: "🥶";
+}
+
+.emoji-warm:before {
+  content: "🌡️";
+}
+
+.emoji-hot:before {
+  content: "🔥";
+}
+
+.emoji-fire:before {
+  content: "🧯";
+}
+
+/* Legacy class name support for backward compatibility */
+.pp-icon-compass:before {
+  content: "\e900";
+}
+
+.pp-icon-map:before {
+  content: "\e901";
+}
+
+.pp-icon-path:before {
+  content: "\e902";
+}
+
+.pp-icon-navigation:before {
+  content: "\e903";
+}
+
+.pp-icon-settings:before {
+  content: "\e904";
+}
+
+.pp-icon-report:before {
+  content: "\e905";
+}
+
+.pp-icon-chart:before {
+  content: "\e906";
+}
+
+.pp-icon-dashboard:before {
+  content: "\e907";
+} 

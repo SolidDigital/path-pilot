@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" width="20" height="20">
+    <circle cx="10" cy="10" r="9.5" fill="#000000"/>
+    <g fill="none" stroke="#ffffff" stroke-width="1">
+        <!-- Simplified compass shape in negative space -->
+        <circle cx="10" cy="10" r="1.5"/>
+        <path d="M10,4 L10,6 M16,10 L14,10 M10,16 L10,14 M4,10 L6,10"/>
+        <path d="M6.5,6.5 L8,8 M13.5,6.5 L12,8 M13.5,13.5 L12,12 M6.5,13.5 L8,12"/>
+        <!-- Pointer lines -->
+        <path d="M10,10 L7,5 M10,10 L15,7 M10,10 L13,15 M10,10 L5,13"/>
+    </g>
+</svg> 

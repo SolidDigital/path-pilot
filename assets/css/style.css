@@ -1,0 +1,457 @@
+/**
+ * Path Pilot Main Styles
+ */
+ @font-face {
+  font-family: 'DM Sans';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/dmsans/v15/rP2Hp2ywxg089UriCZOIHQ.woff2) format('woff2');
+}
+
+
+.pp-rec-skeleton {
+  border-radius: 8px;
+  margin-bottom: 16px;
+  padding: 16px;
+  min-height: 60px;
+  position: relative;
+  overflow: hidden;
+}
+.pp-skeleton-title,
+.pp-skeleton-synopsis {
+  background: #e0e0e0;
+  border-radius: 4px;
+  margin-bottom: 8px;
+  width: 80%;
+  height: 18px;
+  animation: pp-skeleton-loading 1.2s infinite linear;
+}
+.pp-skeleton-synopsis {
+  width: 95%;
+  height: 14px;
+}
+
+@keyframes pp-skeleton-loading {
+  0% { background-color: #303030; }
+  50% { background-color: #555555; }
+  100% { background-color: #303030; }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.pp-drawer-rec-synopsis {
+  display: block;
+  font-size: 0.8rem;
+  color: #999;
+  margin-top: 2px;
+  margin-bottom: 4px;
+  line-height: 1.4;
+  white-space: normal;
+}
+
+.pp-drawer-rec-badge {
+  display: inline-block;
+  font-size: 0.5rem;
+  line-height: .6rem;
+  text-transform: uppercase;
+  font-weight: 600;
+  border-radius: 6px;
+  padding: 2px 8px;
+  margin-top: 0; /* Adjust margin */
+  vertical-align: middle;
+  background: #eee;
+  color: #444;
+  letter-spacing: 0.02em;
+}
+
+.pp-badge-conversion_path {
+  background: #1976d2 !important;
+  color: #fff !important;
+}
+
+.pp-badge-popular {
+  background: #c58723 !important;
+  color: #fff !important;
+}
+
+.pp-badge-related {
+  background: #8e24aa !important;
+  color: #fff !important;
+}
+
+.pp-badge-newest {
+  background: #0e7d15 !important;
+  color: #fff !important;
+}
+
+
+
+.pp-drawer-content {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+.pp-drawer-recommendations,
+.pp-drawer-footer {
+  flex-shrink: 0;
+}
+
+
+
+:root {
+    --pp-drawer-handle-top: 0.5rem;
+  }
+  .pp-drawer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 0;
+    background: var(--pp-dark, #181818);
+    color: var(--pp-white, #fff);
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    transition: width 0.3s cubic-bezier(.4,0,.2,1);
+    overflow: visible;
+    font-family: "DM Sans", sans-serif !important;
+  }
+  
+  .pp-drawer .pp-drawer-content {
+    pointer-events: none;
+    width: 320px;
+    background: var(--pp-dark, #181818);
+    height: 100vh;
+    box-sizing: border-box;
+    padding: 11px 20px 0 24px;
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    left: -320px;
+    top: 0;
+    overflow: hidden;
+  }
+  .pp-drawer.expanded {
+    width: 320px;
+    left:0;
+  }
+  .pp-drawer.expanded .pp-drawer-content {
+    opacity: 1;
+    pointer-events: auto;
+    position: relative;
+    left: 0;
+    transition: left 0.3s cubic-bezier(.4,0,.2,1);
+  }
+
+  /* Handle styles with high specificity to override theme styles */
+body .pp-drawer .pp-drawer-handle,
+body .pp-drawer button.pp-drawer-handle,
+body button.pp-drawer-handle {
+      position: absolute;
+      left: 0.5rem;
+      top: 0.5rem;
+      width: 24px;
+      height: 24px;
+      padding: 0;
+      margin: 0;
+      background: #232323;
+      background-color: #232323;
+      border: none;
+      border-radius: 12px;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 10000;
+      transition: all 0.3s cubic-bezier(.4,0,.2,1);
+      font-size: 1.2rem;
+      outline: none;
+      box-shadow: none;
+      text-decoration: none;
+      line-height: 1;
+      font-family: inherit;
+      font-weight: normal;
+      text-align: center;
+      vertical-align: baseline;
+      min-width: auto;
+      min-height: auto;
+      max-width: none;
+      max-height: none;
+  }
+
+  /* Add focus style for accessibility */
+  body .pp-drawer .pp-drawer-handle:focus {
+    outline: 2px solid #1976d2;
+    box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.3);
+  }
+
+  /* Handle icon styles with high specificity */
+body .pp-drawer .pp-drawer-handle i,
+body .pp-drawer button.pp-drawer-handle i,
+body button.pp-drawer-handle i {
+    color: #fff;
+    font-size: 1.1rem;
+    background: none;
+    border: none;
+    margin: 0;
+    padding: 0;
+    line-height: 1;
+    font-weight: normal;
+    text-decoration: none;
+  }
+
+  .pp-drawer-handle::after {
+    content: "Need a hand? Click here for recommendations.";
+    position: absolute;
+    left: 100%;
+    top: 50%;
+    transform: translateY(-50%);
+    margin-left: 10px;
+    padding: 8px 12px;
+    background: #232323;
+    color: #fff;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: none;
+  }
+
+  /* Only show tooltip when drawer is minimized AND not during transitions */
+  .pp-drawer.minimized .pp-drawer-handle:hover::after {
+    opacity: 1;
+    transition: opacity 0.2s ease 0.3s;
+  }
+
+  /* Expanded state handle styles with high specificity */
+body .pp-drawer.expanded .pp-drawer-handle,
+body .pp-drawer.expanded button.pp-drawer-handle {
+    left: 290px;
+    opacity: 1;
+    transform: rotate(0deg);
+    background: #232323;
+    background-color: #232323;
+  }
+
+  .pp-drawer.expanded .pp-drawer-handle::after {
+    opacity: 0 !important;
+    visibility: hidden !important;
+  }
+
+  /* Minimized state handle styles with high specificity */
+body .pp-drawer.minimized .pp-drawer-handle,
+body .pp-drawer.minimized button.pp-drawer-handle {
+    left: 0.5rem;
+    top: 0.5rem;
+    transform: rotate(-360deg);
+    background: #232323;
+    background-color: #232323;
+  }
+
+  .pp-drawer-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    margin-bottom: 18px;
+    color: var(--pp-lighter-text, #646970);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+  }
+  .pp-drawer-rec-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 24px 0;
+  }
+  .pp-drawer-rec-list li {
+    margin-bottom: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+  }
+  .pp-drawer-rec-title-row {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-bottom: 0;
+  }
+  .pp-drawer-rec-title {
+    flex-grow: 1;
+    font-weight: 600;
+    font-size: 0.95rem;
+    line-height: 1.3;
+    color: #fff;
+    margin: 0;
+  }
+  
+  /* New container for badge and percent */
+  .pp-rec-meta {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-shrink: 0;
+    margin-bottom: 4px;
+  }
+
+  .pp-drawer-rec-percent {
+    font-size: 0.6rem;
+    font-weight: 600;
+    color: #888;
+    flex-shrink: 0;
+    line-height: 0.7rem;
+  }
+  
+
+
+  .pp-drawer-footer {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    text-align: center;
+    font-size: 11px;
+    color: #aaa;
+    opacity: 0.7;
+    z-index: 1;
+    pointer-events: auto;
+    padding: 0;
+    margin: 0;
+    line-height: 2rem;
+  }
+
+  /* Footer link styles with high specificity to override theme styles */
+body .pp-drawer .pp-drawer-footer a.pp-footer-link,
+body .pp-drawer .pp-drawer-footer a.pp-footer-link:link,
+body .pp-drawer .pp-drawer-footer a.pp-footer-link:visited {
+    color: #ccc;
+    text-decoration: none;
+    font-size: 11px;
+    opacity: 0.8;
+    transition: color 0.2s;
+  }
+body .pp-drawer .pp-drawer-footer a.pp-footer-link:hover, 
+body .pp-drawer .pp-drawer-footer a.pp-footer-link:focus,
+body .pp-drawer .pp-drawer-footer a.pp-footer-link:active {
+    color: #fff;
+    opacity: 1;
+    text-decoration: underline;
+  }
+  .pp-drawer .pp-drawer-content {
+    overflow-y: auto;
+    padding-bottom: 2rem;
+  }
+  body.pp-drawer-open {
+    transition: margin-left 0.3s cubic-bezier(.4,0,.2,1);
+    margin-left: 320px !important;
+  }
+  .pp-drawer.minimized {
+    width: 0 !important;
+  }
+  .pp-drawer.minimized .pp-drawer-content {
+    opacity: 0 !important;
+    pointer-events: none !important;
+  }
+  .pp-drawer.minimized .pp-drawer-handle {
+    left: 0.5rem;
+    top:0.5rem
+  }
+
+  @media (max-width: 600px) {
+    .pp-drawer.expanded {
+      width: 100vw;
+      left: 0;
+      background: rgba(24,24,24,0.96); /* semi-transparent dark */
+    }
+
+    .pp-drawer.expanded .pp-drawer-handle {
+        left:auto;
+        right: 0.5rem;
+    }
+
+    .pp-drawer.expanded .pp-drawer-content {
+      width: 100vw;
+      left: 0;
+      background: transparent; /* let the drawer background show through */
+    }
+    body.pp-drawer-open {
+      margin-left: 0 !important; /* Don't push content */
+    }
+  }
+
+
+
+
+  /* General drawer link protection - catch any other links */
+body .pp-drawer a:not(.pp-footer-link),
+body .pp-drawer a:not(.pp-footer-link):link,
+body .pp-drawer a:not(.pp-footer-link):visited {
+    color: #ddd;
+    text-decoration: underline;
+    background: none;
+    border: none;
+  }
+  
+body .pp-drawer a:not(.pp-footer-link):hover,
+body .pp-drawer a:not(.pp-footer-link):focus,
+body .pp-drawer a:not(.pp-footer-link):active {
+    color: #fff;
+    text-decoration: underline;
+    background: none;
+  }
+
+@keyframes pp-beacon-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(25, 118, 210, 0.5);
+  }
+  70% {
+    box-shadow: 0 0 0 12px rgba(25, 118, 210, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(25, 118, 210, 0);
+  }
+}
+
+.pp-drawer-handle.pp-beacon {
+  animation: pp-beacon-pulse 1.2s infinite;
+}
+
+/* Content Type Selection Styles */
+.pp-content-types-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+}
+
+.pp-content-type-item {
+  background: #f9f9f9;
+  padding: 12px 14px;
+  border-radius: 6px;
+  border: 2px solid #e0e0e0;
+  transition: all 0.2s ease;
+}
+
+.pp-content-type-item:hover {
+  border-color: #1976d2;
+  background: #f0f8ff;
+}
+
+.pp-content-type-item input[type="checkbox"]:checked + div {
+  color: #1976d2;
+  font-weight: 600;
+}
+
+.pp-content-type-item input[type="checkbox"]:checked {
+  accent-color: #1976d2;
+}
+
+/* Ensure content type section has proper spacing */
+.pp-content-types-section .pp-home-protip {
+  margin-bottom: 12px;
+}
+
