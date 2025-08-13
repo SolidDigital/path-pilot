@@ -295,7 +295,7 @@ class Path_Pilot_Admin {
         $min_conversions = 10;
         $max_conversions = 50;
         $target_conversions = max($min_conversions, $max_conversions - (($max_conversions - $min_conversions) * ($days_active / 14)));
-        $conversion_count = $wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->prefix}path_pilot_visit_paths");
+        $conversion_count = $wpdb->get_var("SELECT SUM(visit_count) FROM {$wpdb->prefix}path_pilot_visit_paths");
         $conversion_readiness = ($conversion_count >= $target_conversions)
             ? 50
             : max(0, ($conversion_count / $target_conversions) * 50);
@@ -682,7 +682,7 @@ class Path_Pilot_Admin {
         Log::info('Path Pilot Debug: Pages coverage: ' . $pages_coverage);
 
         // Conversion paths tracked
-        $conversion_paths_tracked = $wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->prefix}path_pilot_visit_paths");
+        $conversion_paths_tracked = $wpdb->get_var("SELECT SUM(visit_count) FROM {$wpdb->prefix}path_pilot_visit_paths");
 
         echo '<div class="path-pilot-frontend">';
         ?>

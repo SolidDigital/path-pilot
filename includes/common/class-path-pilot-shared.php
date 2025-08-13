@@ -26,9 +26,12 @@ class Path_Pilot_Shared {
             id bigint(20) NOT NULL AUTO_INCREMENT,
             session_id varchar(64) NOT NULL,
             paths text NOT NULL,
+            visit_date date NOT NULL,
+            visit_count int(11) DEFAULT 1 NOT NULL,
             created_at datetime DEFAULT CURRENT_TIMESTAMP NOT NULL,
             PRIMARY KEY  (id),
-            KEY session_id (session_id)
+            KEY session_id (session_id),
+            UNIQUE KEY unique_path_per_day (paths(255), visit_date)
         ) $charset_collate;";
 
         dbDelta($sql);
@@ -384,12 +387,13 @@ class Path_Pilot_Shared {
     // Path analysis
     public static function analyze_paths() {
         global $wpdb;
-        $rows = $wpdb->get_results("SELECT paths FROM {$wpdb->prefix}path_pilot_visit_paths");
+        // Select paths and their visit counts
+        $rows = $wpdb->get_results("SELECT paths, visit_count FROM {$wpdb->prefix}path_pilot_visit_paths");
         $path_counts = [];
 
         foreach ($rows as $row) {
             $path_json = $row->paths;
-            $path_counts[$path_json] = ($path_counts[$path_json] ?? 0) + 1;
+            $path_counts[$path_json] = ($path_counts[$path_json] ?? 0) + $row->visit_count;
         }
 
         arsort($path_counts);
@@ -627,15 +631,41 @@ class Path_Pilot_Shared {
         $last_page_id = !empty($paths) ? end($paths) : null;
 
         if (!empty($paths) && count($paths) >= $min_hops && $last_page_id && in_array($last_page_id, $goal_pages)) {
-            $wpdb->insert(
-                $table_name,
-                array(
-                    'session_id' => $session_id,
-                    'paths' => json_encode($paths),
-                    'created_at' => current_time('mysql', true)
-                ),
-                array('%s', '%s', '%s')
+            $current_date = current_time('mysql', true);
+            $paths_json = json_encode($paths);
+
+            // Check if a record for this path and date already exists
+            $existing_record = $wpdb->get_row(
+                $wpdb->prepare(
+                    "SELECT id, visit_count FROM %i WHERE paths = %s AND visit_date = CURDATE()",
+                    $table_name,
+                    $paths_json
+                )
             );
+
+            if ($existing_record) {
+                // Update existing record: increment visit_count
+                $wpdb->update(
+                    $table_name,
+                    array('visit_count' => $existing_record->visit_count + 1),
+                    array('id' => $existing_record->id),
+                    array('%d'),
+                    array('%d')
+                );
+            } else {
+                // Insert new record
+                $wpdb->insert(
+                    $table_name,
+                    array(
+                        'session_id' => $session_id,
+                        'paths' => $paths_json,
+                        'visit_date' => date('Y-m-d', strtotime($current_date)),
+                        'visit_count' => 1,
+                        'created_at' => $current_date
+                    ),
+                    array('%s', '%s', '%s', '%d', '%s')
+                );
+            }
             // Also record this as an event (optional, as handle_event already records pageview conversions)
             self::track_event($session_id, 'goal_completion', $last_page_id);
         }
@@ -689,9 +719,9 @@ class Path_Pilot_Shared {
         // Count goal completions (paths) for the previous day
         $goal_completions_yesterday = $wpdb->get_var(
             $wpdb->prepare("
-                SELECT COUNT(*)
+                SELECT SUM(visit_count)
                 FROM {$wpdb->prefix}path_pilot_visit_paths
-                WHERE DATE(created_at) = %s
+                WHERE visit_date = %s
             ", $yesterday)
         );
         if (is_null($goal_completions_yesterday)) $goal_completions_yesterday = 0;

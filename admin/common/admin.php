@@ -65,7 +65,7 @@ function path_pilot_display_analytics($pages_coverage = 0, $days_active = 0, $pa
             // Check column existence for completions
             $columns = $wpdb->get_results("DESCRIBE {$wpdb->prefix}path_pilot_visit_paths");
             $column_names = array_map(function($col) { return $col->Field; }, $columns);
-            $total_completions = $wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->prefix}path_pilot_visit_paths");
+            $total_completions = $wpdb->get_var("SELECT SUM(visit_count) FROM {$wpdb->prefix}path_pilot_visit_paths");
 
         }
     } catch (Exception $e) {
@@ -177,7 +177,7 @@ function path_pilot_display_analytics($pages_coverage = 0, $days_active = 0, $pa
     $total_sessions = $wpdb->get_var("SELECT COUNT(DISTINCT session_id) FROM {$wpdb->prefix}path_pilot_events WHERE event_type = 'pageview'");
     // commented out: $min and $max conversions were undefined
 //    $target_conversions = max($min_conversions, $max_conversions - (($max_conversions - $min_conversions) * ($days_active / 14)));
-    $conversion_count = $wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->prefix}path_pilot_visit_paths");
+    $conversion_count = $wpdb->get_var("SELECT SUM(visit_count) FROM {$wpdb->prefix}path_pilot_visit_paths");
     $explicit_conversions_count = $wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->prefix}path_pilot_events WHERE event_type = 'explicit_conversion'");
     $conversion_count = intval($conversion_count) + intval($explicit_conversions_count);
     $conversion_rate = $total_sessions > 0 ? round(($conversion_count / $total_sessions) * 100, 1) : 0;
@@ -208,7 +208,7 @@ function path_pilot_display_analytics($pages_coverage = 0, $days_active = 0, $pa
     $top_landing_pages = array_slice($top_landing_counts, 0, 3, true);
 
     // Conversion paths tracked (Goal Completions)
-    $goal_completions_tracked = $wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->prefix}path_pilot_visit_paths");
+    $goal_completions_tracked = $wpdb->get_var("SELECT SUM(visit_count) FROM {$wpdb->prefix}path_pilot_visit_paths");
 
     // Explicit Conversions tracked
     $explicit_conversions_tracked = $wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->prefix}path_pilot_events WHERE event_type = 'explicit_conversion'");

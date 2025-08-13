@@ -37,7 +37,7 @@ class Path_Pilot_Recommender {
         $user_path = array_slice($user_path, -$N);
         $next_counts = [];
 
-        $rows = $wpdb->get_results("SELECT paths FROM {$wpdb->prefix}path_pilot_visit_paths WHERE 1=1");
+        $rows = $wpdb->get_results("SELECT paths, visit_count FROM {$wpdb->prefix}path_pilot_visit_paths WHERE 1=1");
 
         foreach ($rows as $row) {
             $path_arr = json_decode($row->paths, true);
@@ -59,7 +59,7 @@ class Path_Pilot_Recommender {
                     $next = $path_arr[$i + count($user_path)];
                     // Exclude conversion pages and current path from being recommended
                     if (!in_array($next, $user_path) && !in_array($next, $conversion_pages)) {
-                        $next_counts[$next] = ($next_counts[$next] ?? 0) + $weight;
+                        $next_counts[$next] = ($next_counts[$next] ?? 0) + ($weight * $row->visit_count);
                     }
                 }
             }
