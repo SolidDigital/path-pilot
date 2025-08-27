@@ -23,11 +23,18 @@
   const drawer = document.createElement('div');
   drawer.id = 'path-pilot-drawer';
   drawer.className = 'pp-drawer minimized';
+  drawer.setAttribute('role', 'complementary');
+  drawer.setAttribute('aria-label', 'Path Pilot recommendations panel');
+  drawer.setAttribute('aria-hidden', 'true');
   document.body.appendChild(drawer);
 
   // --- Drawer Handle (Modern, slim, right-rounded rectangle) ---
   const drawerHandle = document.createElement('button');
   drawerHandle.className = 'pp-drawer-handle';
+  drawerHandle.type = 'button';
+  drawerHandle.setAttribute('aria-label', 'Open Path Pilot panel');
+  drawerHandle.setAttribute('aria-controls', 'path-pilot-drawer');
+  drawerHandle.setAttribute('aria-expanded', 'false');
   drawerHandle.innerHTML = '<i class="icon-pilot-icon"></i>';
   drawer.appendChild(drawerHandle);
 
@@ -193,6 +200,9 @@
     drawerOpen = !drawerOpen;
     drawer.classList.toggle('minimized', !drawerOpen);
     drawer.classList.toggle('expanded', drawerOpen);
+    drawer.setAttribute('aria-hidden', drawerOpen ? 'false' : 'true');
+    drawerHandle.setAttribute('aria-expanded', String(drawerOpen));
+    drawerHandle.setAttribute('aria-label', drawerOpen ? 'Close Path Pilot panel' : 'Open Path Pilot panel');
     if (drawerOpen) {
       document.body.classList.add('pp-drawer-open');
     } else {
