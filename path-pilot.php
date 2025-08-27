@@ -3,7 +3,7 @@
  * Plugin Name: Path Pilot
  * Author URI: https://pathpilot.app
  * Description: Modern WordPress plugin for smart recommendations and analytics.
- * Version: 0.1.5
+ * Version: 0.1.4.1
  * Author: Path Pilot
  * Author URI: https://pathpilot.app
  * Text Domain: path-pilot
