@@ -20,7 +20,7 @@ unset($all_post_types['nav_menu_item']);
 ?>
 
 <div class="pp-home-section pp-margin-bottom pp-content-types-section">
-    <h3 class="pp-section-heading"><i class="emoji-gear"></i> Content Types for Recommendations</h3>
+    <h3 class="pp-section-heading"><i class="emoji-gear icon-pilot-icon"></i> Content Types for Recommendations</h3>
     <div class="pp-home-protip">
         <i class="icon-pilot-icon"></i>
         <strong>Pro Tip:</strong> Select which types of content can appear in recommendations and AI chat responses. This affects both the drawer recommendations and AI chat suggestions.
@@ -67,7 +67,7 @@ unset($all_post_types['nav_menu_item']);
 </div>
 
 <div class="pp-home-section pp-margin-bottom pp-goal-pages-section">
-    <h3 class="pp-section-heading"><i class="emoji-target"></i> Goal Pages</h3>
+    <h3 class="pp-section-heading"><i class="emoji-target icon-pilot-icon"></i> Goal Pages</h3>
     <div class="pp-home-protip">
         <i class="icon-pilot-icon"></i>
         <strong>Pro Tip:</strong> Select pages that represent key objectives for your users. Path Pilot will recommend paths that guide users towards these goals.
@@ -108,7 +108,7 @@ unset($all_post_types['nav_menu_item']);
 </div>
 
 <div class="pp-home-section pp-margin-bottom pp-conversion-pages-section">
-    <h3 class="pp-section-heading"><i class="emoji-star"></i> Conversion Pages</h3>
+    <h3 class="pp-section-heading"><i class="emoji-star icon-pilot-icon"></i> Conversion Pages</h3>
     <div class="pp-home-protip">
         <i class="icon-pilot-icon"></i>
         <strong>Pro Tip:</strong> Select pages that signify a completed action, like a "Thank You" page after a form submission or a purchase confirmation. These will be tracked as explicit conversions.
@@ -169,7 +169,7 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 
 <div class="pp-home-section pp-margin-bottom">
-    <h3 class="pp-section-heading"><i class="emoji-cool"></i> Interface Settings</h3>
+    <h3 class="pp-section-heading"><i class="emoji-star icon-pilot-icon"></i> Interface Settings</h3>
     <div class="pp-home-stat pp-stat-card">
         <div class="pp-home-stat-label">Minimum Path Hops</div>
         <div style="margin:20px 0;">
