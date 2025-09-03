@@ -398,7 +398,7 @@ function path_pilot_display_analytics($pages_coverage = 0, $days_active = 0, $pa
                     <div class="pp-home-stat-value"><?php echo $conversion_rate; ?>%</div>
                     <?php if ($conversion_rate > 0): ?>
                         <div class="pp-stat-trend pp-trend-up">
-                            <i class="emoji-hot"></i> <?php echo $conversion_count; ?> total conversions
+                            <i class="emoji-hot icon-pilot-icon"></i> <?php echo $conversion_count; ?> total conversions
                         </div>
                     <?php else: ?>
                         <div class="pp-stat-waiting">No conversions tracked yet</div>
@@ -426,7 +426,7 @@ function path_pilot_display_analytics($pages_coverage = 0, $days_active = 0, $pa
                     <div class="pp-home-stat-value"><?php echo $avg_path_length; ?> pages</div>
                     <?php if ($avg_path_length > 1): ?>
                         <div class="pp-stat-trend pp-trend-up">
-                            <i class="emoji-hot"></i> Visitors exploring multiple pages
+                            <i class="emoji-hot icon-pilot-icon"></i> Visitors exploring multiple pages
                         </div>
                     <?php endif; ?>
                 <?php else: ?>

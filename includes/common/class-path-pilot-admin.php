@@ -6,7 +6,7 @@ if (!defined('ABSPATH')) exit;
 
 class Path_Pilot_Admin {
     // Define constants
-    const UPGRADE_URL = 'https://pathpilot.app/'; // Centralized upgrade URL
+    const UPGRADE_URL = 'https://buy.stripe.com/4gM8wQ3L05gL3ms2Me9EI00'; // Centralized upgrade URL
 
     public function __construct() {
         add_action('admin_enqueue_scripts', [$this, 'enqueue_admin_css']);
@@ -101,19 +101,13 @@ class Path_Pilot_Admin {
 
         // Add the upgrade link as a submenu item
         if (!Path_Pilot::is_pro()) {
-            // Since we can't directly make menu links open in a new tab,
-            // and the callback of the page is applied only after headers are sent
-            // we have to use a separate filter to do the redirect
             add_submenu_page(
                 'path-pilot',
                 'Upgrade to Pro',
                 '<span class="path-pilot-upgrade-link">Upgrade</span>',
                 'manage_options',
                 'path-pilot-upgrade',
-                function() {
-                    // NOOP
-                    // Redirect must be handled before headers are sent in admin_init
-                }
+                array($this, 'render_upgrade_page')
             );
 
         }
@@ -223,7 +217,7 @@ class Path_Pilot_Admin {
                     </div>
                 </div>
                 <div class="pp-home-section pp-home-news">
-                    <h3 class="pp-section-heading"><i class="emoji-hot"></i> What's New</h3>
+                    <h3 class="pp-section-heading"><i class="emoji-hot icon-pilot-icon"></i> What's New</h3>
                     <ul class="pp-home-news-list">
                         <?php
                         if (count($news_items) > 0) {
@@ -243,13 +237,13 @@ class Path_Pilot_Admin {
                 </div>
             </div>
             <div class="pp-home-section pp-margin-bottom">
-                <h3 class="pp-section-heading"><i class="emoji-warm"></i> Recommendation Engine</h3>
+                <h3 class="pp-section-heading"><i class="emoji-warm icon-pilot-icon"></i> Recommendation Engine</h3>
 
                 <div class="pp-home-protip"><i class="icon-pilot-icon"></i> <strong>Pro Tip:</strong> Path Pilot learns from real visitor behavior. The more traffic your site gets, the smarter the recommendations become!</div>
 
                 <!-- Temperature readiness indicator -->
                 <div class="pp-temp-indicator pp-temp-<?php echo esc_attr($temp_level); ?> pp-margin-bottom">
-                    <div class="pp-temp-indicator-icon emoji-<?php echo esc_attr($temp_data['emoji']); ?>"><?php echo $temp_data['emoji_fallback']; ?></div>
+                    <div class="pp-temp-indicator-icon emoji-<?php echo esc_attr($temp_data['emoji']); ?> icon-pilot-icon"><?php echo $temp_data['emoji_fallback']; ?></div>
                     <div class="pp-temp-indicator-label"><?php echo esc_html($temp_data['label']); ?></div>
                     <div class="pp-temp-indicator-desc"><?php echo esc_html($temp_data['description']); ?></div>
                     <div class="pp-temp-indicator-progress">
@@ -424,7 +418,7 @@ class Path_Pilot_Admin {
         <div class="pp-content">
             <!-- Top Paths Section -->
             <div class="pp-home-section pp-margin-bottom">
-                <h3 class="pp-section-heading"><i class="emoji-hot"></i> Top Conversion Paths</h3>
+                <h3 class="pp-section-heading"><i class="emoji-hot icon-pilot-icon"></i> Top Conversion Paths</h3>
 
                 <div class="pp-home-protip">
                     <i class="icon-pilot-icon"></i>
@@ -467,7 +461,7 @@ class Path_Pilot_Admin {
 
             <!-- Recent Paths Section -->
             <div class="pp-home-section pp-margin-bottom">
-                <h3 class="pp-section-heading"><i class="emoji-cool"></i> Recent Visitor Paths</h3>
+                <h3 class="pp-section-heading"><i class="emoji-cool icon-pilot-icon"></i> Recent Visitor Paths</h3>
 
                 <?php
                 $recent_count = isset($_GET['recent_count']) ? intval($_GET['recent_count']) : 10;
@@ -623,10 +617,31 @@ class Path_Pilot_Admin {
     public function handle_upgrade_redirect($value) {
         global $pagenow;
         $page = (isset($_REQUEST['page']) ? $_REQUEST['page'] : false);
-        if($pagenow == 'admin.php' && $page == 'path-pilot-upgrade'){
+        // Preserve optional redirect behavior only when explicitly requested
+        if ($pagenow == 'admin.php' && $page == 'path-pilot-upgrade' && isset($_GET['pp_redirect']) && $_GET['pp_redirect'] === '1') {
             wp_redirect(self::UPGRADE_URL);
             exit;
         }
+    }
+
+    /**
+     * Render the free upgrade page explaining Pro benefits
+     */
+    public function render_upgrade_page() {
+        // Include admin CSS
+        wp_enqueue_style('path-pilot-admin-style');
+
+        // Wrapper to match existing admin layout
+        echo '<div class="pp-admin-wrap"><div class="pp-content">';
+        do_action('path_pilot_show_pro_status_message');
+
+        // Include the upgrade template
+        include_once(plugin_dir_path(dirname(__DIR__)) . 'admin/free/upgrade-free.php');
+
+        echo '</div></div>';
+
+        // Footer
+        include_once(plugin_dir_path(dirname(__DIR__)) . 'admin/common/footer.php');
     }
 
     /**
@@ -817,7 +832,7 @@ class Path_Pilot_Admin {
         }
         ?>
         <div class="pp-home-section pp-margin-bottom">
-            <h3 class="pp-section-heading"><i class="emoji-chart"></i> Daily Performance (Last 30 Days)</h3>
+            <h3 class="pp-section-heading"><i class="emoji-chart icon-pilot-icon"></i> Daily Performance (Last 30 Days)</h3>
             <canvas id="pp-daily-stats-chart" height="120"></canvas>
         </div>
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
