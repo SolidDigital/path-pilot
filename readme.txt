@@ -54,6 +54,16 @@ Instructions for downloading:
 1. Website visitors will see the Path Pilot logo on the top left of their screen
 1. The Path Pilot dashboard will appear immediately for admins logged in and will begin collecting first-party data
 
+== Screenshots ==
+
+1. Data
+2. Performance
+3. Analytics
+4. Settings
+5. Settings 2
+6. Front End
+7. Question
+
 == Usage ==
 
 Path Pilot needs an inital learning period to gather data.
