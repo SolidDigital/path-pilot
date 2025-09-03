@@ -6,7 +6,7 @@ if (!defined('ABSPATH')) exit;
 
 class Path_Pilot_Admin {
     // Define constants
-    const UPGRADE_URL = 'https://pathpilot.app/'; // Centralized upgrade URL
+    const UPGRADE_URL = 'https://buy.stripe.com/4gM8wQ3L05gL3ms2Me9EI00'; // Centralized upgrade URL
 
     public function __construct() {
         add_action('admin_enqueue_scripts', [$this, 'enqueue_admin_css']);
