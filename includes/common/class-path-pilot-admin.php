@@ -213,11 +213,11 @@ class Path_Pilot_Admin {
                 <div class="pp-home-section pp-home-video">
                     <h3 class="pp-section-heading"><i class="icon-pilot-icon"></i> Quick Start Guide</h3>
                     <div class="pp-video-container">
-                        <iframe src="https://www.youtube.com/embed/T_iO563wpTM" title="Getting Started with Path Pilot" allowfullscreen></iframe>
+                        <iframe src="https://www.youtube.com/embed/t3oF4jb_duo" title="Getting Started with Path Pilot" allowfullscreen></iframe>
                     </div>
                 </div>
                 <div class="pp-home-section pp-home-news">
-                    <h3 class="pp-section-heading"><i class="emoji-hot icon-pilot-icon"></i> What's New</h3>
+                    <h3 class="pp-section-heading"><i class="emoji-hot icon-pilot-icon"></i>What's New</h3>
                     <ul class="pp-home-news-list">
                         <?php
                         if (count($news_items) > 0) {
@@ -229,9 +229,7 @@ class Path_Pilot_Admin {
                         } else {
                             // Fallback to hardcoded news
                         ?>
-                        <li><strong>May 2024:</strong> Path Pilot 3.1 released with improved admin UI and semantic search!</li>
-                        <li><strong>April 2024:</strong> Added OpenAI-powered query rewriting for smarter recommendations.</li>
-                        <li><strong>March 2024:</strong> New analytics and conversion path tracking features.</li>
+                        <li><strong>September 2025:</strong> Path Pilot 1.0 released!</li>
                         <?php } ?>
                     </ul>
                 </div>
@@ -942,7 +940,7 @@ class Path_Pilot_Admin {
      * Fetch remote What's New JSON and cache with transient
      */
     private function get_remote_whats_new() {
-        $remote_url = apply_filters('path_pilot_whats_new_url', 'https://api.jsonbin.io/v3/b/6806ec078561e97a5004af0a');
+        $remote_url = apply_filters('path_pilot_whats_new_url', 'https://api.jsonbin.io/v3/b/6806ec078561e97a5004af0a?' . time());
         $cache_key = 'path_pilot_whats_new_cache';
         $news = get_transient($cache_key);
         if ($news === false) {
