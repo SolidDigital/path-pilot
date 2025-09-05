@@ -75,7 +75,7 @@ class Path_Pilot_Recommender {
             if (in_array($page_id, $conversion_pages)) continue; // Exclude conversion pages
             if (in_array($page_id, $user_path)) continue;
             $page = get_post($page_id);
-            if ($page && $page->post_status === 'publish') {
+            if ($page && $page->post_status === 'publish' && in_array($page->post_type, $allowed_content_types)) {
                 $url = parse_url(get_permalink($page->ID), PHP_URL_PATH);
                 $synopsis = get_post_meta($page->ID, 'path_pilot_synopsis', true);
                 if (!$synopsis) {
@@ -108,7 +108,7 @@ class Path_Pilot_Recommender {
                 if (in_array($row->page_id, $user_path)) continue;
                 if (!in_array($row->page_id, array_column($related_path_recs, 'page_id'))) {
                     $post = get_post($row->page_id);
-                    if (!$post) continue;
+                    if (!$post || $post->post_status !== 'publish' || !in_array($post->post_type, $allowed_content_types)) continue;
                     $url = parse_url(get_permalink($post->ID), PHP_URL_PATH);
                     $synopsis = get_post_meta($post->ID, 'path_pilot_synopsis', true);
                     if (!$synopsis) {
