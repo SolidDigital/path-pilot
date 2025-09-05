@@ -10,6 +10,7 @@ class Path_Pilot_Admin {
 
     public function __construct() {
         add_action('admin_enqueue_scripts', [$this, 'enqueue_admin_css']);
+        add_action('admin_enqueue_scripts', [$this, 'enqueue_admin_js']);
         add_action('admin_enqueue_scripts', [$this, 'enqueue_icon_font']);
 
         add_action('admin_menu', [$this, 'admin_menu']);
@@ -222,7 +223,7 @@ class Path_Pilot_Admin {
                         <?php
                         if (count($news_items) > 0) {
                             foreach ($news_items as $item) {
-                                $date = isset($item['date']) ? date('F Y', strtotime($item['date'])) : '';
+                                $date = isset($item['date']) ? gmdate('F Y', strtotime($item['date'])) : '';
                                 $title = isset($item['title']) ? $item['title'] : '';
                                 echo '<li><strong>' . esc_html($date) . ':</strong> ' . esc_html($title) . '</li>';
                             }
@@ -241,7 +242,7 @@ class Path_Pilot_Admin {
 
                 <!-- Temperature readiness indicator -->
                 <div class="pp-temp-indicator pp-temp-<?php echo esc_attr($temp_level); ?> pp-margin-bottom">
-                    <div class="pp-temp-indicator-icon emoji-<?php echo esc_attr($temp_data['emoji']); ?> icon-pilot-icon"><?php echo $temp_data['emoji_fallback']; ?></div>
+                    <div class="pp-temp-indicator-icon emoji-<?php echo esc_attr($temp_data['emoji']); ?> icon-pilot-icon"><?php echo esc_html($temp_data['emoji_fallback']); ?></div>
                     <div class="pp-temp-indicator-label"><?php echo esc_html($temp_data['label']); ?></div>
                     <div class="pp-temp-indicator-desc"><?php echo esc_html($temp_data['description']); ?></div>
                     <div class="pp-temp-indicator-progress">
@@ -449,7 +450,7 @@ class Path_Pilot_Admin {
                             $path_str = implode(' <span style="color:#888">&rarr;</span> ', $path_titles);
                             $cnt = intval($row->cnt);
                             $last = human_time_diff(strtotime($row->last_updated), current_time('timestamp')) . ' ago';
-                            echo "<tr><td>$path_str</td><td>$cnt</td><td>$last</td></tr>";
+                            printf('<tr><td>%s</td><td>%d</td><td>%s</td></tr>', $path_str, $cnt, esc_html($last));
                         }
                         echo '</tbody></table>';
                     }
@@ -476,7 +477,7 @@ class Path_Pilot_Admin {
                         <label for="recent_count">Show</label>
                         <select name="recent_count" id="recent_count" class="form-select" style="width:auto;padding:4px 8px;" onchange="this.form.submit()">
                             <?php foreach ($recent_options as $opt): ?>
-                                <option value="<?php echo $opt; ?>" <?php selected($recent_count == $opt); ?>><?php echo $opt; ?></option>
+                                <option value="<?php echo esc_attr($opt); ?>" <?php selected($recent_count, $opt); ?>><?php echo esc_html($opt); ?></option>
                             <?php endforeach; ?>
                         </select>
                         <span>paths</span>
@@ -509,7 +510,7 @@ class Path_Pilot_Admin {
                             }
                             $path_str = implode(' <span style="color:#888">&rarr;</span> ', $path_titles);
                             $time_diff = human_time_diff(strtotime($row->updated_at), current_time('timestamp')) . ' ago';
-                            echo "<tr><td>$session</td><td>$path_str</td><td>$time_diff</td></tr>";
+                            printf('<tr><td>%s</td><td>%s</td><td>%s</td></tr>', $session, $path_str, esc_html($time_diff));
                         }
                         echo '</tbody></table>';
                     }
@@ -556,6 +557,16 @@ class Path_Pilot_Admin {
         }
 
         // Register additional styles for specific screens if needed
+    }
+
+    /**
+     * Enqueue admin-specific JS
+     */
+    public function enqueue_admin_js($hook) {
+        // Only load on Path Pilot admin pages
+        if ($this->is_path_pilot_screen()) {
+            wp_enqueue_script('chart-js', 'https://cdn.jsdelivr.net/npm/chart.js', [], '3.7.0', true);
+        }
     }
 
     /**
@@ -708,7 +719,7 @@ class Path_Pilot_Admin {
                 <?php if ($page_views < 50): ?>
                     <div class="pp-stat-waiting">Collecting data...</div>
                     <div class="pp-progress-bar">
-                        <div class="pp-progress-value" style="width: <?php echo min(100, ($page_views / 50) * 100); ?>%"></div>
+                        <div class="pp-progress-value" style="width: <?php echo esc_attr(min(100, ($page_views / 50) * 100)); ?>%"></div>
                     </div>
                 <?php endif; ?>
                 <div class="pp-stat-description">
@@ -725,11 +736,11 @@ class Path_Pilot_Admin {
             <!-- Content Coverage -->
             <div class="pp-home-stat pp-stat-card">
                 <div class="pp-home-stat-label">Content Coverage</div>
-                <div class="pp-home-stat-value"><?php echo $pages_tracked; ?> / <?php echo $total_pages; ?></div>
+                <div class="pp-home-stat-value"><?php echo esc_html($pages_tracked); ?> / <?php echo esc_html($total_pages); ?></div>
                 <?php if ($pages_coverage < 50): ?>
-                    <div class="pp-stat-waiting"><?php echo $pages_coverage; ?>% of site explored</div>
+                    <div class="pp-stat-waiting"><?php echo esc_html($pages_coverage); ?>% of site explored</div>
                     <div class="pp-progress-bar">
-                        <div class="pp-progress-value" style="width: <?php echo $pages_coverage; ?>%"></div>
+                        <div class="pp-progress-value" style="width: <?php echo esc_attr($pages_coverage); ?>%"></div>
                     </div>
                 <?php endif; ?>
                 <div class="pp-stat-description">
@@ -746,11 +757,11 @@ class Path_Pilot_Admin {
             <!-- Learning Period -->
             <div class="pp-home-stat pp-stat-card">
                 <div class="pp-home-stat-label">Learning Period</div>
-                <div class="pp-home-stat-value"><?php echo $days_active; ?> <?php echo $days_active == 1 ? 'day' : 'days'; ?></div>
+                <div class="pp-home-stat-value"><?php echo esc_html($days_active); ?> <?php echo $days_active == 1 ? 'day' : 'days'; ?></div>
                 <?php if ($days_active < 14): ?>
                     <div class="pp-stat-waiting">Initial learning phase</div>
                     <div class="pp-progress-bar">
-                        <div class="pp-progress-value" style="width: <?php echo min(100, ($days_active / 14) * 100); ?>%"></div>
+                        <div class="pp-progress-value" style="width: <?php echo esc_attr(min(100, ($days_active / 14) * 100)); ?>%"></div>
                     </div>
                 <?php endif; ?>
                 <div class="pp-stat-description">
@@ -833,7 +844,7 @@ class Path_Pilot_Admin {
             <h3 class="pp-section-heading"><i class="emoji-chart icon-pilot-icon"></i> Daily Performance (Last 30 Days)</h3>
             <canvas id="pp-daily-stats-chart" height="120"></canvas>
         </div>
-        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
         <script>
         const ctx = document.getElementById('pp-daily-stats-chart').getContext('2d');
         const chart = new Chart(ctx, {
@@ -965,7 +976,7 @@ class Path_Pilot_Admin {
         check_ajax_referer('path_pilot_dismiss_setup_notice', 'nonce');
 
         if (!current_user_can('manage_options')) {
-            wp_die(__('You do not have sufficient permissions to access this page.'));
+            wp_die(esc_html__('You do not have sufficient permissions to access this page.', 'path-pilot'));
         }
 
         // Set user meta to remember dismissal

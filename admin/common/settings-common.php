@@ -48,7 +48,7 @@ unset($all_post_types['nav_menu_item']);
                                 <?php echo esc_html($post_type_obj->labels->name); ?>
                             </div>
                             <div style="font-size: 0.85rem; color: #666;">
-                                <?php echo $published_count; ?> published
+                                <?php echo esc_html($published_count); ?> published
                             </div>
                             <?php if (!empty($post_type_obj->description)): ?>
                                 <div style="font-size: 0.8rem; color: #888; margin-top: 4px; font-style: italic;">
@@ -80,7 +80,7 @@ unset($all_post_types['nav_menu_item']);
                 <?php foreach ($pages as $page): ?>
                 <li style="padding:6px 0;border-bottom:1px solid #f0f0f0;display:flex;align-items:center;">
                     <label style="display:flex;align-items:center;gap:8px;width:100%;cursor:pointer;">
-                    <input type="checkbox" name="path_pilot_goal_pages[]" value="<?php echo $page->ID; ?>" <?php checked(in_array($page->ID, $goal_pages_selected)); ?> style="margin-right:8px;">
+                    <input type="checkbox" name="path_pilot_goal_pages[]" value="<?php echo esc_attr($page->ID); ?>" <?php checked(in_array($page->ID, $goal_pages_selected)); ?> style="margin-right:8px;">
                     <span><?php echo esc_html($page->post_title); ?></span>
                     </label>
                 </li>
@@ -121,7 +121,7 @@ unset($all_post_types['nav_menu_item']);
                 <?php foreach ($pages as $page): ?>
                 <li style="padding:6px 0;border-bottom:1px solid #f0f0f0;display:flex;align-items:center;">
                     <label style="display:flex;align-items:center;gap:8px;width:100%;cursor:pointer;">
-                    <input type="checkbox" name="path_pilot_conversion_pages[]" value="<?php echo $page->ID; ?>" <?php checked(in_array($page->ID, $conversion_pages_selected)); ?> style="margin-right:8px;">
+                    <input type="checkbox" name="path_pilot_conversion_pages[]" value="<?php echo esc_attr($page->ID); ?>" <?php checked(in_array($page->ID, $conversion_pages_selected)); ?> style="margin-right:8px;">
                     <span><?php echo esc_html($page->post_title); ?></span>
                     </label>
                 </li>

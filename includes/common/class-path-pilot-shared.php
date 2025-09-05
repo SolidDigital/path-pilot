@@ -651,7 +651,7 @@ class Path_Pilot_Shared {
         global $wpdb;
 
         // Calculate conversions for the previous day
-        $yesterday = date('Y-m-d', strtotime('-1 day'));
+        $yesterday = gmdate('Y-m-d', strtotime('-1 day'));
 
         // Total unique sessions that had a pageview event for the previous day
         $unique_visitors_yesterday = $wpdb->get_var(
