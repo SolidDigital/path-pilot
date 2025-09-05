@@ -566,6 +566,7 @@ class Path_Pilot_Admin {
         // Only load on Path Pilot admin pages
         if ($this->is_path_pilot_screen()) {
             wp_enqueue_script('chart-js', 'https://cdn.jsdelivr.net/npm/chart.js', [], '3.7.0', true);
+            wp_enqueue_script('path-pilot-chart-loader', plugins_url('../scripts/chart-loader.js', dirname(__FILE__)), ['chart-js'], PATH_PILOT_VERSION, true);
         }
     }
 
@@ -839,76 +840,21 @@ class Path_Pilot_Admin {
             $unique_visitors[] = (int)$row->unique_visitors;
             $conversion_rates[] = round($row->conversion_rate, 2); // Already a percentage
         }
+
+        wp_localize_script('chart-js', 'PathPilotChartData', [
+            'dates' => $dates,
+            'page_views' => $page_views,
+            'conversions' => $conversions,
+            'unique_visitors' => $unique_visitors,
+            'conversion_rates' => $conversion_rates,
+        ]);
         ?>
         <div class="pp-home-section pp-margin-bottom">
             <h3 class="pp-section-heading"><i class="emoji-chart icon-pilot-icon"></i> Daily Performance (Last 30 Days)</h3>
             <canvas id="pp-daily-stats-chart" height="120"></canvas>
         </div>
 
-        <script>
-        const ctx = document.getElementById('pp-daily-stats-chart').getContext('2d');
-        const chart = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: <?php echo json_encode($dates); ?>,
-                datasets: [
-                    {
-                        label: 'Page Views',
-                        data: <?php echo json_encode($page_views); ?>,
-                        borderColor: '#36a2eb',
-                        backgroundColor: 'rgba(54,162,235,0.1)',
-                        yAxisID: 'y',
-                    },
-                    {
-                        label: 'Conversions',
-                        data: <?php echo json_encode($conversions); ?>,
-                        borderColor: '#4caf50',
-                        backgroundColor: 'rgba(76,175,80,0.1)',
-                        yAxisID: 'y',
-                    },
-                    {
-                        label: 'Unique Visitors',
-                        data: <?php echo json_encode($unique_visitors); ?>,
-                        borderColor: '#ff9800',
-                        backgroundColor: 'rgba(255,152,0,0.1)',
-                        yAxisID: 'y',
-                    },
-                    {
-                        label: 'Conversion Rate (%)',
-                        data: <?php echo json_encode($conversion_rates); ?>,
-                        borderColor: '#e91e63',
-                        backgroundColor: 'rgba(233,30,99,0.1)',
-                        yAxisID: 'y1',
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                interaction: { mode: 'index', intersect: false },
-                stacked: false,
-                plugins: {
-                    legend: { position: 'top' },
-                    title: { display: false }
-                },
-                scales: {
-                    y: {
-                        type: 'linear',
-                        display: true,
-                        position: 'left',
-                        title: { display: true, text: 'Count' }
-                    },
-                    y1: {
-                        type: 'linear',
-                        display: true,
-                        position: 'right',
-                        title: { display: true, text: 'Conversion Rate (%)' },
-                        grid: { drawOnChartArea: false },
-                        min: 0
-                    }
-                }
-            }
-        });
-        </script>
+        
         <?php
 
         // Check if the events table exists
