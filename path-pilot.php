@@ -13,7 +13,7 @@
 namespace Path_Pilot;
 
 if (!defined('ABSPATH')) exit;
-define('PATH_PILOT_VERSION', '0.1.4');
+define('PATH_PILOT_VERSION', '1.0.1');
 
 // This is the FREE version. Pro features are only available in the Pro build.
 

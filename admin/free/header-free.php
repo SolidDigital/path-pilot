@@ -21,7 +21,7 @@ $logo_url = plugin_dir_url(dirname(__DIR__)) . 'assets/images/path-pilot-logo.pn
     if (!Path_Pilot::is_pro()) {
         ?>
         <div class="pp-header-right">
-            <a href="<?php echo esc_url('https://pathpilot.app/'); ?>" target="_blank" class="btn btn-pro">Upgrade to Pro</a>
+            <a href="<?php echo esc_attr(admin_url('admin.php?page=path-pilot-settings')); ?>" target="_blank" class="btn btn-pro">Upgrade to Pro</a>
         </div>
         <?php
     }
