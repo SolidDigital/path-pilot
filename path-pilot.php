@@ -1,11 +1,10 @@
 <?php
 /**
  * Plugin Name: Path Pilot
- * Author URI: https://pathpilot.app
  * Description: Modern WordPress plugin for smart recommendations and analytics.
  * Version: 1.0.0
- * Author: Path Pilot
- * Author URI: https://pathpilot.app
+ * Author: Solid Digital
+ * Author URI: https://www.soliddigital.com
  * Text Domain: path-pilot
  * License: GPLv2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
