@@ -68,7 +68,7 @@ Instructions for downloading:
 
 == Usage ==
 
-Path Pilot needs an inital learning period to gather data.
+Path Pilot needs an initial learning period to gather data.
 
 1. **View Reports:**
       - Go to **Path Pilot > Reports** to see top conversion paths and recent user journeys.
