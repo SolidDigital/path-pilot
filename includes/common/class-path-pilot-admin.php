@@ -463,7 +463,7 @@ class Path_Pilot_Admin {
                 <h3 class="pp-section-heading"><i class="emoji-cool icon-pilot-icon"></i> Recent Visitor Paths</h3>
 
                 <?php
-                $recent_count = isset($_GET['recent_count']) ? intval($_GET['recent_count']) : 10;
+                		$recent_count = isset($_GET['recent_count']) ? absint($_GET['recent_count']) : 10;
                 $recent_options = [10, 25, 50, 100];
                 ?>
 
@@ -575,7 +575,7 @@ class Path_Pilot_Admin {
      */
     public function save_settings() {
         // Check if we're processing our settings form submission
-        if (!isset($_POST['_wpnonce']) || !wp_verify_nonce($_POST['_wpnonce'], 'path_pilot_save_settings')) {
+        if (!isset($_POST['_wpnonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['_wpnonce'])), 'path_pilot_save_settings')) {
             wp_die('Invalid nonce verification');
             return;
         }
@@ -586,8 +586,8 @@ class Path_Pilot_Admin {
         }
 
         // Process and save each setting
-        update_option('path_pilot_goal_pages', isset($_POST['path_pilot_goal_pages']) ? array_map('intval', $_POST['path_pilot_goal_pages']) : []);
-        update_option('path_pilot_conversion_pages', isset($_POST['path_pilot_conversion_pages']) ? array_map('intval', $_POST['path_pilot_conversion_pages']) : []);
+        update_option('path_pilot_goal_pages', isset($_POST['path_pilot_goal_pages']) ? array_map('absint', $_POST['path_pilot_goal_pages']) : []);
+        update_option('path_pilot_conversion_pages', isset($_POST['path_pilot_conversion_pages']) ? array_map('absint', $_POST['path_pilot_conversion_pages']) : []);
         update_option('path_pilot_cta_text', sanitize_text_field($_POST['path_pilot_cta_text'] ?? 'Need a hand?'));
         update_option('path_pilot_recommend_label', sanitize_text_field($_POST['path_pilot_recommend_label'] ?? 'Recommended for you:'));
 
@@ -597,8 +597,7 @@ class Path_Pilot_Admin {
             update_option('path_pilot_api_key', $new_api_key);
         }
         // Save minimum hops
-        $min_hops = isset($_POST['path_pilot_min_hops']) ? max(1, min(10, intval($_POST['path_pilot_min_hops']))) : 3;
-        update_option('path_pilot_min_hops', $min_hops);
+        $min_hops = isset($_POST['path_pilot_min_hops']) ? max(1, min(10, absint($_POST['path_pilot_min_hops']))) : 3;
 
         // Save allowed content types with validation
         $submitted_content_types = isset($_POST['path_pilot_allowed_content_types']) && is_array($_POST['path_pilot_allowed_content_types'])
@@ -626,9 +625,9 @@ class Path_Pilot_Admin {
      */
     public function handle_upgrade_redirect($value) {
         global $pagenow;
-        $page = (isset($_REQUEST['page']) ? $_REQUEST['page'] : false);
+        $page = (isset($_REQUEST['page']) ? sanitize_text_field($_REQUEST['page']) : false);
         // Preserve optional redirect behavior only when explicitly requested
-        if ($pagenow == 'admin.php' && $page == 'path-pilot-upgrade' && isset($_GET['pp_redirect']) && $_GET['pp_redirect'] === '1') {
+        if ($pagenow == 'admin.php' && $page == 'path-pilot-upgrade' && isset($_GET['pp_redirect']) && sanitize_text_field($_GET['pp_redirect']) === '1') {
             wp_redirect(self::UPGRADE_URL);
             exit;
         }
@@ -854,7 +853,7 @@ class Path_Pilot_Admin {
             <canvas id="pp-daily-stats-chart" height="120"></canvas>
         </div>
 
-        
+
         <?php
 
         // Check if the events table exists

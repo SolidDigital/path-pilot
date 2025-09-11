@@ -340,7 +340,7 @@ class Path_Pilot_Shared {
 
     // Common session ID handling
     public static function get_session_id() {
-        if (isset($_COOKIE['path_pilot_sid'])) return $_COOKIE['path_pilot_sid'];
+        if (isset($_COOKIE['path_pilot_sid'])) return sanitize_text_field($_COOKIE['path_pilot_sid']);
         $sid = wp_generate_uuid4();
         setcookie('path_pilot_sid', $sid, time() + 3600 * 24 * 30, COOKIEPATH, COOKIE_DOMAIN);
         return $sid;
@@ -575,7 +575,7 @@ class Path_Pilot_Shared {
 
     // --- Helper method to detect device type ---
     private static function detect_device_type() {
-        $user_agent = $_SERVER['HTTP_USER_AGENT'] ?? '';
+        $user_agent = isset($_SERVER['HTTP_USER_AGENT']) ? sanitize_text_field($_SERVER['HTTP_USER_AGENT']) : '';
 
         if (preg_match('/(tablet|ipad|playbook|silk)|(android(?!.*mobile))/i', $user_agent)) {
             return 'tablet';

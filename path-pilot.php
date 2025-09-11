@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Path Pilot
  * Description: Modern WordPress plugin for smart recommendations and analytics.
- * Version: 1.0.0
+ * Version: 1.0.0-build.2
  * Author: Solid Digital
  * Author URI: https://www.soliddigital.com
  * Text Domain: path-pilot
@@ -34,7 +34,7 @@ class Log {
     }
 }
 
-Log::info('Path Pilot: Plugin file loaded for URL: ' . ($_SERVER['REQUEST_URI'] ?? 'unknown'));
+Log::info('Path Pilot: Plugin file loaded for URL: ' . (esc_url_raw($_SERVER['REQUEST_URI'] ?? 'unknown')));
 
 // Core includes
 require_once __DIR__ . '/includes/common/class-path-pilot-admin.php';
