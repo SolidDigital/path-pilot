@@ -140,7 +140,10 @@
           const sid = (document.cookie.match(/path_pilot_sid=([^;]+)/) || [])[1] || '';
           fetch('/wp-json/path-pilot/v1/rec-click', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 
+              'Content-Type': 'application/json',
+              'X-WP-Nonce': window.PathPilotStatus.nonce
+            },
             credentials: 'same-origin',
             body: JSON.stringify({ session_id: sid, page_id: rec.page_id })
           });
@@ -171,7 +174,10 @@
 
     fetch('/wp-json/path-pilot/v1/suggest', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 
+        'Content-Type': 'application/json',
+        'X-WP-Nonce': window.PathPilotStatus.nonce
+     },
       credentials: 'same-origin',
       body: JSON.stringify({
         current: window.location.pathname,

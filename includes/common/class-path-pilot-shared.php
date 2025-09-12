@@ -113,23 +113,37 @@ class Path_Pilot_Shared {
         register_rest_route(self::REST_NAMESPACE, '/event', [
             'methods' => 'POST',
             'callback' => [__CLASS__, 'handle_event'],
-            'permission_callback' => '__return_true',
+            'permission_callback' => [__CLASS__, 'check_rest_api_nonce'],
         ]);
         register_rest_route(self::REST_NAMESPACE, '/suggest', [
             'methods' => 'POST',
             'callback' => [__CLASS__, 'handle_suggest'],
-            'permission_callback' => '__return_true',
+            'permission_callback' => [__CLASS__, 'check_rest_api_nonce'],
         ]);
         register_rest_route(self::REST_NAMESPACE, '/status', [
             'methods' => 'GET',
             'callback' => [__CLASS__, 'handle_status'],
-            'permission_callback' => '__return_true',
+            'permission_callback' => [__CLASS__, 'check_rest_api_nonce'],
         ]);
         register_rest_route(self::REST_NAMESPACE, '/rec-click', [
             'methods' => 'POST',
             'callback' => [__CLASS__, 'handle_rec_click'],
-            'permission_callback' => '__return_true',
+            'permission_callback' => [__CLASS__, 'check_rest_api_nonce'],
         ]);
+    }
+
+    /**
+     * Check nonce for REST API requests.
+     *
+     * @param \WP_REST_Request $request
+     * @return bool
+     */
+    public static function check_rest_api_nonce(\WP_REST_Request $request) {
+        $nonce = $request->get_header('X-WP-Nonce');
+        if (!$nonce) {
+            return false;
+        }
+        return wp_verify_nonce($nonce, 'wp_rest');
     }
 
     // --- Shared REST Handlers ---
@@ -533,6 +547,7 @@ class Path_Pilot_Shared {
                     'has_valid_api_key' => $has_valid_api_key,
                     'chat_enabled' => $chat_enabled,
                     'icon_css_url' => plugins_url('assets/css/path-pilot-icons.css', $main_plugin_file),
+                    'nonce' => wp_create_nonce('wp_rest'),
                 ]
             );
     }
