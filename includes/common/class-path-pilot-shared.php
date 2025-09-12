@@ -130,7 +130,6 @@ class Path_Pilot_Shared {
             'callback' => [__CLASS__, 'handle_rec_click'],
             'permission_callback' => '__return_true',
         ]);
-        // Note: /chat endpoint is registered separately in the pro version
     }
 
     // --- Shared REST Handlers ---
