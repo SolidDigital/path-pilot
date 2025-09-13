@@ -110,6 +110,11 @@ class Path_Pilot_Shared {
 
     // --- Register shared REST endpoints (except chat which is pro-only) ---
     public static function register_rest_endpoints($instance) {
+        register_rest_route(self::REST_NAMESPACE, '/nonce', [
+            'methods' => 'GET',
+            'callback' => [__CLASS__, 'handle_nonce'],
+            'permission_callback' => '__return_true',
+        ]);
         register_rest_route(self::REST_NAMESPACE, '/event', [
             'methods' => 'POST',
             'callback' => [__CLASS__, 'handle_event'],
@@ -130,6 +135,10 @@ class Path_Pilot_Shared {
             'callback' => [__CLASS__, 'handle_rec_click'],
             'permission_callback' => [__CLASS__, 'check_rest_api_nonce'],
         ]);
+    }
+
+    public static function handle_nonce() {
+        return new \WP_REST_Response(['nonce' => wp_create_nonce('wp_rest')]);
     }
 
     /**
