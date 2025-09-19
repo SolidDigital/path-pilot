@@ -86,3 +86,6 @@ Path Pilot does not conflict with any other plugins on your WordPress website.
 
 **Do I need to create a Path Pilot account?**
 No. Once you install Path Pilot, it will appear on the backend of your WP website with no sign in required.
+
+**Where can I find the Path Pilot Terms of Service and Privacy Policy ?**
+These are available here: [Terms of Service](https://www.soliddigital.com/path-pilot-terms) and [Privacy Policy](https://www.soliddigital.com/privacy-policy)
