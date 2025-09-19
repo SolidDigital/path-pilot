@@ -148,26 +148,6 @@ unset($all_post_types['nav_menu_item']);
     </div>
 </div>
 
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    function setupSearch(searchInputId, listSelector) {
-        var search = document.getElementById(searchInputId);
-        if (search) {
-            search.addEventListener('input', function() {
-                var filter = this.value.toLowerCase();
-                document.querySelectorAll(listSelector).forEach(function(li) {
-                    var text = li.textContent.toLowerCase();
-                    li.style.display = text.includes(filter) ? '' : 'none';
-                });
-            });
-        }
-    }
-
-    setupSearch('pp-goal-search', '.pp-goal-pages-list li');
-    setupSearch('pp-conversion-search', '.pp-conversion-pages-list li');
-});
-</script>
-
 <div class="pp-home-section pp-margin-bottom">
     <h3 class="pp-section-heading"><i class="emoji-star icon-pilot-icon"></i> Interface Settings</h3>
     <div class="pp-home-stat pp-stat-card">

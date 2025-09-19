@@ -90,14 +90,14 @@ class Path_Pilot_Admin {
             array($this, 'render_analytics_page')
         );
 
-            add_submenu_page(
-                'path-pilot',                            // Parent slug
-                'Path Pilot Settings',                   // Page title
-                'Settings',                              // Menu title
-                'manage_options',                        // Capability
-                'path-pilot-settings',                   // Menu slug
-                array($this, 'render_settings_page')     // Callback
-            );
+        add_submenu_page(
+            'path-pilot',                            // Parent slug
+            'Path Pilot Settings',                   // Page title
+            'Settings',                              // Menu title
+            'manage_options',                        // Capability
+            'path-pilot-settings',                   // Menu slug
+            array($this, 'render_settings_page')     // Callback
+        );
 
         // Add the upgrade link as a submenu item
         if (!Path_Pilot::is_pro()) {
@@ -516,8 +516,9 @@ class Path_Pilot_Admin {
     public function enqueue_admin_js($hook) {
         // Only load on Path Pilot admin pages
         if ($this->is_path_pilot_screen()) {
-            wp_enqueue_script('chart-js', 'https://cdn.jsdelivr.net/npm/chart.js', [], '3.7.0', true);
-            wp_enqueue_script('path-pilot-chart-loader', plugins_url('../scripts/chart-loader.js', dirname(__FILE__)), ['chart-js'], PATH_PILOT_VERSION, true);
+            wp_enqueue_script('chart-js', plugins_url('../admin/chart.js', dirname(__FILE__)), [], '4.5.0', true);
+            wp_enqueue_script('path-pilot-chart-loader', plugins_url('../admin/chart-loader.js', dirname(__FILE__)), ['chart-js'], PATH_PILOT_VERSION, true);
+            wp_enqueue_script('path-pilot-settings', plugins_url('../admin/settings.js', dirname(__FILE__)), [], PATH_PILOT_VERSION, true);
         }
     }
 
