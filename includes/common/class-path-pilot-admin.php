@@ -15,7 +15,6 @@ class Path_Pilot_Admin {
 
         add_action('admin_menu', [$this, 'admin_menu']);
         add_action('admin_post_path_pilot_save_settings', [$this, 'save_settings']);
-        add_action('admin_init', [$this, 'handle_upgrade_redirect']);
 
         // Use Elementor's approach to render our header in the admin area
         add_action('current_screen', function() {
@@ -570,19 +569,6 @@ class Path_Pilot_Admin {
 
         wp_safe_redirect($redirect_url);
         exit;
-    }
-
-    /**
-     * Handle redirection for upgrade link
-     */
-    public function handle_upgrade_redirect($value) {
-        global $pagenow;
-        $page = (isset($_REQUEST['page']) ? sanitize_text_field($_REQUEST['page']) : false);
-        // Preserve optional redirect behavior only when explicitly requested
-        if ($pagenow == 'admin.php' && $page == 'path-pilot-upgrade' && isset($_GET['pp_redirect']) && sanitize_text_field($_GET['pp_redirect']) === '1') {
-            wp_redirect(self::UPGRADE_URL);
-            exit;
-        }
     }
 
     /**
