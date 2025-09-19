@@ -5,8 +5,6 @@ namespace Path_Pilot;
 if (!defined('ABSPATH')) exit;
 
 class Path_Pilot_Admin {
-    // Define constants
-    const UPGRADE_URL = 'https://buy.stripe.com/4gM8wQ3L05gL3ms2Me9EI00'; // Centralized upgrade URL
 
     public function __construct() {
         add_action('admin_enqueue_scripts', [$this, 'enqueue_admin_css']);
@@ -105,8 +103,7 @@ class Path_Pilot_Admin {
                 'Upgrade to Pro',
                 '<span class="path-pilot-upgrade-link">Upgrade</span>',
                 'manage_options',
-                'path-pilot-upgrade',
-                array($this, 'render_upgrade_page')
+                'https://pathpilot.app/pro/'
             );
         }
     }
@@ -406,7 +403,7 @@ class Path_Pilot_Admin {
                 <h3 class="pp-section-heading"><i class="emoji-cool icon-pilot-icon"></i> Recent Visitor Paths</h3>
 
                 <?php
-                		$recent_count = isset($_GET['recent_count']) ? absint($_GET['recent_count']) : 10;
+                $recent_count = isset($_GET['recent_count']) ? absint($_GET['recent_count']) : 10;
                 $recent_options = [10, 25, 50, 100];
                 ?>
 
@@ -569,26 +566,6 @@ class Path_Pilot_Admin {
 
         wp_safe_redirect($redirect_url);
         exit;
-    }
-
-    /**
-     * Render the free upgrade page explaining Pro benefits
-     */
-    public function render_upgrade_page() {
-        // Include admin CSS
-        wp_enqueue_style('path-pilot-admin-style');
-
-        // Wrapper to match existing admin layout
-        echo '<div class="pp-admin-wrap"><div class="pp-content">';
-        do_action('path_pilot_show_pro_status_message');
-
-        // Include the upgrade template
-        include_once(plugin_dir_path(dirname(__DIR__)) . 'admin/free/upgrade-free.php');
-
-        echo '</div></div>';
-
-        // Footer
-        include_once(plugin_dir_path(dirname(__DIR__)) . 'admin/common/footer.php');
     }
 
     /**
