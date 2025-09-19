@@ -14,7 +14,6 @@ class Path_Pilot_Admin {
         add_action('admin_enqueue_scripts', [$this, 'enqueue_icon_font']);
 
         add_action('admin_menu', [$this, 'admin_menu']);
-        add_action('admin_head', [$this, 'admin_menu_styles']);
         add_action('admin_post_path_pilot_save_settings', [$this, 'save_settings']);
         add_action('admin_init', [$this, 'handle_upgrade_redirect']);
 
@@ -110,62 +109,7 @@ class Path_Pilot_Admin {
                 'path-pilot-upgrade',
                 array($this, 'render_upgrade_page')
             );
-
         }
-
-        // Add CSS to use our custom font icon for the menu
-        add_action('admin_head', function() {
-            echo '<style>
-                /* Replace the default dashicon with our custom icon */
-                #adminmenu #toplevel_page_path-pilot .wp-menu-image:before {
-                    font-family: "path-pilot-icons" !important;
-                    content: "\e900"; /* The code for our icon */
-                    font-size: 20px;
-                }
-
-                /* Style the upgrade link */
-                .path-pilot-upgrade-link {
-                    font-weight: 600;
-                    color: #f9a825;
-                }
-            </style>';
-        });
-    }
-
-    /**
-     * Add custom styles for the admin menu upgrade link
-     */
-    public function admin_menu_styles() {
-        ?>
-        <style>
-            /* Style the upgrade link in the menu to stand out */
-            .path-pilot-upgrade-link {
-                color: #ffffff !important;
-                background-color: #e02e2e; /* Red accent color */
-                padding: 3px 12px;
-                border-radius: 3px;
-                font-weight: 600;
-                display: inline-block;
-                text-align: center;
-                transition: all 0.2s ease;
-            }
-
-            .path-pilot-upgrade-link:hover {
-                background-color: #c12323; /* Darker red on hover */
-            }
-
-            /* Remove default WP admin submenu background hover effect */
-            #adminmenu .wp-submenu a[href="<?php echo esc_attr(admin_url('admin.php?page=path-pilot-upgrade')); ?>"]:hover,
-            #adminmenu .wp-submenu a[href="<?php echo esc_attr(admin_url('admin.php?page=path-pilot-upgrade')); ?>"]:focus {
-                background-color: transparent;
-            }
-
-            /* For when the item is active/current */
-            #adminmenu .wp-submenu a.current[href="<?php echo esc_attr(admin_url('admin.php?page=path-pilot-upgrade')); ?>"] {
-                background-color: transparent;
-            }
-        </style>
-        <?php
     }
 
     /**
@@ -543,7 +487,6 @@ class Path_Pilot_Admin {
      * Enqueue admin-specific CSS
      */
     public function enqueue_admin_css($hook) {
-        // Register and enqueue the admin CSS for all admin pages
         wp_register_style(
             'path-pilot-admin-style',
             plugins_url('../admin/admin.css', dirname(__FILE__)),
@@ -551,7 +494,15 @@ class Path_Pilot_Admin {
             PATH_PILOT_VERSION
         );
 
-        // Only load on Path Pilot admin pages
+        wp_register_style(
+            'path-pilot-menu-style',
+            plugins_url('../admin/menu.css', dirname(__FILE__)),
+            [],
+            PATH_PILOT_VERSION
+        );
+
+        wp_enqueue_style('path-pilot-menu-style');
+
         if ($this->is_path_pilot_screen()) {
             wp_enqueue_style('path-pilot-admin-style');
         }
