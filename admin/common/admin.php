@@ -73,13 +73,15 @@ function path_pilot_display_analytics($pages_coverage = 0, $days_active = 0, $pa
     }
 
     // --- Top Pages ---
-    $popular_pages_query = "SELECT page_id, COUNT(*) as view_count
+
+    $popular_pages = $wpdb->get_results(
+    "SELECT page_id, COUNT(*) as view_count
     FROM {$wpdb->prefix}path_pilot_events
-    WHERE event_type = %s AND page_id > 0
+    WHERE event_type = 'pageview' AND page_id > 0
     GROUP BY page_id
     ORDER BY view_count DESC
-    LIMIT 3";
-    $popular_pages = $wpdb->get_results($wpdb->prepare($popular_pages_query, 'pageview'));
+    LIMIT 3"
+    );
 
     // --- Organic vs Direct ---
     $organic = 0; $direct = 0; $other = 0;
