@@ -16,7 +16,6 @@ define('PATH_PILOT_VERSION', '1.0.0');
 
 // This is the FREE version. Pro features are only available in the Pro build.
 
-define('E_INFO', E_NOTICE);
 class Log {
     // E_ERROR - log only errors
     // E_ERROR | E_INFO - errors and info
