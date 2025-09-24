@@ -497,22 +497,6 @@ class Path_Pilot_Shared {
             false // Load in header instead of footer
         );
 
-        // Get current post ID with debugging
-        $current_post_id = 0;
-        if (function_exists('get_the_ID')) {
-            $current_post_id = get_the_ID();
-        }
-
-        // Debug logging for post ID detection
-        global $post;
-        if (is_single() || is_page()) {
-            // If get_the_ID() failed but we have global $post, use that
-            if (!$current_post_id && isset($post->ID)) {
-                $current_post_id = $post->ID;
-                Log::info('Path Pilot: - Using global $post ID instead: ' . $current_post_id);
-            }
-        }
-
         // Add localization data for tracking
         $localize_result = wp_localize_script(
             self::SLUG . '-tracking',
@@ -524,7 +508,7 @@ class Path_Pilot_Shared {
                 'dev_mode' => $dev_mode,
                 'is_pro' => Path_Pilot::is_pro(),
                 'has_valid_api_key' => $has_valid_api_key,
-                'post_id' => $current_post_id,
+                'post_id' => get_the_ID(),
             ]
         );
         Log::info('Path Pilot: wp_localize_script result = ' . ($localize_result ? 'success' : 'failed'));
