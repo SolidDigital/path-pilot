@@ -203,37 +203,12 @@ class Path_Pilot_Shared {
 		if (!isset($_SESSION['path_pilot_paths'])) {
 			$_SESSION['path_pilot_paths'] = [];
 		}
-		if (!isset($_SESSION['path_pilot_metadata'])) {
-			$_SESSION['path_pilot_metadata'] = [];
-		}
-		$paths = isset($_SESSION['path_pilot_paths'][$sid]) ? $_SESSION['path_pilot_paths'][$sid] : [];
+
+		$paths = isset($_SESSION['path_pilot_paths'][$sid]) ? array_map('intval', $_SESSION['path_pilot_paths'][$sid]) : [];
 		if ($post_id > 0 && (empty($paths) || end($paths) != $post_id)) {
 			$paths[] = $post_id;
 		}
 		$_SESSION['path_pilot_paths'][$sid] = $paths;
-
-		// Store/update metadata in session
-		$metadata = [
-			'device_type' => $device,
-			'referrer' => $referrer,
-			'screen_width' => $screen_w,
-			'screen_height' => $screen_h,
-			'browser_name' => $browser_name,
-			'browser_version' => $browser_version,
-			'os_name' => $os_name,
-			'time_on_page' => $time_on_page,
-			'entrance' => $entrance,
-			'exit' => $exit,
-			'scroll_depth' => $scroll_depth,
-			'viewport_width' => $viewport_width,
-			'viewport_height' => $viewport_height
-		];
-		if (isset($params['metadata']) && is_array($params['metadata'])) {
-			foreach ($params['metadata'] as $key => $value) {
-				$metadata['custom_' . sanitize_key($key)] = $value;
-			}
-		}
-		$_SESSION['path_pilot_metadata'][$sid] = $metadata;
 
 		// Determine if this is a goal or conversion page
 		$is_goal_page = false;
@@ -649,7 +624,6 @@ class Path_Pilot_Shared {
 
         // Clear the session path and metadata for this session after a completion (goal or explicit)
         unset($_SESSION['path_pilot_paths'][$session_id]);
-        unset($_SESSION['path_pilot_metadata'][$session_id]);
         return true;
     }
 
