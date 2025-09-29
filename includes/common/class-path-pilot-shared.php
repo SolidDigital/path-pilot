@@ -600,7 +600,7 @@ class Path_Pilot_Shared {
         }
         $table_name = $wpdb->prefix . 'path_pilot_visit_paths';
         // Retrieve path and metadata from session
-        $paths = isset($_SESSION['path_pilot_paths'][$session_id]) ? $_SESSION['path_pilot_paths'][$session_id] : [];
+        $paths = isset($_SESSION['path_pilot_paths'][$session_id]) ? array_map('intval', $_SESSION['path_pilot_paths'][$session_id]) : [];
         // Get minimum hops from settings (default 3)
         $min_hops = (int) get_option('path_pilot_min_hops', 3);
 
