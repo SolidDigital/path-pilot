@@ -590,6 +590,12 @@ class Path_Pilot_Admin {
         $min_hops = isset($_POST['path_pilot_min_hops']) ? max(1, min(10, intval($_POST['path_pilot_min_hops']))) : 3;
         update_option('path_pilot_min_hops', $min_hops);
 
+        // Handle the toggle switch - we get "1" when checked, nothing when unchecked
+        $insights_only = isset($_POST['path_pilot_insights_only']) && $_POST['path_pilot_insights_only'] === '1';
+        
+        // Save insights_only directly (true = hide drawer, false = show drawer)
+        update_option('path_pilot_insights_only', $insights_only);
+
         // Save allowed content types with validation
         $submitted_content_types = isset($_POST['path_pilot_allowed_content_types']) && is_array($_POST['path_pilot_allowed_content_types'])
             ? array_map('sanitize_text_field', $_POST['path_pilot_allowed_content_types'])

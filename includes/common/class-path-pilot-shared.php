@@ -451,6 +451,8 @@ class Path_Pilot_Shared {
         $chat_enabled = apply_filters('path_pilot_chat_enabled', false);
         $dev_mode = (bool) get_option('path_pilot_dev_mode', false);
         $ready = $dev_mode ? true : (bool) get_option('path_pilot_ready', false);
+        $insights_only = (bool) get_option('path_pilot_insights_only', false); // Default to false (show drawer)
+        $show_drawer = !$insights_only; // Show drawer when NOT insights only
         $cta_text = get_option('path_pilot_cta_text', 'Need a hand?');
         $recommend_label = get_option('path_pilot_recommend_label', 'Recommended for you:');
         $chat_label = get_option('path_pilot_chat_label', 'Path Pilot');
@@ -507,8 +509,9 @@ class Path_Pilot_Shared {
         );
         Log::info('Path Pilot: wp_localize_script result = ' . ($localize_result ? 'success' : 'failed'));
 
-        // Always enqueue UI/interactivity - widget should always be available
-        // Only the chat feature is gated behind Pro license, not the widget itself
+        // Conditionally enqueue UI/interactivity based on show_drawer setting
+        // If drawer is disabled, we skip the UI but keep tracking active
+        if ($show_drawer) {
             Log::info('Path Pilot: Enqueuing index.js script...');
             $script_url = plugins_url('scripts/index.js', $main_plugin_file);
             Log::info('Path Pilot: Script URL = ' . $script_url);
@@ -527,6 +530,8 @@ class Path_Pilot_Shared {
                 [
                     'ready' => $ready,
                     'dev_mode' => $dev_mode,
+                    'insights_only' => $insights_only,
+                    'show_drawer' => $show_drawer,
                     'cta_text' => $cta_text,
                     'recommend_label' => $recommend_label,
                     'chat_label' => $chat_label,
@@ -536,6 +541,9 @@ class Path_Pilot_Shared {
                     'icon_css_url' => plugins_url('assets/css/path-pilot-icons.css', $main_plugin_file),
                 ]
             );
+        } else {
+            Log::info('Path Pilot: Drawer disabled - skipping UI scripts but keeping tracking active');
+        }
     }
 
     // Get most common page 2 hops before goal page (for basic recommendations)

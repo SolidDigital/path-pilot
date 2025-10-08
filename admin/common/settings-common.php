@@ -170,6 +170,24 @@ document.addEventListener('DOMContentLoaded', function() {
 
 <div class="pp-home-section pp-margin-bottom">
     <h3 class="pp-section-heading"><i class="emoji-star icon-pilot-icon"></i> Interface Settings</h3>
+    
+    <div class="pp-home-stat pp-stat-card" style="margin-bottom: 20px;">
+        <div class="pp-home-stat-label">Insights Only</div>
+        <div style="margin:20px 0;">
+            <label class="pp-toggle-switch" style="display:flex;align-items:center;gap:15px;cursor:pointer;">
+                <input type="hidden" name="path_pilot_insights_only" value="0" />
+                <input type="checkbox" name="path_pilot_insights_only" id="path_pilot_insights_only" value="1" <?php checked(get_option('path_pilot_insights_only', false)); ?> style="display:none;" />
+                <div class="pp-toggle-track" style="position:relative;width:50px;height:24px;background:#e0e0e0;border-radius:12px;transition:background-color 0.3s ease;">
+                    <div class="pp-toggle-handle" style="position:absolute;top:2px;left:2px;width:20px;height:20px;background:#fff;border-radius:50%;box-shadow:0 2px 4px rgba(0,0,0,0.2);transition:transform 0.3s ease;"></div>
+                </div>
+                <span style="font-weight:500;">Hide drawer and collect data only</span>
+            </label>
+        </div>
+        <div class="pp-stat-description">
+            When enabled, Path Pilot collects visitor data and analytics in the background without showing any UI to visitors. When disabled, visitors will see the recommendations drawer.
+        </div>
+    </div>
+
     <div class="pp-home-stat pp-stat-card">
         <div class="pp-home-stat-label">Minimum Path Hops</div>
         <div style="margin:20px 0;">
@@ -181,3 +199,41 @@ document.addEventListener('DOMContentLoaded', function() {
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Toggle switch functionality
+    function setupToggleSwitch() {
+        var toggle = document.getElementById('path_pilot_insights_only');
+        var track = document.querySelector('.pp-toggle-track');
+        var handle = document.querySelector('.pp-toggle-handle');
+        
+        if (!toggle || !track || !handle) return;
+
+        function updateToggleState() {
+            if (toggle.checked) {
+                track.style.backgroundColor = '#1976d2';
+                handle.style.transform = 'translateX(26px)';
+            } else {
+                track.style.backgroundColor = '#e0e0e0';
+                handle.style.transform = 'translateX(0)';
+            }
+        }
+
+        // Initialize state
+        updateToggleState();
+
+        // Add click handler
+        track.addEventListener('click', function(e) {
+            e.preventDefault();
+            toggle.checked = !toggle.checked;
+            updateToggleState();
+        });
+
+        // Add change handler for form submission
+        toggle.addEventListener('change', updateToggleState);
+    }
+
+    setupToggleSwitch();
+});
+</script>

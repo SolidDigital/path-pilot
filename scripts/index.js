@@ -8,6 +8,12 @@
 
   function initPathPilot() {
   
+  // --- Check if drawer should be shown ---
+  if (window.PathPilotStatus && window.PathPilotStatus.insights_only === true) {
+    console.log('Path Pilot: Insights only mode enabled - skipping drawer initialization');
+    return; // Exit early if insights only mode is enabled
+  }
+  
   // --- Inject icon font CSS if not present ---
   if (!document.querySelector('link[href*="path-pilot-icons.css"]')) {
     var iconFontLink = document.createElement('link');
