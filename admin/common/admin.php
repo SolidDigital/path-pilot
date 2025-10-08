@@ -73,18 +73,20 @@ function path_pilot_display_analytics($pages_coverage = 0, $days_active = 0, $pa
     }
 
     // --- Top Pages ---
-    $popular_pages_query = "SELECT page_id, COUNT(*) as view_count
+
+    $popular_pages = $wpdb->get_results(
+    "SELECT page_id, COUNT(*) as view_count
     FROM {$wpdb->prefix}path_pilot_events
     WHERE event_type = 'pageview' AND page_id > 0
     GROUP BY page_id
     ORDER BY view_count DESC
-    LIMIT 3";
-    $popular_pages = $wpdb->get_results($popular_pages_query);
+    LIMIT 3"
+    );
 
     // --- Organic vs Direct ---
     $organic = 0; $direct = 0; $other = 0;
     $organic_domains = ['google.', 'bing.', 'yahoo.', 'duckduckgo.', 'baidu.', 'yandex.', 'aol.', 'ask.', 'ecosia.'];
-    $site_host = parse_url(home_url(), PHP_URL_HOST);
+    $site_host = wp_parse_url(home_url(), PHP_URL_HOST);
     $ref_query = $wpdb->get_results("SELECT referrer FROM {$wpdb->prefix}path_pilot_events WHERE referrer IS NOT NULL");
     foreach ($ref_query as $row) {
         $ref = $row->referrer;
@@ -194,7 +196,7 @@ function path_pilot_display_analytics($pages_coverage = 0, $days_active = 0, $pa
     $avg_path_length = $avg_path_length ? round($avg_path_length, 1) : 0;
 
     // --- Top Conversion Landing Pages (external or direct only) ---
-    $site_host = parse_url(home_url(), PHP_URL_HOST);
+    $site_host = wp_parse_url(home_url(), PHP_URL_HOST);
     $top_landing_counts = [];
     $landing_query = $wpdb->get_results("SELECT paths FROM {$wpdb->prefix}path_pilot_visit_paths WHERE paths IS NOT NULL AND paths != ''");
     foreach ($landing_query as $row) {
@@ -235,7 +237,7 @@ function path_pilot_display_analytics($pages_coverage = 0, $days_active = 0, $pa
                 <?php if ($page_views < 50): ?>
                     <div class="pp-stat-waiting">Collecting data...</div>
                     <div class="pp-progress-bar">
-                        <div class="pp-progress-value" style="width: <?php echo min(100, ($page_views / 50) * 100); ?>%"></div>
+                        <div class="pp-progress-value" style="width: <?php echo esc_attr(min(100, ($page_views / 50) * 100)); ?>%"></div>
                     </div>
                 <?php endif; ?>
                 <div class="pp-stat-description">
@@ -254,9 +256,9 @@ function path_pilot_display_analytics($pages_coverage = 0, $days_active = 0, $pa
             <div class="pp-home-stat pp-stat-card">
                 <div class="pp-home-stat-label">Content Coverage</div>
                 <div class="pp-home-stat-value"><?php echo number_format($pages_tracked); ?> / <?php echo number_format($total_pages); ?></div>
-                <div class="pp-home-stat-value-sub"><?php echo $pages_coverage; ?>% of site explored</div>
+                <div class="pp-home-stat-value-sub"><?php echo esc_html($pages_coverage); ?>% of site explored</div>
                 <div class="pp-progress-bar">
-                    <div class="pp-progress-value" style="width: <?php echo $pages_coverage; ?>%"></div>
+                    <div class="pp-progress-value" style="width: <?php echo esc_attr($pages_coverage); ?>%"></div>
                 </div>
                 <div class="pp-stat-description">
                     <?php if ($pages_coverage < 25): ?>
@@ -274,11 +276,11 @@ function path_pilot_display_analytics($pages_coverage = 0, $days_active = 0, $pa
             <?php if ($days_active < 14): // Only show if learning period is not complete yet ?>
             <div class="pp-home-stat pp-stat-card">
                 <div class="pp-home-stat-label">Learning Period</div>
-                <div class="pp-home-stat-value"><?php echo $days_active; ?> <?php echo $days_active == 1 ? 'day' : 'days'; ?></div>
+                <div class="pp-home-stat-value"><?php echo esc_html($days_active); ?> <?php echo $days_active == 1 ? 'day' : 'days'; ?></div>
                 <?php if ($days_active < 14): ?>
                     <div class="pp-stat-waiting">Initial learning phase</div>
                     <div class="pp-progress-bar">
-                        <div class="pp-progress-value" style="width: <?php echo min(100, ($days_active / 14) * 100); ?>%"></div>
+                        <div class="pp-progress-value" style="width: <?php echo esc_attr(min(100, ($days_active / 14) * 100)); ?>%"></div>
                     </div>
                 <?php endif; ?>
                 <div class="pp-stat-description">
@@ -327,23 +329,23 @@ function path_pilot_display_analytics($pages_coverage = 0, $days_active = 0, $pa
                 <?php if ($total_with_device > 0): ?>
                     <div class="pp-device-breakdown">
                         <div class="pp-stat-chart">
-                            <div class="pp-chart-bar" style="width: <?php echo round(($device_data['desktop'] / $total_with_device) * 100); ?>%" data-type="desktop"></div>
-                            <div class="pp-chart-bar" style="width: <?php echo round(($device_data['tablet'] / $total_with_device) * 100); ?>%" data-type="tablet"></div>
-                            <div class="pp-chart-bar" style="width: <?php echo round(($device_data['mobile'] / $total_with_device) * 100); ?>%" data-type="mobile"></div>
-                            <div class="pp-chart-bar" style="width: <?php echo round(($device_data['other'] / $total_with_device) * 100); ?>%" data-type="other"></div>
+                            <div class="pp-chart-bar" style="width: <?php echo esc_attr(round(($device_data['desktop'] / $total_with_device) * 100)); ?>%" data-type="desktop"></div>
+                            <div class="pp-chart-bar" style="width: <?php echo esc_attr(round(($device_data['tablet'] / $total_with_device) * 100)); ?>%" data-type="tablet"></div>
+                            <div class="pp-chart-bar" style="width: <?php echo esc_attr(round(($device_data['mobile'] / $total_with_device) * 100)); ?>%" data-type="mobile"></div>
+                            <div class="pp-chart-bar" style="width: <?php echo esc_attr(round(($device_data['other'] / $total_with_device) * 100)); ?>%" data-type="other"></div>
                         </div>
                         <div class="pp-chart-legend">
                             <div class="pp-legend-item" data-type="desktop">
                                 <span class="pp-legend-color"></span>
-                                <span class="pp-legend-label">Desktop: <?php echo round(($device_data['desktop'] / $total_with_device) * 100); ?>%</span>
+                                <span class="pp-legend-label">Desktop: <?php echo esc_html(round(($device_data['desktop'] / $total_with_device) * 100)); ?>%</span>
                             </div>
                             <div class="pp-legend-item" data-type="mobile">
                                 <span class="pp-legend-color"></span>
-                                <span class="pp-legend-label">Mobile: <?php echo round(($device_data['mobile'] / $total_with_device) * 100); ?>%</span>
+                                <span class="pp-legend-label">Mobile: <?php echo esc_html(round(($device_data['mobile'] / $total_with_device) * 100)); ?>%</span>
                             </div>
                             <div class="pp-legend-item" data-type="tablet">
                                 <span class="pp-legend-color"></span>
-                                <span class="pp-legend-label">Tablet: <?php echo round(($device_data['tablet'] / $total_with_device) * 100); ?>%</span>
+                                <span class="pp-legend-label">Tablet: <?php echo esc_html(round(($device_data['tablet'] / $total_with_device) * 100)); ?>%</span>
                             </div>
                         </div>
                     </div>
@@ -364,16 +366,16 @@ function path_pilot_display_analytics($pages_coverage = 0, $days_active = 0, $pa
                     <div class="pp-duration-breakdown">
                         <div class="pp-stat-chart">
                             <?php foreach ($duration_data as $type => $data): ?>
-                                <div class="pp-chart-bar" style="width: <?php echo round(($data['count'] / $total_with_duration) * 100); ?>%" data-type="<?php echo $type; ?>"></div>
+                                <div class="pp-chart-bar" style="width: <?php echo esc_attr(round(($data['count'] / $total_with_duration) * 100)); ?>%" data-type="<?php echo esc_attr($type); ?>"></div>
                             <?php endforeach; ?>
                         </div>
                         <div class="pp-chart-legend">
                             <?php foreach ($duration_data as $type => $data):
                                 if ($data['count'] > 0):
                             ?>
-                                <div class="pp-legend-item" data-type="<?php echo $type; ?>">
+                                <div class="pp-legend-item" data-type="<?php echo esc_attr($type); ?>">
                                     <span class="pp-legend-color"></span>
-                                    <span class="pp-legend-label"><?php echo $data['label']; ?>: <?php echo round(($data['count'] / $total_with_duration) * 100); ?>%</span>
+                                    <span class="pp-legend-label"><?php echo esc_html($data['label']); ?>: <?php echo esc_html(round(($data['count'] / $total_with_duration) * 100)); ?>%</span>
                                 </div>
                             <?php
                                 endif;
@@ -395,10 +397,10 @@ function path_pilot_display_analytics($pages_coverage = 0, $days_active = 0, $pa
                 <div class="pp-home-stat-label">Conversion Rate</div>
 
                 <?php if ($total_sessions > 0): ?>
-                    <div class="pp-home-stat-value"><?php echo $conversion_rate; ?>%</div>
+                    <div class="pp-home-stat-value"><?php echo esc_html($conversion_rate); ?>%</div>
                     <?php if ($conversion_rate > 0): ?>
                         <div class="pp-stat-trend pp-trend-up">
-                            <i class="emoji-hot icon-pilot-icon"></i> <?php echo $conversion_count; ?> total conversions
+                            <i class="emoji-hot icon-pilot-icon"></i> <?php echo esc_html($conversion_count); ?> total conversions
                         </div>
                     <?php else: ?>
                         <div class="pp-stat-waiting">No conversions tracked yet</div>
@@ -423,7 +425,7 @@ function path_pilot_display_analytics($pages_coverage = 0, $days_active = 0, $pa
                 <div class="pp-home-stat-label">Average Path Length</div>
 
                 <?php if ($avg_path_length > 0): ?>
-                    <div class="pp-home-stat-value"><?php echo $avg_path_length; ?> pages</div>
+                    <div class="pp-home-stat-value"><?php echo esc_html($avg_path_length); ?> pages</div>
                     <?php if ($avg_path_length > 1): ?>
                         <div class="pp-stat-trend pp-trend-up">
                             <i class="emoji-hot icon-pilot-icon"></i> Visitors exploring multiple pages
@@ -453,7 +455,7 @@ function path_pilot_display_analytics($pages_coverage = 0, $days_active = 0, $pa
                             $page_title = get_the_title($page->page_id);
                             if (empty($page_title)) continue;
                         ?>
-                            <li><strong><?php echo esc_html($page_title); ?></strong> (<?php echo $page->view_count; ?> views)</li>
+                            <li><strong><?php echo esc_html($page_title); ?></strong> (<?php echo esc_html($page->view_count); ?> views)</li>
                         <?php endforeach; ?>
                     </ul>
                 <?php else: ?>
@@ -468,9 +470,9 @@ function path_pilot_display_analytics($pages_coverage = 0, $days_active = 0, $pa
                 <div class="pp-home-stat-label">Traffic Sources</div>
                 <?php if ($total_ref > 0): ?>
                     <ul style="margin: 0; padding-left: 20px;">
-                        <li><strong>Direct:</strong> <?php echo round(($direct / $total_ref) * 100); ?>%</li>
-                        <li><strong>Organic:</strong> <?php echo round(($organic / $total_ref) * 100); ?>%</li>
-                        <li><strong>Other:</strong> <?php echo round(($other / $total_ref) * 100); ?>%</li>
+                        <li><strong>Direct:</strong> <?php echo esc_html(round(($direct / $total_ref) * 100)); ?>%</li>
+                        <li><strong>Organic:</strong> <?php echo esc_html(round(($organic / $total_ref) * 100)); ?>%</li>
+                        <li><strong>Other:</strong> <?php echo esc_html(round(($other / $total_ref) * 100)); ?>%</li>
                     </ul>
                 <?php else: ?>
                     <div class="pp-home-stat-value">No data yet</div>
@@ -485,7 +487,7 @@ function path_pilot_display_analytics($pages_coverage = 0, $days_active = 0, $pa
                 <?php if (count($top_referrers) > 0): ?>
                     <ul style="margin: 0; padding-left: 20px;">
                         <?php foreach ($top_referrers as $ref => $count): ?>
-                            <li><?php echo esc_html($ref); ?> (<?php echo $count; ?>)</li>
+                            <li><?php echo esc_html($ref); ?> (<?php echo esc_html($count); ?>)</li>
                         <?php endforeach; ?>
                     </ul>
                 <?php else: ?>
@@ -504,7 +506,7 @@ function path_pilot_display_analytics($pages_coverage = 0, $days_active = 0, $pa
                             $page_title = get_the_title($page_id);
                             if (empty($page_title)) continue;
                         ?>
-                            <li><strong><?php echo esc_html($page_title); ?></strong> (<?php echo $count; ?> conversions)</li>
+                            <li><strong><?php echo esc_html($page_title); ?></strong> (<?php echo esc_html($count); ?> conversions)</li>
                         <?php endforeach; ?>
                     </ul>
                 <?php else: ?>

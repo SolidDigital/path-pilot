@@ -110,27 +110,49 @@ class Path_Pilot_Shared {
 
     // --- Register shared REST endpoints (except chat which is pro-only) ---
     public static function register_rest_endpoints($instance) {
+        register_rest_route(self::REST_NAMESPACE, '/nonce', [
+            'methods' => 'GET',
+            'callback' => [__CLASS__, 'handle_nonce'],
+            'permission_callback' => '__return_true',
+        ]);
         register_rest_route(self::REST_NAMESPACE, '/event', [
             'methods' => 'POST',
             'callback' => [__CLASS__, 'handle_event'],
-            'permission_callback' => '__return_true',
+            'permission_callback' => [__CLASS__, 'check_rest_api_nonce'],
         ]);
         register_rest_route(self::REST_NAMESPACE, '/suggest', [
             'methods' => 'POST',
             'callback' => [__CLASS__, 'handle_suggest'],
-            'permission_callback' => '__return_true',
+            'permission_callback' => [__CLASS__, 'check_rest_api_nonce'],
         ]);
         register_rest_route(self::REST_NAMESPACE, '/status', [
             'methods' => 'GET',
             'callback' => [__CLASS__, 'handle_status'],
-            'permission_callback' => '__return_true',
+            'permission_callback' => [__CLASS__, 'check_rest_api_nonce'],
         ]);
         register_rest_route(self::REST_NAMESPACE, '/rec-click', [
             'methods' => 'POST',
             'callback' => [__CLASS__, 'handle_rec_click'],
-            'permission_callback' => '__return_true',
+            'permission_callback' => [__CLASS__, 'check_rest_api_nonce'],
         ]);
-        // Note: /chat endpoint is registered separately in the pro version
+    }
+
+    public static function handle_nonce() {
+        return new \WP_REST_Response(['nonce' => wp_create_nonce('wp_rest')]);
+    }
+
+    /**
+     * Check nonce for REST API requests.
+     *
+     * @param \WP_REST_Request $request
+     * @return bool
+     */
+    public static function check_rest_api_nonce(\WP_REST_Request $request) {
+        $nonce = $request->get_header('X-WP-Nonce');
+        if (!$nonce) {
+            return false;
+        }
+        return wp_verify_nonce($nonce, 'wp_rest');
     }
 
     // --- Shared REST Handlers ---
@@ -181,37 +203,12 @@ class Path_Pilot_Shared {
 		if (!isset($_SESSION['path_pilot_paths'])) {
 			$_SESSION['path_pilot_paths'] = [];
 		}
-		if (!isset($_SESSION['path_pilot_metadata'])) {
-			$_SESSION['path_pilot_metadata'] = [];
-		}
-		$paths = isset($_SESSION['path_pilot_paths'][$sid]) ? $_SESSION['path_pilot_paths'][$sid] : [];
+
+		$paths = isset($_SESSION['path_pilot_paths'][$sid]) ? array_map('intval', $_SESSION['path_pilot_paths'][$sid]) : [];
 		if ($post_id > 0 && (empty($paths) || end($paths) != $post_id)) {
 			$paths[] = $post_id;
 		}
 		$_SESSION['path_pilot_paths'][$sid] = $paths;
-
-		// Store/update metadata in session
-		$metadata = [
-			'device_type' => $device,
-			'referrer' => $referrer,
-			'screen_width' => $screen_w,
-			'screen_height' => $screen_h,
-			'browser_name' => $browser_name,
-			'browser_version' => $browser_version,
-			'os_name' => $os_name,
-			'time_on_page' => $time_on_page,
-			'entrance' => $entrance,
-			'exit' => $exit,
-			'scroll_depth' => $scroll_depth,
-			'viewport_width' => $viewport_width,
-			'viewport_height' => $viewport_height
-		];
-		if (isset($params['metadata']) && is_array($params['metadata'])) {
-			foreach ($params['metadata'] as $key => $value) {
-				$metadata['custom_' . sanitize_key($key)] = $value;
-			}
-		}
-		$_SESSION['path_pilot_metadata'][$sid] = $metadata;
 
 		// Determine if this is a goal or conversion page
 		$is_goal_page = false;
@@ -340,7 +337,7 @@ class Path_Pilot_Shared {
 
     // Common session ID handling
     public static function get_session_id() {
-        if (isset($_COOKIE['path_pilot_sid'])) return $_COOKIE['path_pilot_sid'];
+        if (isset($_COOKIE['path_pilot_sid'])) return sanitize_text_field($_COOKIE['path_pilot_sid']);
         $sid = wp_generate_uuid4();
         setcookie('path_pilot_sid', $sid, time() + 3600 * 24 * 30, COOKIEPATH, COOKIE_DOMAIN);
         return $sid;
@@ -477,22 +474,6 @@ class Path_Pilot_Shared {
             false // Load in header instead of footer
         );
 
-        // Get current post ID with debugging
-        $current_post_id = 0;
-        if (function_exists('get_the_ID')) {
-            $current_post_id = get_the_ID();
-        }
-
-        // Debug logging for post ID detection
-        global $post;
-        if (is_single() || is_page()) {
-            // If get_the_ID() failed but we have global $post, use that
-            if (!$current_post_id && isset($post->ID)) {
-                $current_post_id = $post->ID;
-                Log::info('Path Pilot: - Using global $post ID instead: ' . $current_post_id);
-            }
-        }
-
         // Add localization data for tracking
         $localize_result = wp_localize_script(
             self::SLUG . '-tracking',
@@ -504,7 +485,7 @@ class Path_Pilot_Shared {
                 'dev_mode' => $dev_mode,
                 'is_pro' => Path_Pilot::is_pro(),
                 'has_valid_api_key' => $has_valid_api_key,
-                'post_id' => $current_post_id,
+                'post_id' => get_the_ID(),
             ]
         );
         Log::info('Path Pilot: wp_localize_script result = ' . ($localize_result ? 'success' : 'failed'));
@@ -539,6 +520,7 @@ class Path_Pilot_Shared {
                     'has_valid_api_key' => $has_valid_api_key,
                     'chat_enabled' => $chat_enabled,
                     'icon_css_url' => plugins_url('assets/css/path-pilot-icons.css', $main_plugin_file),
+                    'nonce' => wp_create_nonce('wp_rest'),
                 ]
             );
         } else {
@@ -583,7 +565,7 @@ class Path_Pilot_Shared {
 
     // --- Helper method to detect device type ---
     private static function detect_device_type() {
-        $user_agent = $_SERVER['HTTP_USER_AGENT'] ?? '';
+        $user_agent = isset($_SERVER['HTTP_USER_AGENT']) ? sanitize_text_field($_SERVER['HTTP_USER_AGENT']) : '';
 
         if (preg_match('/(tablet|ipad|playbook|silk)|(android(?!.*mobile))/i', $user_agent)) {
             return 'tablet';
@@ -626,7 +608,7 @@ class Path_Pilot_Shared {
         }
         $table_name = $wpdb->prefix . 'path_pilot_visit_paths';
         // Retrieve path and metadata from session
-        $paths = isset($_SESSION['path_pilot_paths'][$session_id]) ? $_SESSION['path_pilot_paths'][$session_id] : [];
+        $paths = isset($_SESSION['path_pilot_paths'][$session_id]) ? array_map('intval', $_SESSION['path_pilot_paths'][$session_id]) : [];
         // Get minimum hops from settings (default 3)
         $min_hops = (int) get_option('path_pilot_min_hops', 3);
 
@@ -650,7 +632,6 @@ class Path_Pilot_Shared {
 
         // Clear the session path and metadata for this session after a completion (goal or explicit)
         unset($_SESSION['path_pilot_paths'][$session_id]);
-        unset($_SESSION['path_pilot_metadata'][$session_id]);
         return true;
     }
 
@@ -659,7 +640,7 @@ class Path_Pilot_Shared {
         global $wpdb;
 
         // Calculate conversions for the previous day
-        $yesterday = date('Y-m-d', strtotime('-1 day'));
+        $yesterday = gmdate('Y-m-d', strtotime('-1 day'));
 
         // Total unique sessions that had a pageview event for the previous day
         $unique_visitors_yesterday = $wpdb->get_var(

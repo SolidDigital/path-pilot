@@ -3,7 +3,7 @@ class PathPilotTracker {
     constructor() {
         this.sessionId = this.getSessionId();
         this.currentPath = window.location.pathname;
-        this.postId = (typeof path_pilot_data !== 'undefined' && path_pilot_data.post_id) ? path_pilot_data.post_id : this.getPostId();
+        this.postId = parseInt(path_pilot_data.post_id) || 0;
         this.startTime = Date.now();
         this.maxScrollDepth = 0;
         this.trackScrollDepth();
@@ -17,59 +17,6 @@ class PathPilotTracker {
             localStorage.setItem('path_pilot_sid', sid);
         }
         return sid;
-    }
-
-    getPostId() {
-        // Try to get from the body class first (most reliable for both posts and pages)
-        const bodyClasses = document.body.className.split(' ');
-        for (const cls of bodyClasses) {
-            if (cls.startsWith('postid-')) {
-                return parseInt(cls.replace('postid-', ''), 10);
-            }
-        }
-
-        // Try to get post ID from canonical link (works for numeric permalinks)
-        const canonical = document.querySelector('link[rel="canonical"]');
-        if (canonical) {
-            const url = new URL(canonical.href);
-            const pathParts = url.pathname.split('/').filter(Boolean);
-            if (pathParts.length > 0) {
-                const lastPart = pathParts[pathParts.length - 1];
-                if (/^\d+$/.test(lastPart)) {
-                    return parseInt(lastPart, 10);
-                }
-            }
-        }
-
-        // Check for post ID in the REST API URL pattern
-        const restLinks = document.querySelectorAll('link[rel="https://api.w.org/"]');
-        if (restLinks.length > 0) {
-            const href = restLinks[0].getAttribute('href');
-            const match = href.match(/\/wp-json\/wp\/v2\/posts\/(\d+)/);
-            if (match && match[1]) {
-                return parseInt(match[1], 10);
-            }
-        }
-
-        // Check for single-post body class (indicates this is a blog post)
-        if (bodyClasses.includes('single-post') || bodyClasses.includes('single')) {
-            console.log('Path Pilot: Detected blog post but could not determine post ID');
-            console.log('Path Pilot: Body classes:', bodyClasses.join(' '));
-            console.log('Path Pilot: Current URL:', window.location.href);
-            
-            // Try one more approach - look for shortlink meta tag
-            const shortlink = document.querySelector('link[rel="shortlink"]');
-            if (shortlink) {
-                const href = shortlink.getAttribute('href');
-                const match = href.match(/\?p=(\d+)/);
-                if (match && match[1]) {
-                    console.log('Path Pilot: Found post ID via shortlink:', match[1]);
-                    return parseInt(match[1], 10);
-                }
-            }
-        }
-
-        return 0; // Default if we can't determine post ID
     }
 
     detectDeviceType() {
@@ -89,7 +36,7 @@ class PathPilotTracker {
         let browser = 'unknown';
         let browserVersion = '';
         let os = 'unknown';
-        
+
         // Detect browser
         if (ua.includes('Firefox/')) {
             browser = 'Firefox';
@@ -112,7 +59,7 @@ class PathPilotTracker {
             const match = ua.match(/(?:MSIE |rv:)(\d+\.\d+)/);
             browserVersion = match ? match[1] : '';
         }
-        
+
         // Detect OS
         if (ua.includes('Windows')) {
             os = 'Windows';
@@ -125,7 +72,7 @@ class PathPilotTracker {
         } else if (ua.includes('iPhone') || ua.includes('iPad') || ua.includes('iPod')) {
             os = 'iOS';
         }
-        
+
         return {
             browser,
             browserVersion,
@@ -147,7 +94,7 @@ class PathPilotTracker {
         window.addEventListener('scroll', () => {
             const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
             const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-            
+
             if (scrollHeight > 0) {
                 const scrollDepth = Math.floor((scrollTop / scrollHeight) * 100);
                 if (scrollDepth > this.maxScrollDepth) {
@@ -160,7 +107,7 @@ class PathPilotTracker {
     setupEventListeners() {
         // Track when user is about to leave the page
         window.addEventListener('beforeunload', this.trackPageExit.bind(this));
-        
+
         // Track clicks on links
         document.addEventListener('click', (e) => {
             const link = e.target.closest('a');
@@ -184,12 +131,12 @@ class PathPilotTracker {
                 link_href: link.href,
                 link_position: this.getLinkPosition(link)
             };
-            
+
             const duration = Math.round((Date.now() - this.startTime) / 1000); // Duration in seconds
             this.trackEvent(duration, 'link_click', metadata);
         }
     }
-    
+
     getLinkPosition(element) {
         const rect = element.getBoundingClientRect();
         return {
@@ -206,15 +153,15 @@ class PathPilotTracker {
             console.log('Path Pilot: Skipping tracking - not on subscription domain');
             return;
         }
-        
+
         const browserInfo = this.getBrowserInfo();
-        
+
         const metadata = {
             ...customMetadata,
             url: window.location.href,
             title: document.title
         };
-        
+
         // Categorize duration for easier analysis
         let durationCategory = 'very_short';
         if (duration >= 5 && duration < 30) {
@@ -224,10 +171,10 @@ class PathPilotTracker {
         } else if (duration >= 120) {
             durationCategory = 'long';
         }
-        
+
         // Add duration category to metadata
         metadata.duration_category = durationCategory;
-        
+
         // Send the data to the server
         const data = {
             sid: this.sessionId,
@@ -274,7 +221,7 @@ class PathPilotTracker {
         if (hostname === 'localhost' || hostname.endsWith('.local')) {
             return false;
         }
-        
+
         // For Pro version, only track on valid subscription domains
         // Domain validation is handled server-side - this is a client-side guard
         // TODO: This could be enhanced to check against a whitelist of valid domains
@@ -290,4 +237,4 @@ document.addEventListener('DOMContentLoaded', () => {
         window.pathPilotTracker = new PathPilotTracker();
         window.pathPilotTracker.trackEvent(); // Initial page view
     }
-}); 
+});

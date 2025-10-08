@@ -75,8 +75,8 @@ class Path_Pilot_Recommender {
             if (in_array($page_id, $conversion_pages)) continue; // Exclude conversion pages
             if (in_array($page_id, $user_path)) continue;
             $page = get_post($page_id);
-            if ($page && $page->post_status === 'publish') {
-                $url = parse_url(get_permalink($page->ID), PHP_URL_PATH);
+            if ($page && $page->post_status === 'publish' && in_array($page->post_type, $allowed_content_types)) {
+                $url = wp_parse_url(get_permalink($page->ID), PHP_URL_PATH);
                 $synopsis = get_post_meta($page->ID, 'path_pilot_synopsis', true);
                 if (!$synopsis) {
                     $synopsis = has_excerpt($page->ID) ? get_the_excerpt($page->ID) : wp_trim_words($page->post_content, 40, '...');
@@ -108,8 +108,8 @@ class Path_Pilot_Recommender {
                 if (in_array($row->page_id, $user_path)) continue;
                 if (!in_array($row->page_id, array_column($related_path_recs, 'page_id'))) {
                     $post = get_post($row->page_id);
-                    if (!$post) continue;
-                    $url = parse_url(get_permalink($post->ID), PHP_URL_PATH);
+                    if (!$post || $post->post_status !== 'publish' || !in_array($post->post_type, $allowed_content_types)) continue;
+                    $url = wp_parse_url(get_permalink($post->ID), PHP_URL_PATH);
                     $synopsis = get_post_meta($post->ID, 'path_pilot_synopsis', true);
                     if (!$synopsis) {
                         $synopsis = has_excerpt($post->ID) ? get_the_excerpt($post->ID) : wp_trim_words($post->post_content, 40, '...');
@@ -138,7 +138,7 @@ class Path_Pilot_Recommender {
                 if (in_array($page->ID, $conversion_pages)) continue; // Exclude conversion pages
                 if (in_array($page->ID, $user_path)) continue;
                 if (!in_array($page->ID, array_column($related_path_recs, 'page_id')) && !in_array($page->ID, array_column($most_viewed_recs, 'page_id'))) {
-                    $url = parse_url(get_permalink($page->ID), PHP_URL_PATH);
+                    $url = wp_parse_url(get_permalink($page->ID), PHP_URL_PATH);
                     $synopsis = get_post_meta($page->ID, 'path_pilot_synopsis', true);
                     if (!$synopsis) {
                         $synopsis = has_excerpt($page->ID) ? get_the_excerpt($page->ID) : wp_trim_words($page->post_content, 40, '...');
@@ -219,7 +219,7 @@ class Path_Pilot_Recommender {
                     continue;
                 }
 
-                $url = parse_url(get_permalink($page->ID), PHP_URL_PATH);
+                $url = wp_parse_url(get_permalink($page->ID), PHP_URL_PATH);
                 $synopsis = get_post_meta($page->ID, 'path_pilot_synopsis', true);
                 if (!$synopsis) {
                     $synopsis = has_excerpt($page->ID) ? get_the_excerpt($page->ID) : wp_trim_words($page->post_content, 40, '...');
@@ -258,7 +258,7 @@ class Path_Pilot_Recommender {
         // If that fails, try alternative methods for blog posts
         if (!$post_id) {
             // Parse the URL to get the path
-            $parsed_url = parse_url($url);
+            $parsed_url = wp_parse_url($url);
             $path_only = isset($parsed_url['path']) ? $parsed_url['path'] : '';
 
             // Try to get post by path (for blog posts with custom permalinks)
@@ -277,7 +277,7 @@ class Path_Pilot_Recommender {
 
                 foreach ($posts as $pid) {
                     $permalink = get_permalink($pid);
-                    if ($permalink === $url || parse_url($permalink, PHP_URL_PATH) === $path_only) {
+                    if ($permalink === $url || wp_parse_url($permalink, PHP_URL_PATH) === $path_only) {
                         $post_id = $pid;
                         break;
                     }

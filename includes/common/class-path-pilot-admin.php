@@ -5,17 +5,14 @@ namespace Path_Pilot;
 if (!defined('ABSPATH')) exit;
 
 class Path_Pilot_Admin {
-    // Define constants
-    const UPGRADE_URL = 'https://buy.stripe.com/4gM8wQ3L05gL3ms2Me9EI00'; // Centralized upgrade URL
 
     public function __construct() {
         add_action('admin_enqueue_scripts', [$this, 'enqueue_admin_css']);
+        add_action('admin_enqueue_scripts', [$this, 'enqueue_admin_js']);
         add_action('admin_enqueue_scripts', [$this, 'enqueue_icon_font']);
 
         add_action('admin_menu', [$this, 'admin_menu']);
-        add_action('admin_head', [$this, 'admin_menu_styles']);
         add_action('admin_post_path_pilot_save_settings', [$this, 'save_settings']);
-        add_action('admin_init', [$this, 'handle_upgrade_redirect']);
 
         // Use Elementor's approach to render our header in the admin area
         add_action('current_screen', function() {
@@ -90,14 +87,14 @@ class Path_Pilot_Admin {
             array($this, 'render_analytics_page')
         );
 
-            add_submenu_page(
-                'path-pilot',                            // Parent slug
-                'Path Pilot Settings',                   // Page title
-                'Settings',                              // Menu title
-                'manage_options',                        // Capability
-                'path-pilot-settings',                   // Menu slug
-                array($this, 'render_settings_page')     // Callback
-            );
+        add_submenu_page(
+            'path-pilot',                            // Parent slug
+            'Path Pilot Settings',                   // Page title
+            'Settings',                              // Menu title
+            'manage_options',                        // Capability
+            'path-pilot-settings',                   // Menu slug
+            array($this, 'render_settings_page')     // Callback
+        );
 
         // Add the upgrade link as a submenu item
         if (!Path_Pilot::is_pro()) {
@@ -106,65 +103,9 @@ class Path_Pilot_Admin {
                 'Upgrade to Pro',
                 '<span class="path-pilot-upgrade-link">Upgrade</span>',
                 'manage_options',
-                'path-pilot-upgrade',
-                array($this, 'render_upgrade_page')
+                'https://pathpilot.app/pro/'
             );
-
         }
-
-        // Add CSS to use our custom font icon for the menu
-        add_action('admin_head', function() {
-            echo '<style>
-                /* Replace the default dashicon with our custom icon */
-                #adminmenu #toplevel_page_path-pilot .wp-menu-image:before {
-                    font-family: "path-pilot-icons" !important;
-                    content: "\e900"; /* The code for our icon */
-                    font-size: 20px;
-                }
-
-                /* Style the upgrade link */
-                .path-pilot-upgrade-link {
-                    font-weight: 600;
-                    color: #f9a825;
-                }
-            </style>';
-        });
-    }
-
-    /**
-     * Add custom styles for the admin menu upgrade link
-     */
-    public function admin_menu_styles() {
-        ?>
-        <style>
-            /* Style the upgrade link in the menu to stand out */
-            .path-pilot-upgrade-link {
-                color: #ffffff !important;
-                background-color: #e02e2e; /* Red accent color */
-                padding: 3px 12px;
-                border-radius: 3px;
-                font-weight: 600;
-                display: inline-block;
-                text-align: center;
-                transition: all 0.2s ease;
-            }
-
-            .path-pilot-upgrade-link:hover {
-                background-color: #c12323; /* Darker red on hover */
-            }
-
-            /* Remove default WP admin submenu background hover effect */
-            #adminmenu .wp-submenu a[href="<?php echo esc_attr(admin_url('admin.php?page=path-pilot-upgrade')); ?>"]:hover,
-            #adminmenu .wp-submenu a[href="<?php echo esc_attr(admin_url('admin.php?page=path-pilot-upgrade')); ?>"]:focus {
-                background-color: transparent;
-            }
-
-            /* For when the item is active/current */
-            #adminmenu .wp-submenu a.current[href="<?php echo esc_attr(admin_url('admin.php?page=path-pilot-upgrade')); ?>"] {
-                background-color: transparent;
-            }
-        </style>
-        <?php
     }
 
     /**
@@ -213,25 +154,23 @@ class Path_Pilot_Admin {
                 <div class="pp-home-section pp-home-video">
                     <h3 class="pp-section-heading"><i class="icon-pilot-icon"></i> Quick Start Guide</h3>
                     <div class="pp-video-container">
-                        <iframe src="https://www.youtube.com/embed/T_iO563wpTM" title="Getting Started with Path Pilot" allowfullscreen></iframe>
+                        <iframe src="https://www.youtube.com/embed/t3oF4jb_duo" title="Getting Started with Path Pilot" allowfullscreen></iframe>
                     </div>
                 </div>
                 <div class="pp-home-section pp-home-news">
-                    <h3 class="pp-section-heading"><i class="emoji-hot icon-pilot-icon"></i> What's New</h3>
+                    <h3 class="pp-section-heading"><i class="emoji-hot icon-pilot-icon"></i>What's New</h3>
                     <ul class="pp-home-news-list">
                         <?php
                         if (count($news_items) > 0) {
                             foreach ($news_items as $item) {
-                                $date = isset($item['date']) ? date('F Y', strtotime($item['date'])) : '';
+                                $date = isset($item['date']) ? gmdate('F Y', strtotime($item['date'])) : '';
                                 $title = isset($item['title']) ? $item['title'] : '';
                                 echo '<li><strong>' . esc_html($date) . ':</strong> ' . esc_html($title) . '</li>';
                             }
                         } else {
                             // Fallback to hardcoded news
                         ?>
-                        <li><strong>May 2024:</strong> Path Pilot 3.1 released with improved admin UI and semantic search!</li>
-                        <li><strong>April 2024:</strong> Added OpenAI-powered query rewriting for smarter recommendations.</li>
-                        <li><strong>March 2024:</strong> New analytics and conversion path tracking features.</li>
+                        <li><strong>September 2025:</strong> Path Pilot 1.0 released!</li>
                         <?php } ?>
                     </ul>
                 </div>
@@ -243,7 +182,7 @@ class Path_Pilot_Admin {
 
                 <!-- Temperature readiness indicator -->
                 <div class="pp-temp-indicator pp-temp-<?php echo esc_attr($temp_level); ?> pp-margin-bottom">
-                    <div class="pp-temp-indicator-icon emoji-<?php echo esc_attr($temp_data['emoji']); ?> icon-pilot-icon"><?php echo $temp_data['emoji_fallback']; ?></div>
+                    <div class="pp-temp-indicator-icon emoji-<?php echo esc_attr($temp_data['emoji']); ?> icon-pilot-icon"><?php echo esc_html($temp_data['emoji_fallback']); ?></div>
                     <div class="pp-temp-indicator-label"><?php echo esc_html($temp_data['label']); ?></div>
                     <div class="pp-temp-indicator-desc"><?php echo esc_html($temp_data['description']); ?></div>
                     <div class="pp-temp-indicator-progress">
@@ -410,120 +349,6 @@ class Path_Pilot_Admin {
         include_once(plugin_dir_path(dirname(__DIR__)) . 'admin/free/settings-free.php');
     }
 
-    public function render_reports_page() {
-        global $wpdb;
-        $visit_paths_table = $wpdb->prefix . 'path_pilot_visit_paths';
-        echo '<div class="path-pilot-frontend">';
-        ?>
-        <div class="pp-content">
-            <!-- Top Paths Section -->
-            <div class="pp-home-section pp-margin-bottom">
-                <h3 class="pp-section-heading"><i class="emoji-hot icon-pilot-icon"></i> Top Conversion Paths</h3>
-
-                <div class="pp-home-protip">
-                    <i class="icon-pilot-icon"></i>
-                    <strong>Pro Tip:</strong> These paths show the most common journeys visitors take before reaching your goal pages.
-                </div>
-
-                <div class="pp-table-responsive">
-                    <?php
-                    $top_rows = $wpdb->get_results("SELECT paths, MAX(updated_at) as last_updated, COUNT(*) as cnt FROM {$visit_paths_table} GROUP BY paths ORDER BY cnt DESC, last_updated DESC LIMIT 10");
-
-                    if (empty($top_rows)) {
-                        echo '<div class="pp-stat-waiting" style="text-align:center;padding:20px;">No conversion paths have been tracked yet. As visitors navigate your site, paths will appear here.</div>';
-                    } else {
-                        echo '<table class="table table-striped">';
-                        echo '<thead><tr><th>Path</th><th>Count</th><th>Last Seen</th></tr></thead><tbody>';
-                        foreach ($top_rows as $row) {
-                            $paths = json_decode($row->paths, true);
-                            $path_titles = [];
-                            if (is_array($paths)) {
-                                foreach ($paths as $pid) {
-                                    $post = get_post($pid);
-                                    if ($post) {
-                                        $title = esc_html($post->post_title);
-                                        $short = esc_html(mb_strimwidth($title, 0, 32, '...'));
-                                        $url = get_permalink($post->ID);
-                                        $path_titles[] = '<a href="' . esc_url($url) . '" target="_blank" title="' . esc_attr($title) . '">' . $short . '</a>';
-                                    }
-                                }
-                            }
-                            $path_str = implode(' <span style="color:#888">&rarr;</span> ', $path_titles);
-                            $cnt = intval($row->cnt);
-                            $last = human_time_diff(strtotime($row->last_updated), current_time('timestamp')) . ' ago';
-                            echo "<tr><td>$path_str</td><td>$cnt</td><td>$last</td></tr>";
-                        }
-                        echo '</tbody></table>';
-                    }
-                    ?>
-                </div>
-            </div>
-
-            <!-- Recent Paths Section -->
-            <div class="pp-home-section pp-margin-bottom">
-                <h3 class="pp-section-heading"><i class="emoji-cool icon-pilot-icon"></i> Recent Visitor Paths</h3>
-
-                <?php
-                $recent_count = isset($_GET['recent_count']) ? intval($_GET['recent_count']) : 10;
-                $recent_options = [10, 25, 50, 100];
-                ?>
-
-                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;">
-                    <div class="pp-stat-description" style="border:none;padding:0;margin:0;">
-                        See individual visitor journeys through your site in real-time.
-                    </div>
-
-                    <form method="get" class="pp-filter-form" style="display:flex;align-items:center;gap:8px;">
-                        <input type="hidden" name="page" value="path-pilot-reports" />
-                        <label for="recent_count">Show</label>
-                        <select name="recent_count" id="recent_count" class="form-select" style="width:auto;padding:4px 8px;" onchange="this.form.submit()">
-                            <?php foreach ($recent_options as $opt): ?>
-                                <option value="<?php echo $opt; ?>" <?php selected($recent_count == $opt); ?>><?php echo $opt; ?></option>
-                            <?php endforeach; ?>
-                        </select>
-                        <span>paths</span>
-                    </form>
-                </div>
-
-                <div class="pp-table-responsive">
-                    <?php
-                    $rows = $wpdb->get_results($wpdb->prepare("SELECT * FROM {$visit_paths_table} ORDER BY updated_at DESC LIMIT %d", $recent_count));
-
-                    if (empty($rows)) {
-                        echo '<div class="pp-stat-waiting" style="text-align:center;padding:20px;">No paths have been tracked yet. Check back once visitors start using your site.</div>';
-                    } else {
-                        echo '<table class="table table-striped">';
-                        echo '<thead><tr><th>Session</th><th>Path</th><th>Last Activity</th></tr></thead><tbody>';
-                        foreach ($rows as $row) {
-                            $session = esc_html(substr($row->session_id, 0, 8)) . '...';
-                            $paths = json_decode($row->paths, true);
-                            $path_titles = [];
-                            if (is_array($paths)) {
-                                foreach ($paths as $pid) {
-                                    $post = get_post($pid);
-                                    if ($post) {
-                                        $title = esc_html($post->post_title);
-                                        $short = esc_html(mb_strimwidth($title, 0, 32, '...'));
-                                        $url = get_permalink($post->ID);
-                                        $path_titles[] = '<a href="' . esc_url($url) . '" target="_blank" title="' . esc_attr($title) . '">' . $short . '</a>';
-                                    }
-                                }
-                            }
-                            $path_str = implode(' <span style="color:#888">&rarr;</span> ', $path_titles);
-                            $time_diff = human_time_diff(strtotime($row->updated_at), current_time('timestamp')) . ' ago';
-                            echo "<tr><td>$session</td><td>$path_str</td><td>$time_diff</td></tr>";
-                        }
-                        echo '</tbody></table>';
-                    }
-                    ?>
-                </div>
-            </div>
-        </div>
-        <?php
-        echo '</div>'; // Close path-pilot-frontend
-    }
-
-
     /**
      * Enqueue the custom icon font
      */
@@ -544,7 +369,6 @@ class Path_Pilot_Admin {
      * Enqueue admin-specific CSS
      */
     public function enqueue_admin_css($hook) {
-        // Register and enqueue the admin CSS for all admin pages
         wp_register_style(
             'path-pilot-admin-style',
             plugins_url('../admin/admin.css', dirname(__FILE__)),
@@ -552,7 +376,15 @@ class Path_Pilot_Admin {
             PATH_PILOT_VERSION
         );
 
-        // Only load on Path Pilot admin pages
+        wp_register_style(
+            'path-pilot-menu-style',
+            plugins_url('../admin/menu.css', dirname(__FILE__)),
+            [],
+            PATH_PILOT_VERSION
+        );
+
+        wp_enqueue_style('path-pilot-menu-style');
+
         if ($this->is_path_pilot_screen()) {
             wp_enqueue_style('path-pilot-admin-style');
         }
@@ -561,11 +393,23 @@ class Path_Pilot_Admin {
     }
 
     /**
+     * Enqueue admin-specific JS
+     */
+    public function enqueue_admin_js($hook) {
+        // Only load on Path Pilot admin pages
+        if ($this->is_path_pilot_screen()) {
+            wp_enqueue_script('chart-js', plugins_url('../admin/chart.js', dirname(__FILE__)), [], '4.5.0', true);
+            wp_enqueue_script('path-pilot-chart-loader', plugins_url('../admin/chart-loader.js', dirname(__FILE__)), ['chart-js'], PATH_PILOT_VERSION, true);
+            wp_enqueue_script('path-pilot-settings', plugins_url('../admin/settings.js', dirname(__FILE__)), [], PATH_PILOT_VERSION, true);
+        }
+    }
+
+    /**
      * Handle saving settings from the settings form
      */
     public function save_settings() {
         // Check if we're processing our settings form submission
-        if (!isset($_POST['_wpnonce']) || !wp_verify_nonce($_POST['_wpnonce'], 'path_pilot_save_settings')) {
+        if (!isset($_POST['_wpnonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['_wpnonce'])), 'path_pilot_save_settings')) {
             wp_die('Invalid nonce verification');
             return;
         }
@@ -576,8 +420,8 @@ class Path_Pilot_Admin {
         }
 
         // Process and save each setting
-        update_option('path_pilot_goal_pages', isset($_POST['path_pilot_goal_pages']) ? array_map('intval', $_POST['path_pilot_goal_pages']) : []);
-        update_option('path_pilot_conversion_pages', isset($_POST['path_pilot_conversion_pages']) ? array_map('intval', $_POST['path_pilot_conversion_pages']) : []);
+        update_option('path_pilot_goal_pages', isset($_POST['path_pilot_goal_pages']) ? array_map('absint', $_POST['path_pilot_goal_pages']) : []);
+        update_option('path_pilot_conversion_pages', isset($_POST['path_pilot_conversion_pages']) ? array_map('absint', $_POST['path_pilot_conversion_pages']) : []);
         update_option('path_pilot_cta_text', sanitize_text_field($_POST['path_pilot_cta_text'] ?? 'Need a hand?'));
         update_option('path_pilot_recommend_label', sanitize_text_field($_POST['path_pilot_recommend_label'] ?? 'Recommended for you:'));
 
@@ -587,8 +431,7 @@ class Path_Pilot_Admin {
             update_option('path_pilot_api_key', $new_api_key);
         }
         // Save minimum hops
-        $min_hops = isset($_POST['path_pilot_min_hops']) ? max(1, min(10, intval($_POST['path_pilot_min_hops']))) : 3;
-        update_option('path_pilot_min_hops', $min_hops);
+        $min_hops = isset($_POST['path_pilot_min_hops']) ? max(1, min(10, absint($_POST['path_pilot_min_hops']))) : 3;
 
         // Handle the toggle switch - we get "1" when checked, nothing when unchecked
         $insights_only = isset($_POST['path_pilot_insights_only']) && $_POST['path_pilot_insights_only'] === '1';
@@ -615,39 +458,6 @@ class Path_Pilot_Admin {
 
         wp_safe_redirect($redirect_url);
         exit;
-    }
-
-    /**
-     * Handle redirection for upgrade link
-     */
-    public function handle_upgrade_redirect($value) {
-        global $pagenow;
-        $page = (isset($_REQUEST['page']) ? $_REQUEST['page'] : false);
-        // Preserve optional redirect behavior only when explicitly requested
-        if ($pagenow == 'admin.php' && $page == 'path-pilot-upgrade' && isset($_GET['pp_redirect']) && $_GET['pp_redirect'] === '1') {
-            wp_redirect(self::UPGRADE_URL);
-            exit;
-        }
-    }
-
-    /**
-     * Render the free upgrade page explaining Pro benefits
-     */
-    public function render_upgrade_page() {
-        // Include admin CSS
-        wp_enqueue_style('path-pilot-admin-style');
-
-        // Wrapper to match existing admin layout
-        echo '<div class="pp-admin-wrap"><div class="pp-content">';
-        do_action('path_pilot_show_pro_status_message');
-
-        // Include the upgrade template
-        include_once(plugin_dir_path(dirname(__DIR__)) . 'admin/free/upgrade-free.php');
-
-        echo '</div></div>';
-
-        // Footer
-        include_once(plugin_dir_path(dirname(__DIR__)) . 'admin/common/footer.php');
     }
 
     /**
@@ -716,7 +526,7 @@ class Path_Pilot_Admin {
                 <?php if ($page_views < 50): ?>
                     <div class="pp-stat-waiting">Collecting data...</div>
                     <div class="pp-progress-bar">
-                        <div class="pp-progress-value" style="width: <?php echo min(100, ($page_views / 50) * 100); ?>%"></div>
+                        <div class="pp-progress-value" style="width: <?php echo esc_attr(min(100, ($page_views / 50) * 100)); ?>%"></div>
                     </div>
                 <?php endif; ?>
                 <div class="pp-stat-description">
@@ -733,11 +543,11 @@ class Path_Pilot_Admin {
             <!-- Content Coverage -->
             <div class="pp-home-stat pp-stat-card">
                 <div class="pp-home-stat-label">Content Coverage</div>
-                <div class="pp-home-stat-value"><?php echo $pages_tracked; ?> / <?php echo $total_pages; ?></div>
+                <div class="pp-home-stat-value"><?php echo esc_html($pages_tracked); ?> / <?php echo esc_html($total_pages); ?></div>
                 <?php if ($pages_coverage < 50): ?>
-                    <div class="pp-stat-waiting"><?php echo $pages_coverage; ?>% of site explored</div>
+                    <div class="pp-stat-waiting"><?php echo esc_html($pages_coverage); ?>% of site explored</div>
                     <div class="pp-progress-bar">
-                        <div class="pp-progress-value" style="width: <?php echo $pages_coverage; ?>%"></div>
+                        <div class="pp-progress-value" style="width: <?php echo esc_attr($pages_coverage); ?>%"></div>
                     </div>
                 <?php endif; ?>
                 <div class="pp-stat-description">
@@ -754,11 +564,11 @@ class Path_Pilot_Admin {
             <!-- Learning Period -->
             <div class="pp-home-stat pp-stat-card">
                 <div class="pp-home-stat-label">Learning Period</div>
-                <div class="pp-home-stat-value"><?php echo $days_active; ?> <?php echo $days_active == 1 ? 'day' : 'days'; ?></div>
+                <div class="pp-home-stat-value"><?php echo esc_html($days_active); ?> <?php echo $days_active == 1 ? 'day' : 'days'; ?></div>
                 <?php if ($days_active < 14): ?>
                     <div class="pp-stat-waiting">Initial learning phase</div>
                     <div class="pp-progress-bar">
-                        <div class="pp-progress-value" style="width: <?php echo min(100, ($days_active / 14) * 100); ?>%"></div>
+                        <div class="pp-progress-value" style="width: <?php echo esc_attr(min(100, ($days_active / 14) * 100)); ?>%"></div>
                     </div>
                 <?php endif; ?>
                 <div class="pp-stat-description">
@@ -836,76 +646,21 @@ class Path_Pilot_Admin {
             $unique_visitors[] = (int)$row->unique_visitors;
             $conversion_rates[] = round($row->conversion_rate, 2); // Already a percentage
         }
+
+        wp_localize_script('chart-js', 'PathPilotChartData', [
+            'dates' => $dates,
+            'page_views' => $page_views,
+            'conversions' => $conversions,
+            'unique_visitors' => $unique_visitors,
+            'conversion_rates' => $conversion_rates,
+        ]);
         ?>
         <div class="pp-home-section pp-margin-bottom">
             <h3 class="pp-section-heading"><i class="emoji-chart icon-pilot-icon"></i> Daily Performance (Last 30 Days)</h3>
             <canvas id="pp-daily-stats-chart" height="120"></canvas>
         </div>
-        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-        <script>
-        const ctx = document.getElementById('pp-daily-stats-chart').getContext('2d');
-        const chart = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: <?php echo json_encode($dates); ?>,
-                datasets: [
-                    {
-                        label: 'Page Views',
-                        data: <?php echo json_encode($page_views); ?>,
-                        borderColor: '#36a2eb',
-                        backgroundColor: 'rgba(54,162,235,0.1)',
-                        yAxisID: 'y',
-                    },
-                    {
-                        label: 'Conversions',
-                        data: <?php echo json_encode($conversions); ?>,
-                        borderColor: '#4caf50',
-                        backgroundColor: 'rgba(76,175,80,0.1)',
-                        yAxisID: 'y',
-                    },
-                    {
-                        label: 'Unique Visitors',
-                        data: <?php echo json_encode($unique_visitors); ?>,
-                        borderColor: '#ff9800',
-                        backgroundColor: 'rgba(255,152,0,0.1)',
-                        yAxisID: 'y',
-                    },
-                    {
-                        label: 'Conversion Rate (%)',
-                        data: <?php echo json_encode($conversion_rates); ?>,
-                        borderColor: '#e91e63',
-                        backgroundColor: 'rgba(233,30,99,0.1)',
-                        yAxisID: 'y1',
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                interaction: { mode: 'index', intersect: false },
-                stacked: false,
-                plugins: {
-                    legend: { position: 'top' },
-                    title: { display: false }
-                },
-                scales: {
-                    y: {
-                        type: 'linear',
-                        display: true,
-                        position: 'left',
-                        title: { display: true, text: 'Count' }
-                    },
-                    y1: {
-                        type: 'linear',
-                        display: true,
-                        position: 'right',
-                        title: { display: true, text: 'Conversion Rate (%)' },
-                        grid: { drawOnChartArea: false },
-                        min: 0
-                    }
-                }
-            }
-        });
-        </script>
+
+
         <?php
 
         // Check if the events table exists
@@ -948,7 +703,7 @@ class Path_Pilot_Admin {
      * Fetch remote What's New JSON and cache with transient
      */
     private function get_remote_whats_new() {
-        $remote_url = apply_filters('path_pilot_whats_new_url', 'https://api.jsonbin.io/v3/b/6806ec078561e97a5004af0a');
+        $remote_url = apply_filters('path_pilot_whats_new_url', 'https://api.jsonbin.io/v3/b/6806ec078561e97a5004af0a?' . time());
         $cache_key = 'path_pilot_whats_new_cache';
         $news = get_transient($cache_key);
         if ($news === false) {
@@ -973,7 +728,7 @@ class Path_Pilot_Admin {
         check_ajax_referer('path_pilot_dismiss_setup_notice', 'nonce');
 
         if (!current_user_can('manage_options')) {
-            wp_die(__('You do not have sufficient permissions to access this page.'));
+            wp_die(esc_html__('You do not have sufficient permissions to access this page.', 'path-pilot'));
         }
 
         // Set user meta to remember dismissal

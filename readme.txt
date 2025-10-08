@@ -1,8 +1,10 @@
 === Path Pilot ===
 Requires at least: 6.0
-Tested up to: 6.5.3
+Tested up to: 6.8
 Requires PHP: 7.4
 Stable tag: 1.0.0
+License: GPLv2 or later
+License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
 Modern WordPress plugin for smart recommendations and analytics.
 
@@ -54,9 +56,19 @@ Instructions for downloading:
 1. Website visitors will see the Path Pilot logo on the top left of their screen
 1. The Path Pilot dashboard will appear immediately for admins logged in and will begin collecting first-party data
 
+== Screenshots ==
+
+1. Data
+2. Performance
+3. Analytics
+4. Settings
+5. Settings 2
+6. Front End
+7. Question
+
 == Usage ==
 
-Path Pilot needs an inital learning period to gather data.
+Path Pilot needs an initial learning period to gather data.
 
 1. **View Reports:**
       - Go to **Path Pilot > Reports** to see top conversion paths and recent user journeys.
@@ -74,3 +86,6 @@ Path Pilot does not conflict with any other plugins on your WordPress website.
 
 **Do I need to create a Path Pilot account?**
 No. Once you install Path Pilot, it will appear on the backend of your WP website with no sign in required.
+
+**Where can I find the Path Pilot Terms of Service and Privacy Policy ?**
+These are available here: [Terms of Service](https://www.soliddigital.com/path-pilot-terms) and [Privacy Policy](https://www.soliddigital.com/privacy-policy)

@@ -1,21 +1,21 @@
 <?php
 /**
  * Plugin Name: Path Pilot
- * Author URI: https://pathpilot.app
  * Description: Modern WordPress plugin for smart recommendations and analytics.
- * Version: 0.1.4.1
- * Author: Path Pilot
- * Author URI: https://pathpilot.app
+ * Version: 1.0.0
+ * Author: Solid Digital
+ * Author URI: https://www.soliddigital.com
  * Text Domain: path-pilot
+ * License: GPLv2 or later
+ * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  */
 namespace Path_Pilot;
 
 if (!defined('ABSPATH')) exit;
-define('PATH_PILOT_VERSION', '0.1.4');
+define('PATH_PILOT_VERSION', '1.0.0');
 
 // This is the FREE version. Pro features are only available in the Pro build.
 
-define('E_INFO', E_NOTICE);
 class Log {
     // E_ERROR - log only errors
     // E_ERROR | E_INFO - errors and info
@@ -33,7 +33,7 @@ class Log {
     }
 }
 
-Log::info('Path Pilot: Plugin file loaded for URL: ' . ($_SERVER['REQUEST_URI'] ?? 'unknown'));
+Log::info('Path Pilot: Plugin file loaded for URL: ' . (esc_url_raw($_SERVER['REQUEST_URI'] ?? 'unknown')));
 
 // Core includes
 require_once __DIR__ . '/includes/common/class-path-pilot-admin.php';
