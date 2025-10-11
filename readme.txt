@@ -5,6 +5,7 @@ Requires PHP: 7.4
 Stable tag: 1.1.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
+Tags: analytics, conversion optimization, cro, funnel, goal tracking, recommendations, semantic search, user engagement, user experience, ux, ab testing, ai, artificial intelligence
 
 Modern WordPress plugin for smart recommendations and analytics.
 
