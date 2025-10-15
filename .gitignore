@@ -1,5 +1,5 @@
 .claude/settings.local.json
 .idea
 /node_modules
+/design
 /build
-

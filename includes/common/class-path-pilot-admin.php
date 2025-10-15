@@ -76,6 +76,15 @@ class Path_Pilot_Admin {
             array($this, 'render_admin_page')        // Callback
         );
 
+        add_submenu_page(
+            'path-pilot',
+            'Path Pilot Path Analysis',
+            'Path Analysis',
+            'manage_options',
+            'path-pilot-path-analysis',
+            array($this, 'render_path_analysis_page')
+        );
+
         // Create the analytics page regardless of whether tables exist
         // We'll show appropriate messages inside the page
         add_submenu_page(
@@ -401,6 +410,42 @@ class Path_Pilot_Admin {
             wp_enqueue_script('chart-js', plugins_url('../admin/chart.js', dirname(__FILE__)), [], '4.5.0', true);
             wp_enqueue_script('path-pilot-chart-loader', plugins_url('../admin/chart-loader.js', dirname(__FILE__)), ['chart-js'], PATH_PILOT_VERSION, true);
             wp_enqueue_script('path-pilot-settings', plugins_url('../admin/settings.js', dirname(__FILE__)), [], PATH_PILOT_VERSION, true);
+
+            if ('path-pilot_page_path-pilot-path-analysis' === $hook) {
+                $asset_path = plugin_dir_path(dirname(dirname(__FILE__))) . 'build/path-analysis.asset.php';
+
+                $dependencies = ['wp-element', 'wp-components', 'wp-i18n'];
+                $version = PATH_PILOT_VERSION;
+
+                if (file_exists($asset_path)) {
+                    $asset_file = include($asset_path);
+                    $dependencies = $asset_file['dependencies'];
+                    $version = $asset_file['version'];
+                }
+
+                $script_url = plugins_url('build/path-analysis.js', dirname( __FILE__, 2 ));
+                $site_url = get_option('siteurl');
+
+                if (substr($site_url, 0, 8) === 'https://' && substr($script_url, 0, 5) !== 'https') {
+                    $script_url = set_url_scheme($script_url, 'https');
+                }
+                error_log($script_url);
+                wp_enqueue_script(
+                    'path-pilot-path-analysis',
+                    $script_url,
+                    $dependencies,
+                    $version,
+                    true
+                );
+
+                wp_add_inline_style('path-pilot-admin-style', '
+                    .path-pilot-path-analysis .wp-list-table tbody tr { background-color: #f6fbf8 !important; }
+                    .path-pilot-path-analysis .wp-list-table tbody tr:nth-child(odd) { background-color: #f6fbf8 !important; }
+                    .path-pilot-path-analysis .wp-list-table td, .path-pilot-path-analysis .wp-list-table th { border-bottom: 1px solid #e7e7e7; }
+                    .path-pilot-path-analysis .wp-list-table th { background-color: #fff; border-bottom-width: 2px; }
+                    .path-pilot-path-analysis .wp-list-table td { padding: 12px 10px; }
+                ');
+            }
         }
     }
 
@@ -435,7 +480,7 @@ class Path_Pilot_Admin {
 
         // Handle the toggle switch - we get "1" when checked, nothing when unchecked
         $insights_only = isset($_POST['path_pilot_insights_only']) && $_POST['path_pilot_insights_only'] === '1';
-        
+
         // Save insights_only directly (true = hide drawer, false = show drawer)
         update_option('path_pilot_insights_only', $insights_only);
 
@@ -692,6 +737,30 @@ class Path_Pilot_Admin {
             </div>
             <?php
         }
+
+        echo '</div></div>'; // Close pp-content and pp-admin-wrap
+
+        // Include the footer
+        include_once(plugin_dir_path(dirname(__DIR__)) . 'admin/common/footer.php');
+    }
+
+    /**
+     * Render path analysis page
+     */
+    public function render_path_analysis_page() {
+        // Include admin CSS
+        wp_enqueue_style('path-pilot-admin-style');
+
+        // Wrapper with proper CSS classes to match layout
+        echo '<div class="pp-admin-wrap"><div class="pp-content">';
+
+        do_action('path_pilot_show_pro_status_message');
+
+        if (!class_exists('Path_Pilot\\Path_Pilot_Path_Analysis')) {
+            require_once(plugin_dir_path(dirname(__DIR__)) . 'includes/common/class-path-pilot-path-analysis.php');
+        }
+        $path_analysis_page = new \Path_Pilot\Path_Pilot_Path_Analysis();
+        $path_analysis_page->render_page_content();
 
         echo '</div></div>'; // Close pp-content and pp-admin-wrap
 
