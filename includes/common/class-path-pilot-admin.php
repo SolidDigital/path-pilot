@@ -380,14 +380,14 @@ class Path_Pilot_Admin {
     public function enqueue_admin_css($hook) {
         wp_register_style(
             'path-pilot-admin-style',
-            plugins_url('../admin/admin.css', dirname(__FILE__)),
+            plugins_url('../assets/css/admin.css', dirname(__FILE__)),
             [],
             PATH_PILOT_VERSION
         );
 
         wp_register_style(
             'path-pilot-menu-style',
-            plugins_url('../admin/menu.css', dirname(__FILE__)),
+            plugins_url('../assets/css/menu.css', dirname(__FILE__)),
             [],
             PATH_PILOT_VERSION
         );
@@ -407,9 +407,9 @@ class Path_Pilot_Admin {
     public function enqueue_admin_js($hook) {
         // Only load on Path Pilot admin pages
         if ($this->is_path_pilot_screen()) {
-            wp_enqueue_script('chart-js', plugins_url('../admin/chart.js', dirname(__FILE__)), [], '4.5.0', true);
-            wp_enqueue_script('path-pilot-chart-loader', plugins_url('../admin/chart-loader.js', dirname(__FILE__)), ['chart-js'], PATH_PILOT_VERSION, true);
-            wp_enqueue_script('path-pilot-settings', plugins_url('../admin/settings.js', dirname(__FILE__)), [], PATH_PILOT_VERSION, true);
+            wp_enqueue_script('chart-js', plugins_url('../assets/scripts/chart.js', dirname(__FILE__)), [], '4.5.0', true);
+            wp_enqueue_script('path-pilot-chart-loader', plugins_url('../assets/scripts/chart-loader.js', dirname(__FILE__)), ['chart-js'], PATH_PILOT_VERSION, true);
+            wp_enqueue_script('path-pilot-settings', plugins_url('../assets/scripts/settings.js', dirname(__FILE__)), [], PATH_PILOT_VERSION, true);
 
             if ('path-pilot_page_path-pilot-path-analysis' === $hook) {
                 $asset_path = plugin_dir_path(dirname(dirname(__FILE__))) . 'build//path-analysis.asset.php';

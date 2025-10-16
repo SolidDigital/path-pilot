@@ -468,7 +468,7 @@ class Path_Pilot_Shared {
         // Always enqueue tracking script
         wp_enqueue_script(
             self::SLUG . '-tracking',
-            plugins_url('scripts/tracking.js', $main_plugin_file),
+            plugins_url('assets/scripts/tracking.js', $main_plugin_file),
             [],
             PATH_PILOT_VERSION,
             false // Load in header instead of footer
@@ -494,7 +494,7 @@ class Path_Pilot_Shared {
         // If drawer is disabled, we skip the UI but keep tracking active
         if ($show_drawer) {
             Log::info('Path Pilot: Enqueuing index.js script...');
-            $script_url = plugins_url('scripts/index.js', $main_plugin_file);
+            $script_url = plugins_url('assets/scripts/index.js', $main_plugin_file);
             Log::info('Path Pilot: Script URL = ' . $script_url);
 
             wp_enqueue_script(
