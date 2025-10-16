@@ -412,31 +412,17 @@ class Path_Pilot_Admin {
             wp_enqueue_script('path-pilot-settings', plugins_url('../admin/settings.js', dirname(__FILE__)), [], PATH_PILOT_VERSION, true);
 
             if ('path-pilot_page_path-pilot-path-analysis' === $hook) {
-                $asset_path = plugin_dir_path(dirname(dirname(__FILE__))) . 'build/path-analysis.asset.php';
-
+                $asset_path = plugin_dir_path(dirname(dirname(__FILE__))) . 'build//path-analysis.asset.php';
                 $dependencies = ['wp-element', 'wp-components', 'wp-i18n'];
                 $version = PATH_PILOT_VERSION;
 
                 if (file_exists($asset_path)) {
                     $asset_file = include($asset_path);
-                    $dependencies = $asset_file['dependencies'];
+                    $dependencies = array_merge($dependencies, $asset_file['dependencies']);
                     $version = $asset_file['version'];
                 }
-
-                $script_url = plugins_url('build/path-analysis.js', dirname( __FILE__, 2 ));
-                $site_url = get_option('siteurl');
-
-                if (substr($site_url, 0, 8) === 'https://' && substr($script_url, 0, 5) !== 'https') {
-                    $script_url = set_url_scheme($script_url, 'https');
-                }
-                error_log($script_url);
-                wp_enqueue_script(
-                    'path-pilot-path-analysis',
-                    $script_url,
-                    $dependencies,
-                    $version,
-                    true
-                );
+                error_log(print_r($dependencies, true));
+                wp_enqueue_script('path-pilot-path-analysis', plugins_url('../build/path-analysis.js', dirname(__FILE__)), $dependencies, PATH_PILOT_VERSION, true);
 
                 wp_add_inline_style('path-pilot-admin-style', '
                     .path-pilot-path-analysis .wp-list-table tbody tr { background-color: #f6fbf8 !important; }

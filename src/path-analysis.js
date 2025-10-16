@@ -46,23 +46,23 @@ const PathAnalysis = () => {
             <div className="pp-content" style={{backgroundColor: 'white', padding: '20px'}}>
                 <table className="wp-list-table widefat">
                     <thead>
-                        <tr>
-                            <th scope="col" className="manage-column">Path</th>
-                            <th scope="col" className="manage-column">Path Steps</th>
-                            <th scope="col" className="manage-column">Path Last Taken</th>
-                        </tr>
+                    <tr>
+                        <th scope="col" className="manage-column">Path</th>
+                        <th scope="col" className="manage-column">Path Steps</th>
+                        <th scope="col" className="manage-column">Path Last Taken</th>
+                    </tr>
                     </thead>
                     <tbody>
-                        {hardcodedData.map((row, index) => (
-                            <tr key={index}>
-                                <td>
-                                    {renderPathIcons(row.icons)}
-                                    {row.path}
-                                </td>
-                                <td>{row.steps}</td>
-                                <td><span className="dashicons dashicons-calendar-alt" style={{marginRight: '5px'}}></span>{row.lastTaken}</td>
-                            </tr>
-                        ))}
+                    {hardcodedData.map((row, index) => (
+                        <tr key={index}>
+                            <td>
+                                {renderPathIcons(row.icons)}
+                                {row.path}
+                            </td>
+                            <td>{row.steps}</td>
+                            <td><span className="dashicons dashicons-calendar-alt" style={{marginRight: '5px'}}></span>{row.lastTaken}</td>
+                        </tr>
+                    ))}
                     </tbody>
                 </table>
                 <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', marginTop: '10px', color: '#50575e' }}>
