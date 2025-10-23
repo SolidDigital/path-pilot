@@ -1307,3 +1307,9 @@ body.folded .pp-admin-wrap {
 .pp-goal-pages-selected-box .pp-goal-selected-list li span {
   font-size: 0.8rem !important;
 }
+
+/* Loading Spinner Animation */
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
