@@ -766,11 +766,12 @@ class Path_Pilot_Admin {
 
     public function get_path_analysis_data() {
         global $wpdb;
+        $default_items_per_page = 20;
         $table_name = $wpdb->prefix . 'path_pilot_visit_paths';
 
         // Get pagination parameters
         $paged = isset($_GET['paged']) ? absint($_GET['paged']) : 1;
-        $items_per_page = isset($_GET['items']) ? absint($_GET['items']) : 50;
+        $items_per_page = isset($_GET['items']) ? absint($_GET['items']) : $default_items_per_page;
         $offset = ($paged - 1) * $items_per_page;
 
         // Query to get total number of unique paths

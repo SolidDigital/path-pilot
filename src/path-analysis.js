@@ -2,8 +2,11 @@ const { render, useState } = wp.element;
 const { Button } = wp.components;
 
 const PathAnalysis = () => {
-    const { paths: pathData = [], total_paths: totalPaths = 0, paged: currentPage = 1, items_per_page: initialItemsPerPage = 50, site_url } = window.pathPilotPathData;
-    const [itemsPerPage, setItemsPerPage] = useState(initialItemsPerPage);
+    const { paths: pathData = [], total_paths: totalPaths = 0, paged: paged = 1, items_per_page: initialItemsPerPage = 50, site_url } = window.pathPilotPathData;
+    let [itemsPerPage, setItemsPerPage] = useState(initialItemsPerPage);
+    const currentPage = parseInt(paged, 10);
+
+    itemsPerPage = +itemsPerPage;
 
     const renderPathIcons = (path) => {
         return path.map((step, index) => {
@@ -21,26 +24,21 @@ const PathAnalysis = () => {
         window.location.href = url.href;
     };
 
-    const handlePrevClick = () => {
+    const getPageLink = (pageNumber) => {
         const url = new URL(window.location.href);
         url.searchParams.set('page', 'path-pilot-path-analysis');
-        url.searchParams.set('paged', currentPage - 1);
+        url.searchParams.set('paged', pageNumber);
         url.searchParams.set('items', itemsPerPage);
-        window.location.href = url.href;
-    };
-
-    const handleNextClick = () => {
-        const url = new URL(window.location.href);
-        url.searchParams.set('page', 'path-pilot-path-analysis');
-        url.searchParams.set('paged', currentPage + 1);
-        url.searchParams.set('items', itemsPerPage);
-        window.location.href = url.href;
+        return url.href;
     };
 
     const totalPages = Math.ceil(totalPaths / itemsPerPage);
     const startItem = (currentPage - 1) * itemsPerPage + 1;
+    console.log(`Start item ${startItem}`);
+    console.log(`Items per page ${ itemsPerPage }`);
     const endItem = Math.min(startItem + itemsPerPage - 1, totalPaths);
-
+    console.log(startItem + itemsPerPage - 1);
+    console.log(`End item ${endItem}`);
     return (
         <div className="path-pilot-path-analysis">
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px' }}>
@@ -82,10 +80,19 @@ const PathAnalysis = () => {
                 </table>
                 <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', marginTop: '10px', color: '#50575e' }}>
                     <span>{startItem}-{endItem} of {totalPaths}</span>
-                    <Button isSmall disabled={currentPage <= 1} onClick={handlePrevClick} style={{marginLeft: '15px'}}>&lt;</Button>
-                    <Button isSmall disabled={currentPage >= totalPages} onClick={handleNextClick} style={{marginLeft: '5px'}}>&gt;</Button>
+                    {currentPage > 1 ? (
+                        <a href={getPageLink(currentPage - 1)} className="button is-small" style={{marginLeft: '15px'}}>&lt;</a>
+                    ) : (
+                        <span className="button is-small is-disabled" style={{marginLeft: '15px'}}>&lt;</span>
+                    )}
+                    {currentPage < totalPages ? (
+                        <a href={getPageLink(currentPage + 1)} className="button is-small" style={{marginLeft: '5px'}}>&gt;</a>
+                    ) : (
+                        <span className="button is-small is-disabled" style={{marginLeft: '5px'}}>&gt;</span>
+                    )}
                     <span style={{marginLeft: '20px'}}>View</span>
                     <select value={itemsPerPage} onChange={handleViewChange} style={{marginLeft: '5px'}}>
+                        <option value="20">20</option>
                         <option value="50">50</option>
                         <option value="100">100</option>
                         <option value="250">250</option>
