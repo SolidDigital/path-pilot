@@ -10,25 +10,60 @@ const PathAnalysis = () => {
 
     const renderPathIcons = (path) => {
         const maxPermalinkLength = 50;
-        return path.map((step, index) => {
-            const isLast = index === path.length - 1;
-            const iconClass = step.is_home ? 'dashicons-admin-home' : 'dashicons-admin-page';
+        const nodes = [];
 
+        const renderStep = (step, isLast, key) => {
+            const iconClass = step.is_home ? 'dashicons-admin-home' : 'dashicons-admin-page';
+            if (isLast) {
+                return (
+                    <a href={step.permalink} key={key} title={step.title} style={{textDecoration: 'none'}}>
+                        {step.permalink.length > maxPermalinkLength ? step.permalink.substring(0, maxPermalinkLength) + '...' : step.permalink}
+                    </a>
+                );
+            }
             return (
-                <Fragment key={index}>
-                    {isLast ? (
-                        <a href={step.permalink} title={step.title} style={{textDecoration: 'none'}}>
-                            {step.permalink.length > maxPermalinkLength ? step.permalink.substring(0, maxPermalinkLength) + '...' : step.permalink}
-                        </a>
-                    ) : (
-                        <a href={step.permalink} title={step.title} style={{textDecoration: 'none'}}>
-                            <span className={`dashicons ${iconClass}`} style={{margin: '0 2px', color: '#9ca3af'}}></span>
-                        </a>
-                    )}
-                    {!isLast && <span className="dashicons dashicons-arrow-right-alt" style={{margin: '0 2px', color: '#9ca3af', opacity: 0.5}}></span>}
-                </Fragment>
+                <a href={step.permalink} key={key} title={step.title} style={{textDecoration: 'none'}}>
+                    <span className={`dashicons ${iconClass}`} style={{margin: '0 2px', color: '#9ca3af'}}></span>
+                </a>
             );
-        });
+        };
+
+        const renderArrow = (key) => {
+            return <span key={key} className="dashicons dashicons-arrow-right-alt" style={{margin: '0 2px', color: '#9ca3af', opacity: 0.5}}></span>;
+        };
+
+        const renderEllipsis = (key) => {
+            return <span key={key} className="dashicons dashicons-ellipsis" style={{margin: '0 2px', color: '#9ca3af'}}></span>;
+        }
+
+        if (path.length >= 8) {
+            // First item
+            nodes.push(renderStep(path[0], false, 'step-0'));
+            nodes.push(renderArrow('arrow-0'));
+
+            // Ellipsis
+            nodes.push(renderEllipsis('ellipsis'));
+            nodes.push(renderArrow('arrow-ellipsis'));
+
+            // Last 5 items
+            for (let i = path.length - 5; i < path.length; i++) {
+                const isLast = i === path.length - 1;
+                nodes.push(renderStep(path[i], isLast, `step-${i}`));
+                if (!isLast) {
+                    nodes.push(renderArrow(`arrow-${i}`));
+                }
+            }
+        } else {
+            path.forEach((step, index) => {
+                const isLast = index === path.length - 1;
+                nodes.push(renderStep(step, isLast, `step-${index}`));
+                if (!isLast) {
+                    nodes.push(renderArrow(`arrow-${index}`));
+                }
+            });
+        }
+
+        return nodes;
     };
 
     const handleViewChange = (e) => {
