@@ -779,7 +779,7 @@ class Path_Pilot_Admin {
 
         // Query to get unique paths for the current page
         $results = $wpdb->get_results($wpdb->prepare("
-            SELECT paths, COUNT(*) as count, MAX(visit_date) as last_taken
+            SELECT paths, COUNT(*) as count, MAX(created_at) as last_taken
             FROM {$table_name}
             GROUP BY paths
             ORDER BY count DESC
