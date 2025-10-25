@@ -4,9 +4,14 @@ const { Button } = wp.components;
 const PathAnalysis = () => {
     const { paths: pathData = [], total_paths: totalPaths = 0, paged: paged = 1, items_per_page: initialItemsPerPage = 50, site_url } = window.pathPilotPathData;
     let [itemsPerPage, setItemsPerPage] = useState(initialItemsPerPage);
+    const [expandedRow, setExpandedRow] = useState(null);
     const currentPage = parseInt(paged, 10);
 
     itemsPerPage = +itemsPerPage;
+
+    const handleRowClick = (index) => {
+        setExpandedRow(expandedRow === index ? null : index);
+    };
 
     const renderPathIcons = (path) => {
         const maxPermalinkLength = 50;
@@ -115,14 +120,31 @@ const PathAnalysis = () => {
                     </thead>
                     <tbody>
                     {pathData.map((row, index) => (
-                        <tr key={index}>
-                            <td>
-                                {renderPathIcons(row.path)}
-                            </td>
-                            <td>{row.steps}</td>
-                            <td>{row.count}</td>
-                            <td><span className="dashicons dashicons-calendar-alt" style={{marginRight: '5px'}}></span>{row.last_taken}</td>
-                        </tr>
+                        <Fragment key={index}>
+                            <tr onClick={() => handleRowClick(index)} style={{cursor: 'pointer'}}>
+                                <td>
+                                    {renderPathIcons(row.path)}
+                                </td>
+                                <td>{row.steps}</td>
+                                <td>{row.count}</td>
+                                <td><span className="dashicons dashicons-calendar-alt" style={{marginRight: '5px'}}></span>{row.last_taken}</td>
+                            </tr>
+                            {expandedRow === index && (
+                                <tr className="path-pilot-expanded-row">
+                                    <td colSpan="4">
+                                        <ol style={{margin: '10px 0 10px 20px'}}>
+                                            {row.path.map((step, stepIndex) => (
+                                                <li key={stepIndex} style={{marginBottom: '5px'}}>
+                                                    <a href={step.permalink}>
+                                                        {step.permalink.replace(site_url, '')}
+                                                    </a>
+                                                </li>
+                                            ))}
+                                        </ol>
+                                    </td>
+                                </tr>
+                            )}
+                        </Fragment>
                     ))}
                     </tbody>
                 </table>
