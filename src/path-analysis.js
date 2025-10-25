@@ -79,18 +79,20 @@ const PathAnalysis = () => {
             const iconClass = step.is_home ? 'dashicons-admin-home' : 'dashicons-admin-page';
             if (isLast) {
                 return (
-                    <a href={step.permalink} key={key} title={step.title} style={{textDecoration: 'none'}}
+                    <a href={step.permalink} target="_blank" key={key} style={{textDecoration: 'none'}}
                        onMouseEnter={(e) => handleMouseEnter(e, step)}
                        onMouseLeave={handleMouseLeave}
+                       onClick={(e) => e.stopPropagation()}
                     >
                         {step.permalink.length > maxPermalinkLength ? step.permalink.substring(0, maxPermalinkLength) + '...' : step.permalink}
                     </a>
                 );
             }
             return (
-                <a href={step.permalink} key={key} title={step.title} style={{textDecoration: 'none'}}
+                <a href={step.permalink} target="_blank" key={key} style={{textDecoration: 'none'}}
                    onMouseEnter={(e) => handleMouseEnter(e, step)}
                    onMouseLeave={handleMouseLeave}
+                   onClick={(e) => e.stopPropagation()}
                 >
                     <span className={`dashicons ${iconClass}`} style={{margin: '0 2px', color: '#9ca3af'}}></span>
                 </a>
@@ -200,7 +202,7 @@ const PathAnalysis = () => {
                                         <ol style={{margin: '10px 0 10px 20px'}}>
                                             {row.path.map((step, stepIndex) => (
                                                 <li key={stepIndex} style={{marginBottom: '5px'}}>
-                                                    <a href={step.permalink}>
+                                                    <a href={step.permalink} target="_blank">
                                                         {step.permalink.replace(site_url, '')}
                                                     </a>
                                                 </li>

@@ -807,7 +807,7 @@ class Path_Pilot_Admin {
                         $terms = get_the_terms($post_id, $taxonomy_slug);
                         if (!empty($terms) && !is_wp_error($terms)) {
                             foreach ($terms as $term) {
-                                $terms_list[] = $taxonomy->labels->singular_name . ' > ' . $term->name;
+                                $terms_list[] = $taxonomy->labels->singular_name . ': ' . $term->name;
                             }
                         }
                     }

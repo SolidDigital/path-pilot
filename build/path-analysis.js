@@ -211,23 +211,25 @@ const PathAnalysis = () => {
       if (isLast) {
         return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("a", {
           href: step.permalink,
-          title: step.title,
+          target: "_blank",
           style: {
             textDecoration: 'none'
           },
           onMouseEnter: e => handleMouseEnter(e, step),
           onMouseLeave: handleMouseLeave,
+          onClick: e => e.stopPropagation(),
           children: step.permalink.length > maxPermalinkLength ? step.permalink.substring(0, maxPermalinkLength) + '...' : step.permalink
         }, key);
       }
       return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("a", {
         href: step.permalink,
-        title: step.title,
+        target: "_blank",
         style: {
           textDecoration: 'none'
         },
         onMouseEnter: e => handleMouseEnter(e, step),
         onMouseLeave: handleMouseLeave,
+        onClick: e => e.stopPropagation(),
         children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("span", {
           className: `dashicons ${iconClass}`,
           style: {
@@ -417,6 +419,7 @@ const PathAnalysis = () => {
                     },
                     children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("a", {
                       href: step.permalink,
+                      target: "_blank",
                       children: step.permalink.replace(site_url, '')
                     })
                   }, stepIndex))
