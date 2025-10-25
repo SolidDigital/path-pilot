@@ -1,4 +1,4 @@
-const { render, useState } = wp.element;
+const { render, useState, Fragment } = wp.element;
 const { Button } = wp.components;
 
 const PathAnalysis = () => {
@@ -9,9 +9,25 @@ const PathAnalysis = () => {
     itemsPerPage = +itemsPerPage;
 
     const renderPathIcons = (path) => {
+        const maxPermalinkLength = 50;
         return path.map((step, index) => {
+            const isLast = index === path.length - 1;
             const iconClass = step.is_home ? 'dashicons-admin-home' : 'dashicons-admin-page';
-            return <a href={step.permalink} key={index} title={step.title} style={{textDecoration: 'none'}}><span className={`dashicons ${iconClass}`} style={{margin: '0 2px', color: '#9ca3af'}}></span></a>;
+
+            return (
+                <Fragment key={index}>
+                    {isLast ? (
+                        <a href={step.permalink} title={step.title} style={{textDecoration: 'none'}}>
+                            {step.permalink.length > maxPermalinkLength ? step.permalink.substring(0, maxPermalinkLength) + '...' : step.permalink}
+                        </a>
+                    ) : (
+                        <a href={step.permalink} title={step.title} style={{textDecoration: 'none'}}>
+                            <span className={`dashicons ${iconClass}`} style={{margin: '0 2px', color: '#9ca3af'}}></span>
+                        </a>
+                    )}
+                    {!isLast && <span className="dashicons dashicons-arrow-right-alt" style={{margin: '0 2px', color: '#9ca3af', opacity: 0.5}}></span>}
+                </Fragment>
+            );
         });
     };
 

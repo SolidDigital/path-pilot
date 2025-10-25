@@ -801,7 +801,7 @@ class Path_Pilot_Admin {
                     $path_details[] = [
                         'id' => $post_id,
                         'title' => $post->post_title,
-                        'permalink' => get_permalink($post_id),
+                        'permalink' => str_replace(home_url(), '', get_permalink($post_id)),
                         'is_home' => $post_id === $home_page_id,
                     ];
                 }
