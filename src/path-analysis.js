@@ -10,7 +10,8 @@ const PathAnalysis = () => {
 
     const renderPathIcons = (path) => {
         return path.map((step, index) => {
-            return <a href={step.permalink} key={index} title={step.title} style={{textDecoration: 'none'}}><span className="dashicons dashicons-admin-page" style={{margin: '0 2px', color: '#9ca3af'}}></span></a>;
+            const iconClass = step.is_home ? 'dashicons-admin-home' : 'dashicons-admin-page';
+            return <a href={step.permalink} key={index} title={step.title} style={{textDecoration: 'none'}}><span className={`dashicons ${iconClass}`} style={{margin: '0 2px', color: '#9ca3af'}}></span></a>;
         });
     };
 
@@ -34,11 +35,7 @@ const PathAnalysis = () => {
 
     const totalPages = Math.ceil(totalPaths / itemsPerPage);
     const startItem = (currentPage - 1) * itemsPerPage + 1;
-    console.log(`Start item ${startItem}`);
-    console.log(`Items per page ${ itemsPerPage }`);
     const endItem = Math.min(startItem + itemsPerPage - 1, totalPaths);
-    console.log(startItem + itemsPerPage - 1);
-    console.log(`End item ${endItem}`);
     return (
         <div className="path-pilot-path-analysis">
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px' }}>

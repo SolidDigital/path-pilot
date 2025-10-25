@@ -787,6 +787,7 @@ class Path_Pilot_Admin {
         ", $items_per_page, $offset));
 
         $path_data = [];
+        $home_page_id = (int) get_option('page_on_front');
         foreach ($results as $row) {
             $path_ids = json_decode($row->paths);
             if (json_last_error() !== JSON_ERROR_NONE) {
@@ -801,6 +802,7 @@ class Path_Pilot_Admin {
                         'id' => $post_id,
                         'title' => $post->post_title,
                         'permalink' => get_permalink($post_id),
+                        'is_home' => $post_id === $home_page_id,
                     ];
                 }
             }
