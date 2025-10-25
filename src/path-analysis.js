@@ -2,13 +2,44 @@ const { render, useState } = wp.element;
 const { Button } = wp.components;
 
 const PathAnalysis = () => {
-    const pathData = window.pathPilotPathData.paths || [];
+    const { paths: pathData = [], total_paths: totalPaths = 0, paged: currentPage = 1, items_per_page: initialItemsPerPage = 50, site_url } = window.pathPilotPathData;
+    const [itemsPerPage, setItemsPerPage] = useState(initialItemsPerPage);
 
     const renderPathIcons = (path) => {
         return path.map((step, index) => {
             return <a href={step.permalink} key={index} title={step.title} style={{textDecoration: 'none'}}><span className="dashicons dashicons-admin-page" style={{margin: '0 2px', color: '#9ca3af'}}></span></a>;
         });
     };
+
+    const handleViewChange = (e) => {
+        const newItemsPerPage = parseInt(e.target.value, 10);
+        setItemsPerPage(newItemsPerPage);
+        const url = new URL(window.location.href);
+        url.searchParams.set('page', 'path-pilot-path-analysis');
+        url.searchParams.set('paged', '1');
+        url.searchParams.set('items', newItemsPerPage);
+        window.location.href = url.href;
+    };
+
+    const handlePrevClick = () => {
+        const url = new URL(window.location.href);
+        url.searchParams.set('page', 'path-pilot-path-analysis');
+        url.searchParams.set('paged', currentPage - 1);
+        url.searchParams.set('items', itemsPerPage);
+        window.location.href = url.href;
+    };
+
+    const handleNextClick = () => {
+        const url = new URL(window.location.href);
+        url.searchParams.set('page', 'path-pilot-path-analysis');
+        url.searchParams.set('paged', currentPage + 1);
+        url.searchParams.set('items', itemsPerPage);
+        window.location.href = url.href;
+    };
+
+    const totalPages = Math.ceil(totalPaths / itemsPerPage);
+    const startItem = (currentPage - 1) * itemsPerPage + 1;
+    const endItem = Math.min(startItem + itemsPerPage - 1, totalPaths);
 
     return (
         <div className="path-pilot-path-analysis">
@@ -17,12 +48,12 @@ const PathAnalysis = () => {
                     <h1 className="wp-heading-inline" style={{marginBottom: '10px'}}>Goal Path Analysis</h1>
                     <p style={{ margin: 0, color: '#50575e' }}>
                         <span className="dashicons dashicons-admin-site" style={{color: 'red', fontSize: '16px', marginRight: '5px'}}></span>
-                        {window.pathPilotPathData.site_url.replace(/https?:\/\//, '')} Showing paths for the last <strong>30 days</strong>
+                        {site_url.replace(/https?:\/\//, '')} Showing paths for the last <strong>30 days</strong>
                     </p>
                 </div>
                 <Button isPrimary style={{background: '#4CAF50', border: 'none'}}>
                     <span className="dashicons dashicons-plus" style={{marginRight: '5px'}}></span>
-                    {pathData.length} Goal Paths
+                    {totalPaths} Goal Paths
                 </Button>
             </div>
 
@@ -50,12 +81,14 @@ const PathAnalysis = () => {
                     </tbody>
                 </table>
                 <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', marginTop: '10px', color: '#50575e' }}>
-                    <span>1-{pathData.length} of {pathData.length}</span>
-                    <Button isSmall disabled style={{marginLeft: '15px'}}>&lt;</Button>
-                    <Button isSmall style={{marginLeft: '5px'}}>&gt;</Button>
+                    <span>{startItem}-{endItem} of {totalPaths}</span>
+                    <Button isSmall disabled={currentPage <= 1} onClick={handlePrevClick} style={{marginLeft: '15px'}}>&lt;</Button>
+                    <Button isSmall disabled={currentPage >= totalPages} onClick={handleNextClick} style={{marginLeft: '5px'}}>&gt;</Button>
                     <span style={{marginLeft: '20px'}}>View</span>
-                    <select style={{marginLeft: '5px'}}>
-                        <option>20</option>
+                    <select value={itemsPerPage} onChange={handleViewChange} style={{marginLeft: '5px'}}>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                        <option value="250">250</option>
                     </select>
                 </div>
             </div>

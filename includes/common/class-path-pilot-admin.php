@@ -427,7 +427,10 @@ class Path_Pilot_Admin {
                 // Prepare and localize data for the path analysis script
                 $path_data = $this->get_path_analysis_data();
                 wp_localize_script('path-pilot-path-analysis', 'pathPilotPathData', [
-                    'paths' => $path_data,
+                    'paths' => $path_data['paths'],
+                    'total_paths' => $path_data['total_paths'],
+                    'paged' => $path_data['paged'],
+                    'items_per_page' => $path_data['items_per_page'],
                     'site_url' => get_site_url(),
                 ]);
 
@@ -765,13 +768,22 @@ class Path_Pilot_Admin {
         global $wpdb;
         $table_name = $wpdb->prefix . 'path_pilot_visit_paths';
 
-        // Query to get unique paths, their count, and the last time they were taken
-        $results = $wpdb->get_results("
+        // Get pagination parameters
+        $paged = isset($_GET['paged']) ? absint($_GET['paged']) : 1;
+        $items_per_page = isset($_GET['items']) ? absint($_GET['items']) : 50;
+        $offset = ($paged - 1) * $items_per_page;
+
+        // Query to get total number of unique paths
+        $total_paths = $wpdb->get_var("SELECT COUNT(DISTINCT paths) FROM {$table_name}");
+
+        // Query to get unique paths for the current page
+        $results = $wpdb->get_results($wpdb->prepare("
             SELECT paths, COUNT(*) as count, MAX(visit_date) as last_taken
             FROM {$table_name}
             GROUP BY paths
             ORDER BY count DESC
-        ");
+            LIMIT %d OFFSET %d
+        ", $items_per_page, $offset));
 
         $path_data = [];
         foreach ($results as $row) {
@@ -803,7 +815,12 @@ class Path_Pilot_Admin {
         error_log('Path Pilot Debug: Found ' . count($results) . ' path results.');
         error_log('Path Pilot Debug: Path data: ' . print_r($path_data, true));
 
-        return $path_data;
+        return [
+            'paths' => $path_data,
+            'total_paths' => (int) $total_paths,
+            'paged' => $paged,
+            'items_per_page' => $items_per_page,
+        ];
     }
 
     /**
