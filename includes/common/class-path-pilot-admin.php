@@ -424,6 +424,13 @@ class Path_Pilot_Admin {
                 error_log(print_r($dependencies, true));
                 wp_enqueue_script('path-pilot-path-analysis', plugins_url('../build/path-analysis.js', dirname(__FILE__)), $dependencies, PATH_PILOT_VERSION, true);
 
+                // Prepare and localize data for the path analysis script
+                $path_data = $this->get_path_analysis_data();
+                wp_localize_script('path-pilot-path-analysis', 'pathPilotPathData', [
+                    'paths' => $path_data,
+                    'site_url' => get_site_url(),
+                ]);
+
                 wp_add_inline_style('path-pilot-admin-style', '
                     .path-pilot-path-analysis .wp-list-table tbody tr { background-color: #f6fbf8 !important; }
                     .path-pilot-path-analysis .wp-list-table tbody tr:nth-child(odd) { background-color: #f6fbf8 !important; }
@@ -752,6 +759,51 @@ class Path_Pilot_Admin {
 
         // Include the footer
         include_once(plugin_dir_path(dirname(__DIR__)) . 'admin/common/footer.php');
+    }
+
+    public function get_path_analysis_data() {
+        global $wpdb;
+        $table_name = $wpdb->prefix . 'path_pilot_visit_paths';
+
+        // Query to get unique paths, their count, and the last time they were taken
+        $results = $wpdb->get_results("
+            SELECT paths, COUNT(*) as count, MAX(visit_date) as last_taken
+            FROM {$table_name}
+            GROUP BY paths
+            ORDER BY count DESC
+        ");
+
+        $path_data = [];
+        foreach ($results as $row) {
+            $path_ids = json_decode($row->paths);
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                continue; // Skip if JSON is invalid
+            }
+
+            $path_details = [];
+            foreach ($path_ids as $post_id) {
+                $post = get_post($post_id);
+                if ($post) {
+                    $path_details[] = [
+                        'id' => $post_id,
+                        'title' => $post->post_title,
+                        'permalink' => get_permalink($post_id),
+                    ];
+                }
+            }
+
+            $path_data[] = [
+                'path' => $path_details,
+                'count' => $row->count,
+                'steps' => count($path_ids),
+                'last_taken' => human_time_diff(strtotime($row->last_taken), current_time('timestamp')) . ' ago',
+            ];
+        }
+
+        error_log('Path Pilot Debug: Found ' . count($results) . ' path results.');
+        error_log('Path Pilot Debug: Path data: ' . print_r($path_data, true));
+
+        return $path_data;
     }
 
     /**

@@ -2,28 +2,11 @@ const { render, useState } = wp.element;
 const { Button } = wp.components;
 
 const PathAnalysis = () => {
-    const hardcodedData = [
-        { path: '/contact', steps: 6, lastTaken: '2 days ago', icons: ['home', 'document', 'document', 'document', 'document'] },
-        { path: '/landing-page-name', steps: 5, lastTaken: 'Yesterday', icons: ['home', 'document', 'document', 'document', 'document', 'document'] },
-        { path: '/path6-url-that-is-longer...', steps: 5, lastTaken: '17 days ago', icons: ['home', 'document-alt'] },
-        { path: '/demo', steps: 3, lastTaken: '30 days ago', icons: ['home', 'document', 'document', 'document'] },
-        { path: '/path6-url-that-is-longer...', steps: 3, lastTaken: '26 days ago', icons: ['home'] },
-        { path: '/landing-page-name', steps: 3, lastTaken: '3 days ago', icons: ['home', 'document', 'document', 'document', 'document'] },
-        { path: '/landing-page-name', steps: 3, lastTaken: '6 days ago', icons: ['home', 'document', 'document', 'document', 'document', 'document'] },
-        { path: '/landing-page-name', steps: 10, lastTaken: '102 days ago', icons: ['home', 'document', 'document', 'document', 'document', 'document'] },
-        { path: '/path6-url-that-is-longer...', steps: 3, lastTaken: 'Today', icons: ['home'] },
-        { path: '/path6-url-that-is-longer...', steps: 3, lastTaken: '48 days ago', icons: ['home', 'document', 'document', 'document'] },
-    ];
+    const pathData = window.pathPilotPathData.paths || [];
 
-    const renderPathIcons = (icons) => {
-        return icons.map((icon, index) => {
-            let dashiconClass = 'dashicons-media-default';
-            if (icon === 'home') {
-                dashiconClass = 'dashicons-admin-home';
-            } else if (icon === 'document-alt') {
-                dashiconClass = 'dashicons-format-status';
-            }
-            return <span key={index} className={`dashicons ${dashiconClass}`} style={{margin: '0 2px', color: '#9ca3af'}}></span>;
+    const renderPathIcons = (path) => {
+        return path.map((step, index) => {
+            return <a href={step.permalink} key={index} title={step.title} style={{textDecoration: 'none'}}><span className="dashicons dashicons-admin-page" style={{margin: '0 2px', color: '#9ca3af'}}></span></a>;
         });
     };
 
@@ -34,12 +17,12 @@ const PathAnalysis = () => {
                     <h1 className="wp-heading-inline" style={{marginBottom: '10px'}}>Goal Path Analysis</h1>
                     <p style={{ margin: 0, color: '#50575e' }}>
                         <span className="dashicons dashicons-admin-site" style={{color: 'red', fontSize: '16px', marginRight: '5px'}}></span>
-                        soliddigital.com Showing paths for the last <strong>30 days</strong>
+                        {window.pathPilotPathData.site_url.replace(/https?:\/\//, '')} Showing paths for the last <strong>30 days</strong>
                     </p>
                 </div>
                 <Button isPrimary style={{background: '#4CAF50', border: 'none'}}>
                     <span className="dashicons dashicons-plus" style={{marginRight: '5px'}}></span>
-                    423 Goal Paths
+                    {pathData.length} Goal Paths
                 </Button>
             </div>
 
@@ -49,24 +32,25 @@ const PathAnalysis = () => {
                     <tr>
                         <th scope="col" className="manage-column">Path</th>
                         <th scope="col" className="manage-column">Path Steps</th>
+                        <th scope="col" className="manage-column">Count</th>
                         <th scope="col" className="manage-column">Path Last Taken</th>
                     </tr>
                     </thead>
                     <tbody>
-                    {hardcodedData.map((row, index) => (
+                    {pathData.map((row, index) => (
                         <tr key={index}>
                             <td>
-                                {renderPathIcons(row.icons)}
-                                {row.path}
+                                {renderPathIcons(row.path)}
                             </td>
                             <td>{row.steps}</td>
-                            <td><span className="dashicons dashicons-calendar-alt" style={{marginRight: '5px'}}></span>{row.lastTaken}</td>
+                            <td>{row.count}</td>
+                            <td><span className="dashicons dashicons-calendar-alt" style={{marginRight: '5px'}}></span>{row.last_taken}</td>
                         </tr>
                     ))}
                     </tbody>
                 </table>
                 <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', marginTop: '10px', color: '#50575e' }}>
-                    <span>1-10 of 423</span>
+                    <span>1-{pathData.length} of {pathData.length}</span>
                     <Button isSmall disabled style={{marginLeft: '15px'}}>&lt;</Button>
                     <Button isSmall style={{marginLeft: '5px'}}>&gt;</Button>
                     <span style={{marginLeft: '20px'}}>View</span>
