@@ -98,6 +98,66 @@ const {
 const {
   Button
 } = wp.components;
+const Tooltip = ({
+  content,
+  position
+}) => {
+  if (!content) {
+    return null;
+  }
+  const style = {
+    position: 'absolute',
+    top: position.y,
+    left: position.x,
+    backgroundColor: '#23282d',
+    color: '#fff',
+    padding: '10px',
+    borderRadius: '4px',
+    zIndex: 100,
+    maxWidth: '350px',
+    lineHeight: '1.5',
+    fontSize: '13px',
+    boxShadow: '0 2px 5px rgba(0,0,0,0.2)'
+  };
+  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
+    style: style,
+    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
+      style: {
+        marginBottom: '5px'
+      },
+      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("strong", {
+        children: "Name:"
+      }), " ", content.title]
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
+      style: {
+        marginBottom: '5px'
+      },
+      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("strong", {
+        children: "URL:"
+      }), " ", content.permalink]
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
+      style: {
+        marginBottom: '5px'
+      },
+      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("strong", {
+        children: "Post Type:"
+      }), " ", content.post_type]
+    }), content.taxonomies && content.taxonomies.length > 0 && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
+      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("strong", {
+        children: "Taxonomy:"
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("ul", {
+        style: {
+          margin: '5px 0 0 20px',
+          padding: 0,
+          listStyleType: 'disc'
+        },
+        children: content.taxonomies.map((tax, i) => /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("li", {
+          children: tax
+        }, i))
+      })]
+    })]
+  });
+};
 const PathAnalysis = () => {
   const {
     paths: pathData = [],
@@ -108,10 +168,40 @@ const PathAnalysis = () => {
   } = window.pathPilotPathData;
   let [itemsPerPage, setItemsPerPage] = useState(initialItemsPerPage);
   const [expandedRow, setExpandedRow] = useState(null);
+  const [tooltip, setTooltip] = useState({
+    visible: false,
+    content: null,
+    position: {
+      x: 0,
+      y: 0
+    }
+  });
   const currentPage = parseInt(paged, 10);
   itemsPerPage = +itemsPerPage;
   const handleRowClick = index => {
     setExpandedRow(expandedRow === index ? null : index);
+  };
+  const handleMouseEnter = (e, step) => {
+    const rect = e.target.getBoundingClientRect();
+    const containerRect = e.target.closest('.path-pilot-path-analysis').getBoundingClientRect();
+    setTooltip({
+      visible: true,
+      content: step,
+      position: {
+        x: rect.left - containerRect.left,
+        y: rect.bottom - containerRect.top + 5
+      }
+    });
+  };
+  const handleMouseLeave = () => {
+    setTooltip({
+      visible: false,
+      content: null,
+      position: {
+        x: 0,
+        y: 0
+      }
+    });
   };
   const renderPathIcons = path => {
     const maxPermalinkLength = 50;
@@ -125,6 +215,8 @@ const PathAnalysis = () => {
           style: {
             textDecoration: 'none'
           },
+          onMouseEnter: e => handleMouseEnter(e, step),
+          onMouseLeave: handleMouseLeave,
           children: step.permalink.length > maxPermalinkLength ? step.permalink.substring(0, maxPermalinkLength) + '...' : step.permalink
         }, key);
       }
@@ -134,6 +226,8 @@ const PathAnalysis = () => {
         style: {
           textDecoration: 'none'
         },
+        onMouseEnter: e => handleMouseEnter(e, step),
+        onMouseLeave: handleMouseLeave,
         children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("span", {
           className: `dashicons ${iconClass}`,
           style: {
@@ -211,7 +305,13 @@ const PathAnalysis = () => {
   const endItem = Math.min(startItem + itemsPerPage - 1, totalPaths);
   return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
     className: "path-pilot-path-analysis",
-    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
+    style: {
+      position: 'relative'
+    },
+    children: [tooltip.visible && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(Tooltip, {
+      content: tooltip.content,
+      position: tooltip.position
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
       style: {
         display: 'flex',
         justifyContent: 'space-between',

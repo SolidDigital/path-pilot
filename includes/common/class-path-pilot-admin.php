@@ -798,11 +798,27 @@ class Path_Pilot_Admin {
             foreach ($path_ids as $post_id) {
                 $post = get_post($post_id);
                 if ($post) {
+                    $post_type_obj = get_post_type_object($post->post_type);
+                    $post_type_name = $post_type_obj ? $post_type_obj->labels->singular_name : $post->post_type;
+
+                    $terms_list = [];
+                    $taxonomies = get_object_taxonomies($post, 'objects');
+                    foreach ($taxonomies as $taxonomy_slug => $taxonomy) {
+                        $terms = get_the_terms($post_id, $taxonomy_slug);
+                        if (!empty($terms) && !is_wp_error($terms)) {
+                            foreach ($terms as $term) {
+                                $terms_list[] = $taxonomy->labels->singular_name . ' > ' . $term->name;
+                            }
+                        }
+                    }
+
                     $path_details[] = [
                         'id' => $post_id,
                         'title' => $post->post_title,
                         'permalink' => str_replace(home_url(), '', get_permalink($post_id)),
                         'is_home' => $post_id === $home_page_id,
+                        'post_type' => $post_type_name,
+                        'taxonomies' => $terms_list,
                     ];
                 }
             }

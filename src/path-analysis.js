@@ -1,16 +1,74 @@
 const { render, useState, Fragment } = wp.element;
 const { Button } = wp.components;
 
+const Tooltip = ({ content, position }) => {
+    if (!content) {
+        return null;
+    }
+
+    const style = {
+        position: 'absolute',
+        top: position.y,
+        left: position.x,
+        backgroundColor: '#23282d',
+        color: '#fff',
+        padding: '10px',
+        borderRadius: '4px',
+        zIndex: 100,
+        maxWidth: '350px',
+        lineHeight: '1.5',
+        fontSize: '13px',
+        boxShadow: '0 2px 5px rgba(0,0,0,0.2)',
+    };
+
+    return (
+        <div style={style}>
+            <div style={{ marginBottom: '5px' }}><strong>Name:</strong> {content.title}</div>
+            <div style={{ marginBottom: '5px' }}><strong>URL:</strong> {content.permalink}</div>
+            <div style={{ marginBottom: '5px' }}><strong>Post Type:</strong> {content.post_type}</div>
+            {content.taxonomies && content.taxonomies.length > 0 && (
+                <div>
+                    <strong>Taxonomy:</strong>
+                    <ul style={{ margin: '5px 0 0 20px', padding: 0, listStyleType: 'disc' }}>
+                        {content.taxonomies.map((tax, i) => (
+                            <li key={i}>{tax}</li>
+                        ))}
+                    </ul>
+                </div>
+            )}
+        </div>
+    );
+};
+
+
 const PathAnalysis = () => {
     const { paths: pathData = [], total_paths: totalPaths = 0, paged: paged = 1, items_per_page: initialItemsPerPage = 50, site_url } = window.pathPilotPathData;
     let [itemsPerPage, setItemsPerPage] = useState(initialItemsPerPage);
     const [expandedRow, setExpandedRow] = useState(null);
+    const [tooltip, setTooltip] = useState({ visible: false, content: null, position: { x: 0, y: 0 } });
     const currentPage = parseInt(paged, 10);
 
     itemsPerPage = +itemsPerPage;
 
     const handleRowClick = (index) => {
         setExpandedRow(expandedRow === index ? null : index);
+    };
+
+    const handleMouseEnter = (e, step) => {
+        const rect = e.target.getBoundingClientRect();
+        const containerRect = e.target.closest('.path-pilot-path-analysis').getBoundingClientRect();
+        setTooltip({
+            visible: true,
+            content: step,
+            position: {
+                x: rect.left - containerRect.left,
+                y: rect.bottom - containerRect.top + 5
+            },
+        });
+    };
+
+    const handleMouseLeave = () => {
+        setTooltip({ visible: false, content: null, position: { x: 0, y: 0 } });
     };
 
     const renderPathIcons = (path) => {
@@ -21,13 +79,19 @@ const PathAnalysis = () => {
             const iconClass = step.is_home ? 'dashicons-admin-home' : 'dashicons-admin-page';
             if (isLast) {
                 return (
-                    <a href={step.permalink} key={key} title={step.title} style={{textDecoration: 'none'}}>
+                    <a href={step.permalink} key={key} title={step.title} style={{textDecoration: 'none'}}
+                       onMouseEnter={(e) => handleMouseEnter(e, step)}
+                       onMouseLeave={handleMouseLeave}
+                    >
                         {step.permalink.length > maxPermalinkLength ? step.permalink.substring(0, maxPermalinkLength) + '...' : step.permalink}
                     </a>
                 );
             }
             return (
-                <a href={step.permalink} key={key} title={step.title} style={{textDecoration: 'none'}}>
+                <a href={step.permalink} key={key} title={step.title} style={{textDecoration: 'none'}}
+                   onMouseEnter={(e) => handleMouseEnter(e, step)}
+                   onMouseLeave={handleMouseLeave}
+                >
                     <span className={`dashicons ${iconClass}`} style={{margin: '0 2px', color: '#9ca3af'}}></span>
                 </a>
             );
@@ -93,7 +157,8 @@ const PathAnalysis = () => {
     const startItem = (currentPage - 1) * itemsPerPage + 1;
     const endItem = Math.min(startItem + itemsPerPage - 1, totalPaths);
     return (
-        <div className="path-pilot-path-analysis">
+        <div className="path-pilot-path-analysis" style={{ position: 'relative' }}>
+            {tooltip.visible && <Tooltip content={tooltip.content} position={tooltip.position} />}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px' }}>
                 <div>
                     <h1 className="wp-heading-inline" style={{marginBottom: '10px'}}>Goal Path Analysis</h1>
