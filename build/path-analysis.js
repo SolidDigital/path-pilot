@@ -379,8 +379,10 @@ const PathAnalysis = () => {
       }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(Button, {
         isPrimary: true,
         style: {
-          background: '#4CAF50',
-          border: 'none'
+          background: '#DAE7E5',
+          border: 'none',
+          borderRadius: '8px',
+          padding: '12px 12px 8px 8px'
         },
         children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("span", {
           className: "dashicons dashicons-plus",

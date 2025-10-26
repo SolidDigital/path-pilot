@@ -191,7 +191,7 @@ const PathAnalysis = () => {
                         {site_url.replace(/https?:\/\//, '')} Showing paths for the last <strong>30 days</strong>
                     </p>
                 </div>
-                <Button isPrimary style={{background: '#4CAF50', border: 'none'}}>
+                <Button isPrimary style={{background: '#DAE7E5', border: 'none', borderRadius: '8px', padding: '12px 12px 8px 8px'}}>
                     <span className="dashicons dashicons-plus" style={{marginRight: '5px'}}></span>
                     {totalPaths} Goal Paths
                 </Button>
