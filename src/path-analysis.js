@@ -98,7 +98,7 @@ const PathAnalysis = () => {
         const nodes = [];
 
         const renderStep = (step, isLast, key) => {
-            const iconClass = step.is_home ? 'dashicons-admin-home' : 'dashicons-admin-page';
+            const iconUrl = step.is_home ? `${plugin_url}assets/images/icons/house.svg` : `${plugin_url}assets/images/icons/web-page.svg`;
             if (isLast) {
                 return (
                     <a href={step.permalink} target="_blank" key={key} style={{textDecoration: 'none'}}
@@ -116,7 +116,7 @@ const PathAnalysis = () => {
                    onMouseLeave={handleMouseLeave}
                    onClick={(e) => e.stopPropagation()}
                 >
-                    <span className={`dashicons ${iconClass}`} style={{margin: '0 2px', color: '#9ca3af'}}></span>
+                    <img src={iconUrl} style={{margin: '0 2px', width: '14px', height: '14px', verticalAlign: 'text-bottom'}} />
                 </a>
             );
         };
@@ -228,7 +228,7 @@ const PathAnalysis = () => {
                                 </td>
                                 <td>{row.steps}</td>
                                 <td>{row.count}</td>
-                                <td><span className="dashicons dashicons-calendar-alt" style={{marginRight: '5px'}}></span>{row.last_taken}</td>
+                                <td><img src={`${plugin_url}assets/images/icons/calendar.svg`} style={{marginRight: '5px', width: '12px', height: '13px', verticalAlign: 'text-bottom'}} />&nbsp;{row.last_taken}</td>
                             </tr>
                             {expandedRow === index && (
                                 <tr className="path-pilot-expanded-row">

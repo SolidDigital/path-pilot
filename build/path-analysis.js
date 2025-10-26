@@ -242,7 +242,7 @@ const PathAnalysis = () => {
     const maxPermalinkLength = 50;
     const nodes = [];
     const renderStep = (step, isLast, key) => {
-      const iconClass = step.is_home ? 'dashicons-admin-home' : 'dashicons-admin-page';
+      const iconUrl = step.is_home ? `${plugin_url}assets/images/icons/house.svg` : `${plugin_url}assets/images/icons/web-page.svg`;
       if (isLast) {
         return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("a", {
           href: step.permalink,
@@ -265,11 +265,13 @@ const PathAnalysis = () => {
         onMouseEnter: e => handleMouseEnter(e, step),
         onMouseLeave: handleMouseLeave,
         onClick: e => e.stopPropagation(),
-        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("span", {
-          className: `dashicons ${iconClass}`,
+        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("img", {
+          src: iconUrl,
           style: {
             margin: '0 2px',
-            color: '#9ca3af'
+            width: '14px',
+            height: '14px',
+            verticalAlign: 'text-bottom'
           }
         })
       }, key);
@@ -451,12 +453,15 @@ const PathAnalysis = () => {
               }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("td", {
                 children: row.count
               }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("td", {
-                children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("span", {
-                  className: "dashicons dashicons-calendar-alt",
+                children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("img", {
+                  src: `${plugin_url}assets/images/icons/calendar.svg`,
                   style: {
-                    marginRight: '5px'
+                    marginRight: '5px',
+                    width: '12px',
+                    height: '13px',
+                    verticalAlign: 'text-bottom'
                   }
-                }), row.last_taken]
+                }), "\xA0", row.last_taken]
               })]
             }), expandedRow === index && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("tr", {
               className: "path-pilot-expanded-row",
