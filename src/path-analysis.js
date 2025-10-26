@@ -55,7 +55,7 @@ const PathAnalysis = () => {
     };
 
     const handleSort = (column) => {
-        const newSortOrder = sortBy === column ? (sortOrder === 'asc' ? 'desc' : 'asc') : 'desc';
+        const newSortOrder = sortBy === column ? (sortOrder.toLowerCase() === 'asc' ? 'desc' : 'asc') : 'desc';
         const url = new URL(window.location.href);
         url.searchParams.set('page', 'path-pilot-path-analysis');
         url.searchParams.set('sort_by', column);
@@ -66,7 +66,7 @@ const PathAnalysis = () => {
 
     const SortableHeader = ({ children, column }) => {
         const isSorted = sortBy === column;
-        const icon = (sortOrder === 'asc' && isSorted) ? 'dashicons-arrow-up' : 'dashicons-arrow-down';
+        const icon = (sortOrder.toLowerCase() === 'asc' && isSorted) ? 'dashicons-arrow-up' : 'dashicons-arrow-down';
 
         return (
             <th scope="col" className="manage-column" onClick={() => handleSort(column)} style={{ cursor: 'pointer' }}>
