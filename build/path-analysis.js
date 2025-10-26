@@ -370,14 +370,25 @@ const PathAnalysis = () => {
             display: 'flex',
             alignItems: 'center'
           },
-          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("img", {
-            src: site_icon_url,
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("div", {
             style: {
-              width: '24px',
-              height: '24px',
+              width: '34px',
+              height: '34px',
               borderRadius: '50%',
+              backgroundColor: '#FFF',
+              border: '1px solid #D4D8DD',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
               marginRight: '8px'
-            }
+            },
+            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("img", {
+              src: site_icon_url,
+              style: {
+                width: '18px',
+                height: '18px'
+              }
+            })
           }), site_url.replace(/https?:\/\//, ''), "\xA0\xA0\xA0Showing paths for the last ", /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("strong", {
             children: "30 days"
           })]

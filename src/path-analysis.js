@@ -187,7 +187,19 @@ const PathAnalysis = () => {
                 <div>
                     <h1 className="wp-heading-inline" style={{marginBottom: '1.6rem'}}>Goal Path Analysis</h1>
                     <p style={{ margin: 0, color: '#50575e', marginBottom: '0.8rem', display: 'flex', alignItems: 'center' }}>
-                        <img src={site_icon_url} style={{width: '24px', height: '24px', borderRadius: '50%', marginRight: '8px'}} />
+                        <div style={{
+                            width: '34px',
+                            height: '34px',
+                            borderRadius: '50%',
+                            backgroundColor: '#FFF',
+                            border: '1px solid #D4D8DD',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            marginRight: '8px'
+                        }}>
+                            <img src={site_icon_url} style={{width: '18px', height: '18px'}} />
+                        </div>
                         {site_url.replace(/https?:\/\//, '')}&nbsp;&nbsp;&nbsp;Showing paths for the last <strong>30 days</strong>
                     </p>
                 </div>
