@@ -432,6 +432,8 @@ class Path_Pilot_Admin {
                     'paged' => $path_data['paged'],
                     'items_per_page' => $path_data['items_per_page'],
                     'site_url' => get_site_url(),
+                    'sort_by' => $path_data['sort_by'],
+                    'sort_order' => $path_data['sort_order'],
                 ]);
 
                 wp_add_inline_style('path-pilot-admin-style', '
@@ -772,15 +774,33 @@ class Path_Pilot_Admin {
         $items_per_page = isset($_GET['items']) ? absint($_GET['items']) : $default_items_per_page;
         $offset = ($paged - 1) * $items_per_page;
 
+        // Get sorting parameters
+        $sort_by = isset($_GET['sort_by']) ? sanitize_key($_GET['sort_by']) : 'count';
+        $sort_order = isset($_GET['sort_order']) ? strtoupper(sanitize_key($_GET['sort_order'])) : 'DESC';
+
+        // Validate sort_order
+        if (!in_array($sort_order, ['ASC', 'DESC'])) {
+            $sort_order = 'DESC';
+        }
+
         // Query to get total number of unique paths
         $total_paths = $wpdb->get_var("SELECT COUNT(DISTINCT paths) FROM {$table_name}");
+
+        $order_by_clause = 'count DESC';
+        if ($sort_by === 'steps') {
+            $order_by_clause = "JSON_LENGTH(paths) $sort_order";
+        } elseif ($sort_by === 'count') {
+            $order_by_clause = "count $sort_order";
+        } elseif ($sort_by === 'last_taken') {
+            $order_by_clause = "last_taken $sort_order";
+        }
 
         // Query to get unique paths for the current page
         $results = $wpdb->get_results($wpdb->prepare("
             SELECT paths, COUNT(*) as count, MAX(created_at) as last_taken
             FROM {$table_name}
             GROUP BY paths
-            ORDER BY count DESC
+            ORDER BY $order_by_clause
             LIMIT %d OFFSET %d
         ", $items_per_page, $offset));
 
@@ -837,6 +857,8 @@ class Path_Pilot_Admin {
             'total_paths' => (int) $total_paths,
             'paged' => $paged,
             'items_per_page' => $items_per_page,
+            'sort_by' => $sort_by,
+            'sort_order' => $sort_order,
         ];
     }
 

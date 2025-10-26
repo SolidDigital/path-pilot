@@ -164,7 +164,9 @@ const PathAnalysis = () => {
     total_paths: totalPaths = 0,
     paged = 1,
     items_per_page: initialItemsPerPage = 50,
-    site_url
+    site_url,
+    sort_by: sortBy = 'count',
+    sort_order: sortOrder = 'desc'
   } = window.pathPilotPathData;
   let [itemsPerPage, setItemsPerPage] = useState(initialItemsPerPage);
   const [expandedRow, setExpandedRow] = useState(null);
@@ -180,6 +182,37 @@ const PathAnalysis = () => {
   itemsPerPage = +itemsPerPage;
   const handleRowClick = index => {
     setExpandedRow(expandedRow === index ? null : index);
+  };
+  const handleSort = column => {
+    const newSortOrder = sortBy === column && sortOrder === 'asc' ? 'desc' : 'asc';
+    const url = new URL(window.location.href);
+    url.searchParams.set('page', 'path-pilot-path-analysis');
+    url.searchParams.set('sort_by', column);
+    url.searchParams.set('sort_order', newSortOrder);
+    url.searchParams.set('paged', '1'); // Reset to first page
+    window.location.href = url.href;
+  };
+  const SortableHeader = ({
+    children,
+    column
+  }) => {
+    const isSorted = sortBy === column;
+    const icon = sortOrder === 'asc' && isSorted ? 'dashicons-arrow-up' : 'dashicons-arrow-down';
+    return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("th", {
+      scope: "col",
+      className: "manage-column",
+      onClick: () => handleSort(column),
+      style: {
+        cursor: 'pointer'
+      },
+      children: [children, /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("span", {
+        className: `dashicons ${icon}`,
+        style: {
+          marginLeft: '5px',
+          color: isSorted ? 'black' : '#9ca3af'
+        }
+      })]
+    });
   };
   const handleMouseEnter = (e, step) => {
     const rect = e.target.getBoundingClientRect();
@@ -369,17 +402,14 @@ const PathAnalysis = () => {
               scope: "col",
               className: "manage-column",
               children: "Path"
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("th", {
-              scope: "col",
-              className: "manage-column",
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(SortableHeader, {
+              column: "steps",
               children: "Path Steps"
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("th", {
-              scope: "col",
-              className: "manage-column",
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(SortableHeader, {
+              column: "count",
               children: "Count"
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("th", {
-              scope: "col",
-              className: "manage-column",
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(SortableHeader, {
+              column: "last_taken",
               children: "Path Last Taken"
             })]
           })

@@ -42,7 +42,7 @@ const Tooltip = ({ content, position }) => {
 
 
 const PathAnalysis = () => {
-    const { paths: pathData = [], total_paths: totalPaths = 0, paged: paged = 1, items_per_page: initialItemsPerPage = 50, site_url } = window.pathPilotPathData;
+    const { paths: pathData = [], total_paths: totalPaths = 0, paged: paged = 1, items_per_page: initialItemsPerPage = 50, site_url, sort_by: sortBy = 'count', sort_order: sortOrder = 'desc' } = window.pathPilotPathData;
     let [itemsPerPage, setItemsPerPage] = useState(initialItemsPerPage);
     const [expandedRow, setExpandedRow] = useState(null);
     const [tooltip, setTooltip] = useState({ visible: false, content: null, position: { x: 0, y: 0 } });
@@ -52,6 +52,28 @@ const PathAnalysis = () => {
 
     const handleRowClick = (index) => {
         setExpandedRow(expandedRow === index ? null : index);
+    };
+
+    const handleSort = (column) => {
+        const newSortOrder = (sortBy === column && sortOrder === 'asc') ? 'desc' : 'asc';
+        const url = new URL(window.location.href);
+        url.searchParams.set('page', 'path-pilot-path-analysis');
+        url.searchParams.set('sort_by', column);
+        url.searchParams.set('sort_order', newSortOrder);
+        url.searchParams.set('paged', '1'); // Reset to first page
+        window.location.href = url.href;
+    };
+
+    const SortableHeader = ({ children, column }) => {
+        const isSorted = sortBy === column;
+        const icon = (sortOrder === 'asc' && isSorted) ? 'dashicons-arrow-up' : 'dashicons-arrow-down';
+
+        return (
+            <th scope="col" className="manage-column" onClick={() => handleSort(column)} style={{ cursor: 'pointer' }}>
+                {children}
+                <span className={`dashicons ${icon}`} style={{ marginLeft: '5px', color: isSorted ? 'black' : '#9ca3af' }}></span>
+            </th>
+        );
     };
 
     const handleMouseEnter = (e, step) => {
@@ -180,9 +202,9 @@ const PathAnalysis = () => {
                     <thead>
                     <tr>
                         <th scope="col" className="manage-column">Path</th>
-                        <th scope="col" className="manage-column">Path Steps</th>
-                        <th scope="col" className="manage-column">Count</th>
-                        <th scope="col" className="manage-column">Path Last Taken</th>
+                        <SortableHeader column="steps">Path Steps</SortableHeader>
+                        <SortableHeader column="count">Count</SortableHeader>
+                        <SortableHeader column="last_taken">Path Last Taken</SortableHeader>
                     </tr>
                     </thead>
                     <tbody>
