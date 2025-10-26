@@ -403,7 +403,7 @@ const PathAnalysis = () => {
           padding: '12px 12px 12px 12px'
         },
         children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("img", {
-          src: plugin_url + 'assets/images/path-pilot-disc-icon.svg',
+          src: plugin_url + 'assets/images/icons/path-pilot-disc-icon.svg',
           alt: "Goal Paths Icon",
           style: {
             marginRight: '5px',
