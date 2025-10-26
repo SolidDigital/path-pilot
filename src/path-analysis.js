@@ -55,7 +55,7 @@ const PathAnalysis = () => {
     };
 
     const handleSort = (column) => {
-        const newSortOrder = (sortBy === column && sortOrder === 'asc') ? 'desc' : 'asc';
+        const newSortOrder = sortBy === column ? (sortOrder === 'asc' ? 'desc' : 'asc') : 'desc';
         const url = new URL(window.location.href);
         url.searchParams.set('page', 'path-pilot-path-analysis');
         url.searchParams.set('sort_by', column);
