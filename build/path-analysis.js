@@ -389,7 +389,7 @@ const PathAnalysis = () => {
                 height: '18px'
               }
             })
-          }), site_url.replace(/https?:\/\//, ''), "\xA0\xA0\xA0Showing paths for the last ", /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("strong", {
+          }), site_url.replace(/https?:\/\//, ''), "\xA0\xA0\xA0Showing paths for the last\xA0", /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("strong", {
             children: "30 days"
           })]
         })]

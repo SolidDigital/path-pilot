@@ -200,7 +200,7 @@ const PathAnalysis = () => {
                         }}>
                             <img src={site_icon_url} style={{width: '18px', height: '18px'}} />
                         </div>
-                        {site_url.replace(/https?:\/\//, '')}&nbsp;&nbsp;&nbsp;Showing paths for the last <strong>30 days</strong>
+                        {site_url.replace(/https?:\/\//, '')}&nbsp;&nbsp;&nbsp;Showing paths for the last&nbsp;<strong>30 days</strong>
                     </p>
                 </div>
                 <Button isPrimary style={{background: '#DAE7E5', fontSize: "0.9rem", border: 'none', borderRadius: '8px', padding: '12px 12px 12px 12px'}}>
