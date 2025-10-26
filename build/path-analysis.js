@@ -451,15 +451,15 @@ const PathAnalysis = () => {
                   style: {
                     margin: '10px 0 10px 20px'
                   },
-                  children: row.path.map((step, stepIndex) => /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("li", {
+                  children: row.path.map((step, stepIndex) => /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("li", {
                     style: {
                       marginBottom: '5px'
                     },
-                    children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("a", {
+                    children: ["\xA0\xA0\xA0", /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("a", {
                       href: step.permalink,
                       target: "_blank",
                       children: step.permalink.replace(site_url, '')
-                    })
+                    })]
                   }, stepIndex))
                 })
               })

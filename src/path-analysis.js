@@ -224,7 +224,7 @@ const PathAnalysis = () => {
                                         <ol style={{margin: '10px 0 10px 20px'}}>
                                             {row.path.map((step, stepIndex) => (
                                                 <li key={stepIndex} style={{marginBottom: '5px'}}>
-                                                    <a href={step.permalink} target="_blank">
+                                                    &nbsp;&nbsp;&nbsp;<a href={step.permalink} target="_blank">
                                                         {step.permalink.replace(site_url, '')}
                                                     </a>
                                                 </li>

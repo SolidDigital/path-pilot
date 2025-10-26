@@ -1326,3 +1326,21 @@ body.folded .pp-admin-wrap {
     padding: 20px; /* Adding some padding for better visual */
     margin-top: 20px; /* Adding some top margin */
 }
+
+.path-pilot-expanded-row ol {
+    counter-reset: item;
+    margin-left: 0;
+    padding-left: 0;
+}
+.path-pilot-expanded-row li {
+    display: block;
+    margin-bottom: .5em;
+    margin-left: 2em;
+}
+.path-pilot-expanded-row li::before {
+    display: inline-block;
+    content: counter(item) " ";
+    counter-increment: item;
+    width: 2em;
+    margin-left: -2.8em;
+}
