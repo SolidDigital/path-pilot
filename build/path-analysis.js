@@ -167,7 +167,8 @@ const PathAnalysis = () => {
     site_url,
     sort_by: sortBy = 'count',
     sort_order: sortOrder = 'desc',
-    plugin_url
+    plugin_url,
+    site_icon_url
   } = window.pathPilotPathData;
   let [itemsPerPage, setItemsPerPage] = useState(initialItemsPerPage);
   const [expandedRow, setExpandedRow] = useState(null);
@@ -365,16 +366,19 @@ const PathAnalysis = () => {
           style: {
             margin: 0,
             color: '#50575e',
-            marginBottom: '0.8rem'
+            marginBottom: '0.8rem',
+            display: 'flex',
+            alignItems: 'center'
           },
-          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("span", {
-            className: "dashicons dashicons-admin-site",
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("img", {
+            src: site_icon_url,
             style: {
-              color: 'red',
-              fontSize: '16px',
-              marginRight: '5px'
+              width: '24px',
+              height: '24px',
+              borderRadius: '50%',
+              marginRight: '8px'
             }
-          }), "\xA0\xA0", site_url.replace(/https?:\/\//, ''), "\xA0\xA0\xA0Showing paths for the last ", /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("strong", {
+          }), site_url.replace(/https?:\/\//, ''), "\xA0\xA0\xA0Showing paths for the last ", /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("strong", {
             children: "30 days"
           })]
         })]

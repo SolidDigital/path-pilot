@@ -42,7 +42,7 @@ const Tooltip = ({ content, position }) => {
 
 
 const PathAnalysis = () => {
-    const { paths: pathData = [], total_paths: totalPaths = 0, paged: paged = 1, items_per_page: initialItemsPerPage = 50, site_url, sort_by: sortBy = 'count', sort_order: sortOrder = 'desc', plugin_url } = window.pathPilotPathData;
+    const { paths: pathData = [], total_paths: totalPaths = 0, paged: paged = 1, items_per_page: initialItemsPerPage = 50, site_url, sort_by: sortBy = 'count', sort_order: sortOrder = 'desc', plugin_url, site_icon_url } = window.pathPilotPathData;
     let [itemsPerPage, setItemsPerPage] = useState(initialItemsPerPage);
     const [expandedRow, setExpandedRow] = useState(null);
     const [tooltip, setTooltip] = useState({ visible: false, content: null, position: { x: 0, y: 0 } });
@@ -186,9 +186,9 @@ const PathAnalysis = () => {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px' }}>
                 <div>
                     <h1 className="wp-heading-inline" style={{marginBottom: '1.6rem'}}>Goal Path Analysis</h1>
-                    <p style={{ margin: 0, color: '#50575e', marginBottom: '0.8rem' }}>
-                        <span className="dashicons dashicons-admin-site" style={{color: 'red', fontSize: '16px', marginRight: '5px'}}></span>
-                        &nbsp;&nbsp;{site_url.replace(/https?:\/\//, '')}&nbsp;&nbsp;&nbsp;Showing paths for the last <strong>30 days</strong>
+                    <p style={{ margin: 0, color: '#50575e', marginBottom: '0.8rem', display: 'flex', alignItems: 'center' }}>
+                        <img src={site_icon_url} style={{width: '24px', height: '24px', borderRadius: '50%', marginRight: '8px'}} />
+                        {site_url.replace(/https?:\/\//, '')}&nbsp;&nbsp;&nbsp;Showing paths for the last <strong>30 days</strong>
                     </p>
                 </div>
                 <Button isPrimary style={{background: '#DAE7E5', fontSize: "0.9rem", border: 'none', borderRadius: '8px', padding: '12px 12px 12px 12px'}}>
