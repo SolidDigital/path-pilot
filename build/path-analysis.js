@@ -166,7 +166,8 @@ const PathAnalysis = () => {
     items_per_page: initialItemsPerPage = 50,
     site_url,
     sort_by: sortBy = 'count',
-    sort_order: sortOrder = 'desc'
+    sort_order: sortOrder = 'desc',
+    plugin_url
   } = window.pathPilotPathData;
   let [itemsPerPage, setItemsPerPage] = useState(initialItemsPerPage);
   const [expandedRow, setExpandedRow] = useState(null);
@@ -357,13 +358,14 @@ const PathAnalysis = () => {
         children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("h1", {
           className: "wp-heading-inline",
           style: {
-            marginBottom: '10px'
+            marginBottom: '1.6rem'
           },
           children: "Goal Path Analysis"
         }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("p", {
           style: {
             margin: 0,
-            color: '#50575e'
+            color: '#50575e',
+            marginBottom: '0.8rem'
           },
           children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("span", {
             className: "dashicons dashicons-admin-site",
@@ -372,7 +374,7 @@ const PathAnalysis = () => {
               fontSize: '16px',
               marginRight: '5px'
             }
-          }), site_url.replace(/https?:\/\//, ''), " Showing paths for the last ", /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("strong", {
+          }), "\xA0\xA0", site_url.replace(/https?:\/\//, ''), "\xA0\xA0\xA0Showing paths for the last ", /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("strong", {
             children: "30 days"
           })]
         })]
@@ -380,16 +382,21 @@ const PathAnalysis = () => {
         isPrimary: true,
         style: {
           background: '#DAE7E5',
+          fontSize: "0.9rem",
           border: 'none',
           borderRadius: '8px',
-          padding: '12px 12px 8px 8px'
+          padding: '12px 12px 12px 12px'
         },
-        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("span", {
-          className: "dashicons dashicons-plus",
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("img", {
+          src: plugin_url + 'assets/images/path-pilot-disc-icon.svg',
+          alt: "Goal Paths Icon",
           style: {
-            marginRight: '5px'
+            marginRight: '5px',
+            width: '16px',
+            height: '16px',
+            verticalAlign: 'text-bottom'
           }
-        }), totalPaths, " Goal Paths"]
+        }), "\xA0", totalPaths, " Goal Paths"]
       })]
     }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
       className: "pp-content",

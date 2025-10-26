@@ -434,6 +434,7 @@ class Path_Pilot_Admin {
                     'site_url' => get_site_url(),
                     'sort_by' => $path_data['sort_by'],
                     'sort_order' => $path_data['sort_order'],
+                    'plugin_url' => plugin_dir_url(dirname(__DIR__)),
                 ]);
 
                 wp_add_inline_style('path-pilot-admin-style', '

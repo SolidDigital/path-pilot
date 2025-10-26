@@ -42,7 +42,7 @@ const Tooltip = ({ content, position }) => {
 
 
 const PathAnalysis = () => {
-    const { paths: pathData = [], total_paths: totalPaths = 0, paged: paged = 1, items_per_page: initialItemsPerPage = 50, site_url, sort_by: sortBy = 'count', sort_order: sortOrder = 'desc' } = window.pathPilotPathData;
+    const { paths: pathData = [], total_paths: totalPaths = 0, paged: paged = 1, items_per_page: initialItemsPerPage = 50, site_url, sort_by: sortBy = 'count', sort_order: sortOrder = 'desc', plugin_url } = window.pathPilotPathData;
     let [itemsPerPage, setItemsPerPage] = useState(initialItemsPerPage);
     const [expandedRow, setExpandedRow] = useState(null);
     const [tooltip, setTooltip] = useState({ visible: false, content: null, position: { x: 0, y: 0 } });
@@ -185,15 +185,15 @@ const PathAnalysis = () => {
             {tooltip.visible && <Tooltip content={tooltip.content} position={tooltip.position} />}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px' }}>
                 <div>
-                    <h1 className="wp-heading-inline" style={{marginBottom: '10px'}}>Goal Path Analysis</h1>
-                    <p style={{ margin: 0, color: '#50575e' }}>
+                    <h1 className="wp-heading-inline" style={{marginBottom: '1.6rem'}}>Goal Path Analysis</h1>
+                    <p style={{ margin: 0, color: '#50575e', marginBottom: '0.8rem' }}>
                         <span className="dashicons dashicons-admin-site" style={{color: 'red', fontSize: '16px', marginRight: '5px'}}></span>
-                        {site_url.replace(/https?:\/\//, '')} Showing paths for the last <strong>30 days</strong>
+                        &nbsp;&nbsp;{site_url.replace(/https?:\/\//, '')}&nbsp;&nbsp;&nbsp;Showing paths for the last <strong>30 days</strong>
                     </p>
                 </div>
-                <Button isPrimary style={{background: '#DAE7E5', border: 'none', borderRadius: '8px', padding: '12px 12px 8px 8px'}}>
-                    <span className="dashicons dashicons-plus" style={{marginRight: '5px'}}></span>
-                    {totalPaths} Goal Paths
+                <Button isPrimary style={{background: '#DAE7E5', fontSize: "0.9rem", border: 'none', borderRadius: '8px', padding: '12px 12px 12px 12px'}}>
+                    <img src={plugin_url + 'assets/images/path-pilot-disc-icon.svg'} alt="Goal Paths Icon" style={{marginRight: '5px', width: '16px', height: '16px', verticalAlign: 'text-bottom'}} />
+                    &nbsp;{totalPaths} Goal Paths
                 </Button>
             </div>
 
