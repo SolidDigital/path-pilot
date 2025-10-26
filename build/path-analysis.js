@@ -359,8 +359,7 @@ const PathAnalysis = () => {
     }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
       className: "pp-content",
       style: {
-        backgroundColor: 'white',
-        padding: '20px'
+        padding: '0'
       },
       children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("table", {
         className: "wp-list-table widefat",
@@ -491,12 +490,7 @@ const PathAnalysis = () => {
         })]
       })]
     }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
-      className: "pp-content",
-      style: {
-        marginTop: '40px',
-        backgroundColor: 'white',
-        padding: '20px'
-      },
+      className: "pp-clarification",
       children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("h3", {
         children: "Need clarification?"
       }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("p", {

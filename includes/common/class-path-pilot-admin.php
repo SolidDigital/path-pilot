@@ -435,8 +435,6 @@ class Path_Pilot_Admin {
                 ]);
 
                 wp_add_inline_style('path-pilot-admin-style', '
-                    .path-pilot-path-analysis .wp-list-table tbody tr { background-color: #f6fbf8 !important; }
-                    .path-pilot-path-analysis .wp-list-table tbody tr:nth-child(odd) { background-color: #f6fbf8 !important; }
                     .path-pilot-path-analysis .wp-list-table td, .path-pilot-path-analysis .wp-list-table th { border-bottom: 1px solid #e7e7e7; }
                     .path-pilot-path-analysis .wp-list-table th { background-color: #fff; border-bottom-width: 2px; }
                     .path-pilot-path-analysis .wp-list-table td { padding: 12px 10px; }

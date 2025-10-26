@@ -175,7 +175,7 @@ const PathAnalysis = () => {
                 </Button>
             </div>
 
-            <div className="pp-content" style={{backgroundColor: 'white', padding: '20px'}}>
+            <div className="pp-content" style={{padding: '0'}}>
                 <table className="wp-list-table widefat">
                     <thead>
                     <tr>
@@ -237,7 +237,7 @@ const PathAnalysis = () => {
                 </div>
             </div>
 
-            <div className="pp-content" style={{ marginTop: '40px', backgroundColor: 'white', padding: '20px' }}>
+            <div className="pp-clarification">
                 <h3>Need clarification?</h3>
                 <p><strong>Path</strong> = The path taken to Lorem Ipsum is simply dummy text of the printing and typesetting industry.</p>
                 <p><strong>Path Steps</strong> = The path taken to Lorem Ipsum is simply dummy text of the printing and typesetting industry.</p>

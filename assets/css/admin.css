@@ -184,11 +184,11 @@ a {
   .container {
     padding: 0 8px;
   }
-  
+
   .row {
     flex-direction: column;
   }
-  
+
   .col-lg-6 {
     max-width: 100%;
     flex: 0 0 100%;
@@ -199,15 +199,15 @@ a {
   .pp-header {
     top: 46px; /* Adjust for the WP admin bar on smaller screens */
   }
-  
+
   .pp-home-flex {
     flex-direction: column;
   }
-  
+
   .pp-home-section {
     width: 100%;
   }
-  
+
   .pp-home-stats {
     flex-direction: column;
   }
@@ -219,7 +219,7 @@ a {
     top: 0;
     flex-wrap: wrap;
   }
-  
+
   .pp-header-actions {
     margin-top: 10px;
     width: 100%;
@@ -706,16 +706,16 @@ body.folded .pp-admin-wrap {
   .pp-content .container, .pp-content .row {
     flex-direction: column;
   }
-  
+
   .pp-content .col-lg-6 {
     width: 100%;
   }
-  
+
   .pp-content .pp-header {
     flex-direction: column;
     align-items: flex-start;
   }
-  
+
   .pp-content .pp-header-right {
     margin-top: 15px;
     width: 100%;
@@ -727,15 +727,15 @@ body.folded .pp-admin-wrap {
   .pp-content .pp-home-flex {
     flex-direction: column;
   }
-  
+
   .pp-content .pp-home-section {
     width: 100%;
   }
-  
+
   .pp-content .pp-header {
     padding: 15px;
   }
-  
+
   .pp-content .pp-header-actions {
     flex-direction: column;
     align-items: flex-start;
@@ -852,7 +852,7 @@ body.folded .pp-admin-wrap {
 }
 
 .pp-content .pp-temp-warmer {
-  color: #ff4800; 
+  color: #ff4800;
 }
 
 .pp-content .pp-temp-warmer .pp-temp-indicator-bar {
@@ -1306,4 +1306,20 @@ body.folded .pp-admin-wrap {
 
 .pp-goal-pages-selected-box .pp-goal-selected-list li span {
   font-size: 0.8rem !important;
+}
+
+.wp-list-table {
+    border-radius: 10px;
+    overflow: hidden; /* Ensures rounded corners are visible */
+}
+
+.wp-list-table tbody {
+    background-color: #fff;
+}
+
+.pp-clarification {
+    background-color: rgba(210, 210, 210, 0.2);
+    border-radius: 10px;
+    padding: 20px; /* Adding some padding for better visual */
+    margin-top: 20px; /* Adding some top margin */
 }
