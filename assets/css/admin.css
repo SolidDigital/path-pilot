@@ -1307,9 +1307,12 @@ body.folded .pp-admin-wrap {
   font-size: 0.8rem !important;
 }
 
-.wp-list-table {
-    border-radius: 10px;
+.pp-content .wp-list-table {
+    border-radius: 8px;
     overflow: hidden; /* Ensures rounded corners are visible */
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    border-color: #FFF;
+    padding: 2rem;
 }
 
 .wp-list-table tbody {
@@ -1318,7 +1321,8 @@ body.folded .pp-admin-wrap {
 
 .pp-clarification {
     background-color: rgba(210, 210, 210, 0.2);
-    border-radius: 10px;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
     padding: 20px; /* Adding some padding for better visual */
     margin-top: 20px; /* Adding some top margin */
 }
