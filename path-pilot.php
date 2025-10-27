@@ -39,6 +39,7 @@ Log::info('Path Pilot: Plugin file loaded for URL: ' . (esc_url_raw($_SERVER['RE
 require_once __DIR__ . '/includes/common/class-path-pilot-admin.php';
 require_once __DIR__ . '/includes/common/class-path-pilot-recommender.php';
 require_once __DIR__ . '/includes/common/class-path-pilot-shared.php';
+require_once __DIR__ . '/includes/common/class-path-pilot-cron.php';
 
 // Register multisite-safe activation redirect
 Path_Pilot_Shared::register_activation_hook(__FILE__);
@@ -74,6 +75,7 @@ class Path_Pilot {
         }
 
         new Path_Pilot_Admin();
+        new Path_Pilot_Cron();
     }
 
     // No need to implement REST handlers or other methods
