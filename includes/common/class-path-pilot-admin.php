@@ -53,11 +53,6 @@ class Path_Pilot_Admin {
      */
     public function admin_menu() {
         error_log('Path Pilot Admin: admin_menu called.');
-        // If Pro version is active, this free plugin should not register any menu pages
-        if (Path_Pilot::is_pro()) {
-            error_log('Path Pilot Admin: Pro is active, exiting admin_menu early.');
-            return;
-        }
 
         // Use a CSS class for the icon instead of SVG
         $menu_icon = 'dashicons-admin-site'; // Temporarily use dashicons until our font is ready
@@ -103,17 +98,18 @@ class Path_Pilot_Admin {
             array($this, 'render_analytics_page')
         );
 
-        add_submenu_page(
-            'path-pilot',                            // Parent slug
-            'Path Pilot Settings',                   // Page title
-            'Settings',                              // Menu title
-            'manage_options',                        // Capability
-            'path-pilot-settings',                   // Menu slug
-            array($this, 'render_settings_page')     // Callback
-        );
 
         // Add the upgrade link as a submenu item
         if (!Path_Pilot::is_pro()) {
+            add_submenu_page(
+                'path-pilot',                            // Parent slug
+                'Path Pilot Settings',                   // Page title
+                'Settings',                              // Menu title
+                'manage_options',                        // Capability
+                'path-pilot-settings',                   // Menu slug
+                array($this, 'render_settings_page')     // Callback
+            );
+
             add_submenu_page(
                 'path-pilot',
                 'Upgrade to Pro',
