@@ -52,6 +52,13 @@ class Path_Pilot_Admin {
      * Register the admin menu.
      */
     public function admin_menu() {
+        error_log('Path Pilot Admin: admin_menu called.');
+        // If Pro version is active, this free plugin should not register any menu pages
+        if (Path_Pilot::is_pro()) {
+            error_log('Path Pilot Admin: Pro is active, exiting admin_menu early.');
+            return;
+        }
+
         // Use a CSS class for the icon instead of SVG
         $menu_icon = 'dashicons-admin-site'; // Temporarily use dashicons until our font is ready
 

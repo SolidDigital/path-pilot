@@ -1344,3 +1344,10 @@ body.folded .pp-admin-wrap {
     width: 2em;
     margin-left: -2.8em;
 }
+
+
+/* Loading Spinner Animation */
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
