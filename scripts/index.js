@@ -1,6 +1,43 @@
 // Path Pilot left-side navigation drawer (vanilla JS)
 (function() {
 
+  // Lightweight inline SVG icon helper (Material-style, no extra requests)
+  function ppIcon(name) {
+    switch (name) {
+      case 'compass': // recommendations
+        return (
+          '<svg class="pp-icon" viewBox="0 0 24 24" aria-hidden="true">' +
+            '<circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2" />' +
+            '<polygon points="12,6 8,16 12,13 16,16" fill="currentColor" />' +
+          '</svg>'
+        );
+      case 'info': // page summary
+        return (
+          '<svg class="pp-icon" viewBox="0 0 24 24" aria-hidden="true">' +
+            '<circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2" />' +
+            '<rect x="11" y="10" width="2" height="7" fill="currentColor" />' +
+            '<circle cx="12" cy="8" r="1" fill="currentColor" />' +
+          '</svg>'
+        );
+      case 'search': // magnifying glass
+        return (
+          '<svg class="pp-icon" viewBox="0 0 24 24" aria-hidden="true">' +
+            '<circle cx="11" cy="11" r="5.5" fill="none" stroke="currentColor" stroke-width="2" />' +
+            '<line x1="15" y1="15" x2="20" y2="20" stroke="currentColor" stroke-width="2" stroke-linecap="round" />' +
+          '</svg>'
+        );
+      case 'dockRight': // drawer closer
+        return (
+          '<svg class="pp-icon" viewBox="0 0 24 24" aria-hidden="true">' +
+            '<rect x="4" y="5" width="16" height="14" rx="1.5" ry="1.5" fill="none" stroke="currentColor" stroke-width="2" />' +
+            '<rect x="13" y="5" width="7" height="14" fill="currentColor" />' +
+          '</svg>'
+        );
+      default:
+        return '';
+    }
+  }
+
   // Wait for DOM to be ready
   document.addEventListener('DOMContentLoaded', function() {
     initPathPilot();
@@ -60,76 +97,159 @@
         return response;
     }
 
-    // --- Inject icon font CSS if not present ---
-    if (!document.querySelector('link[href*="path-pilot-icons.css"]')) {
-      var iconFontLink = document.createElement('link');
-      iconFontLink.rel = 'stylesheet';
-      iconFontLink.href = (window.PathPilotStatus && window.PathPilotStatus.icon_css_url) || '/wp-content/plugins/path-pilot/assets/css/path-pilot-icons.css';
-      document.head.appendChild(iconFontLink);
+    // --- Sidebar state ---
+    let isExpanded = false;
+    let activeTabId = null;
+    const DRAWER_STORAGE_KEY = 'path_pilot_drawer_state';
+
+    function loadDrawerState() {
+      try {
+        const raw = window.localStorage ? localStorage.getItem(DRAWER_STORAGE_KEY) : null;
+        if (!raw) return null;
+        return JSON.parse(raw);
+      } catch (e) {
+        return null;
+      }
     }
 
-    // --- Drawer State ---
-    let drawerOpen = false;
-
-    // --- Drawer Container ---
-    const drawer = document.createElement('div');
-    drawer.id = 'path-pilot-drawer';
-    drawer.className = 'pp-drawer minimized';
-    drawer.setAttribute('role', 'complementary');
-    drawer.setAttribute('aria-label', 'Path Pilot recommendations panel');
-    drawer.setAttribute('aria-hidden', 'true');
-    document.body.appendChild(drawer);
-
-    // --- Drawer Handle (Modern, slim, right-rounded rectangle) ---
-    const drawerHandle = document.createElement('button');
-    drawerHandle.className = 'pp-drawer-handle';
-    drawerHandle.type = 'button';
-    drawerHandle.setAttribute('aria-label', 'Open Path Pilot panel');
-    drawerHandle.setAttribute('aria-controls', 'path-pilot-drawer');
-    drawerHandle.setAttribute('aria-expanded', 'false');
-    drawerHandle.innerHTML = '<i class="icon-pilot-icon"></i>';
-    drawer.appendChild(drawerHandle);
-
-    // Beacon effect after 15s, only if drawer is closed
-    setTimeout(function() {
-      if (!drawer.classList.contains('expanded')) {
-        drawerHandle.classList.add('pp-beacon');
+    function persistDrawerState() {
+      try {
+        if (!window.localStorage) return;
+        const state = {
+          open: isExpanded,
+          tab: activeTabId || null
+        };
+        localStorage.setItem(DRAWER_STORAGE_KEY, JSON.stringify(state));
+      } catch (e) {
+        // fail silently if storage is unavailable
       }
-    }, 15000);
-    drawerHandle.addEventListener('click', function() {
-      drawerHandle.classList.remove('pp-beacon');
-    });
+    }
 
-    // Also remove beacon if drawer is opened by any means
-    const observer = new MutationObserver(function() {
-      if (drawer.classList.contains('expanded')) {
-        drawerHandle.classList.remove('pp-beacon');
+    // --- Tab configuration (pluggable) ---
+    const TAB_DEFS = [
+      {
+        id: 'recommendations',
+        label: 'Recommendations',
+        icon: 'compass',
+      },
+      {
+        id: 'summary',
+        label: 'Page summary',
+        icon: 'info',
+      },
+      {
+        id: 'search',
+        label: 'Search',
+        icon: 'search',
+      },
+    ];
+
+    // --- Sidebar Container (always visible on the left) ---
+    const sidebar = document.createElement('div');
+    sidebar.id = 'path-pilot-sidebar';
+    sidebar.className = 'pp-sidebar collapsed';
+    sidebar.setAttribute('role', 'complementary');
+    sidebar.setAttribute('aria-label', 'Path Pilot panel');
+    sidebar.setAttribute('aria-hidden', 'true');
+    document.body.appendChild(sidebar);
+    // Let the theme know to reserve space for the sidebar
+    document.body.classList.add('pp-sidebar-present');
+
+    // Inner container to stack brand + nav
+    const sidebarInner = document.createElement('div');
+    sidebarInner.className = 'pp-sidebar-inner';
+    sidebar.appendChild(sidebarInner);
+
+    // --- Brand / top icon (links to pathpilot.app) ---
+    const brand = document.createElement('button');
+    brand.type = 'button';
+    brand.className = 'pp-sidebar-brand';
+    brand.innerHTML = '<i class="icon-pilot-icon" aria-hidden="true"></i>';
+    brand.setAttribute('title', 'Path Pilot');
+    brand.setAttribute('aria-label', 'Open Path Pilot website');
+    brand.addEventListener('click', function () {
+      try {
+        window.open('https://pathpilot.app', '_blank', 'noopener,noreferrer');
+      } catch (e) {
+        // Fallback: change location if popup blocked
+        window.location.href = 'https://pathpilot.app';
       }
     });
-    observer.observe(drawer, { attributes: true, attributeFilter: ['class'] });
+    sidebarInner.appendChild(brand);
 
-    // --- Drawer Content ---
-    const drawerContent = document.createElement('div');
-    drawerContent.className = 'pp-drawer-content';
-    drawer.appendChild(drawerContent);
+    // --- Vertical Nav ---
+    const nav = document.createElement('nav');
+    nav.className = 'pp-sidebar-nav';
+    nav.setAttribute('aria-label', 'Path Pilot navigation');
+    sidebarInner.appendChild(nav);
 
-    // --- Recommendations Section (Dynamic) ---
+    // --- Content panel (appears to the right of the nav when expanded) ---
+    const panel = document.createElement('div');
+    panel.className = 'pp-sidebar-content';
+    sidebar.appendChild(panel);
+
+    // Panel close button (top-right inside drawer)
+    const panelClose = document.createElement('button');
+    panelClose.type = 'button';
+    panelClose.className = 'pp-panel-close';
+    panelClose.setAttribute('aria-label', 'Close Path Pilot panel');
+    panelClose.innerHTML = ppIcon('dockRight');
+    panel.appendChild(panelClose);
+
+    // Panel header title (changes with active tab)
+    const panelHeader = document.createElement('div');
+    panelHeader.className = 'pp-drawer-title';
+    panelHeader.textContent = 'Recommendations';
+    panel.appendChild(panelHeader);
+
+    // --- Tab content containers ---
+    // Recommendations (Dynamic)
     const recSection = document.createElement('div');
-    recSection.className = 'pp-drawer-recommendations';
-    recSection.innerHTML = `
-      <div class="pp-drawer-title">RECOMMENDED FOR YOU</div>
-      <ul class="pp-drawer-rec-list"></ul>
-    `;
-    const recList = recSection.querySelector('.pp-drawer-rec-list');
-    drawerContent.appendChild(recSection);
+    recSection.className = 'pp-tab-root pp-tab-recommendations';
+    const recList = document.createElement('ul');
+    recList.className = 'pp-drawer-rec-list';
+    recSection.appendChild(recList);
+    panel.appendChild(recSection);
 
-    // --- Chat functionality is now handled by Path Pilot Pro plugin ---
+    // Page summary (placeholder for now)
+    const summarySection = document.createElement('div');
+    summarySection.className = 'pp-tab-root pp-tab-summary';
+    summarySection.style.display = 'none';
+    summarySection.innerHTML = '<div style="color:#aaa;font-size:0.9rem;">Page summary coming soon.</div>';
+    panel.appendChild(summarySection);
 
-    // --- Path Pilot Advert/Footer ---
-    const footer = document.createElement('div');
-    footer.className = 'pp-drawer-footer';
-    footer.innerHTML = 'Path Pilot &mdash; <a href="https://pathpilot.app" target="_blank" rel="noopener" class="pp-footer-link">pathpilot.app</a>';
-    drawerContent.appendChild(footer);
+    // Search (placeholder for now)
+    const searchSection = document.createElement('div');
+    searchSection.className = 'pp-tab-root pp-tab-search';
+    searchSection.style.display = 'none';
+    searchSection.innerHTML = '<div style="color:#aaa;font-size:0.9rem;">Search coming soon.</div>';
+    panel.appendChild(searchSection);
+
+    // Map sections by tab id for pluggable use
+    const TAB_SECTIONS = {
+      recommendations: recSection,
+      summary: summarySection,
+      search: searchSection,
+    };
+
+    // Build nav buttons from TAB_DEFS
+    const tabs = TAB_DEFS.map(def => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'pp-nav-btn';
+      btn.setAttribute('data-view', def.id);
+      btn.setAttribute('title', def.label);
+      btn.setAttribute('aria-label', def.label);
+      btn.innerHTML = ppIcon(def.icon);
+      nav.appendChild(btn);
+      return {
+        ...def,
+        button: btn,
+        section: TAB_SECTIONS[def.id] || null,
+      };
+    });
+
+
 
     // --- Recommendations Logic ---
     function renderRecommendations(recs) {
@@ -205,7 +325,7 @@
     }
     
     function showRecommendationSkeletons(count = 3) {
-      const ul = document.querySelector('.pp-drawer-rec-list');
+      const ul = panel.querySelector('.pp-drawer-rec-list');
       if (!ul) return;
       ul.innerHTML = '';
       for (let i = 0; i < count; i++) {
@@ -247,22 +367,102 @@
         renderRecommendations([]);
       });
     }
-    fetchRecommendations();
+    // Default view shows recs when panel first expands
 
-    // --- Toggle Drawer ---
-    drawerHandle.addEventListener('click', function() {
-      drawerOpen = !drawerOpen;
-      drawer.classList.toggle('minimized', !drawerOpen);
-      drawer.classList.toggle('expanded', drawerOpen);
-      drawer.setAttribute('aria-hidden', drawerOpen ? 'false' : 'true');
-      drawerHandle.setAttribute('aria-expanded', String(drawerOpen));
-      drawerHandle.setAttribute('aria-label', drawerOpen ? 'Close Path Pilot panel' : 'Open Path Pilot panel');
-      if (drawerOpen) {
-        document.body.classList.add('pp-drawer-open');
-      } else {
-        document.body.classList.remove('pp-drawer-open');
+    // helper to update panel title when tab changes
+    function setPanelTitle(text) {
+      const header = panel.querySelector('.pp-drawer-title');
+      if (header) {
+        header.textContent = text;
+      }
+    }
+
+    // --- Expand/Collapse helpers ---
+    function expandSidebar() {
+      if (isExpanded) return;
+      isExpanded = true;
+      sidebar.classList.remove('collapsed');
+      sidebar.classList.add('expanded');
+      sidebar.setAttribute('aria-hidden', 'false');
+      document.body.classList.add('pp-sidebar-open');
+      // Load data on first open
+      if (!panel.dataset.loaded) {
+        fetchRecommendations();
+        panel.dataset.loaded = '1';
+      }
+      persistDrawerState();
+    }
+
+    function collapseSidebar() {
+      if (!isExpanded) return;
+      isExpanded = false;
+      sidebar.classList.remove('expanded');
+      sidebar.classList.add('collapsed');
+      sidebar.setAttribute('aria-hidden', 'true');
+      document.body.classList.remove('pp-sidebar-open');
+      activeTabId = null;
+      persistDrawerState();
+    }
+
+    function setActiveTab(tabId) {
+      activeTabId = tabId;
+      tabs.forEach(tab => {
+        const isActive = tab.id === tabId;
+        if (tab.button) {
+          tab.button.classList.toggle('is-active', isActive);
+        }
+        if (tab.section) {
+          tab.section.style.display = isActive ? 'block' : 'none';
+        }
+      });
+      const tabMeta = tabs.find(t => t.id === tabId);
+      if (tabMeta) {
+        setPanelTitle(tabMeta.label);
+      }
+    }
+
+    function handleTabClick(tab) {
+      if (!isExpanded) {
+        setActiveTab(tab.id);
+        expandSidebar();
+        return;
+      }
+      setActiveTab(tab.id);
+      persistDrawerState();
+    }
+
+    // --- Nav interactions ---
+    tabs.forEach(tab => {
+      if (!tab.button) return;
+      tab.button.addEventListener('click', function() {
+        handleTabClick(tab);
+      });
+    });
+
+    // Panel close button (top-right)
+    panelClose.addEventListener('click', function() {
+      collapseSidebar();
+    });
+
+    // Close with Escape
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        collapseSidebar();
       }
     });
+
+    // --- Restore persisted state on load ---
+    const savedState = loadDrawerState();
+    if (savedState && savedState.open) {
+      const fallbackId = tabs.length ? tabs[0].id : null;
+      const tabId = savedState.tab && tabs.some(t => t.id === savedState.tab)
+        ? savedState.tab
+        : fallbackId;
+      if (tabId) {
+        setActiveTab(tabId);
+        expandSidebar();
+      }
+    }
     
   } // End of initPathPilot function
 

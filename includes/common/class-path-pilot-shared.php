@@ -490,42 +490,38 @@ class Path_Pilot_Shared {
         );
         Log::info('Path Pilot: wp_localize_script result = ' . ($localize_result ? 'success' : 'failed'));
 
-        // Conditionally enqueue UI/interactivity based on show_drawer setting
-        // If drawer is disabled, we skip the UI but keep tracking active
-        if ($show_drawer) {
-            Log::info('Path Pilot: Enqueuing index.js script...');
-            $script_url = plugins_url('scripts/index.js', $main_plugin_file);
-            Log::info('Path Pilot: Script URL = ' . $script_url);
+        // Always enqueue UI/interactivity; the script itself will respect the
+        // insights_only / show_drawer flags and no-op when the drawer is disabled.
+        Log::info('Path Pilot: Enqueuing index.js script...');
+        $script_url = plugins_url('scripts/index.js', $main_plugin_file);
+        Log::info('Path Pilot: Script URL = ' . $script_url);
 
-            wp_enqueue_script(
-                'path-pilot-interactivity',
-                $script_url,
-                [],
-                PATH_PILOT_VERSION,
-                false // Load in header instead of footer
-            );
+        wp_enqueue_script(
+            'path-pilot-interactivity',
+            $script_url,
+            [],
+            PATH_PILOT_VERSION,
+            false // Load in header instead of footer
+        );
 
-            wp_localize_script(
-                'path-pilot-interactivity',
-                'PathPilotStatus',
-                [
-                    'ready' => $ready,
-                    'dev_mode' => $dev_mode,
-                    'insights_only' => $insights_only,
-                    'show_drawer' => $show_drawer,
-                    'cta_text' => $cta_text,
-                    'recommend_label' => $recommend_label,
-                    'chat_label' => $chat_label,
-                    'is_pro' =>Path_Pilot::is_pro(),
-                    'has_valid_api_key' => $has_valid_api_key,
-                    'chat_enabled' => $chat_enabled,
-                    'icon_css_url' => plugins_url('assets/css/path-pilot-icons.css', $main_plugin_file),
-                    'nonce' => wp_create_nonce('wp_rest'),
-                ]
-            );
-        } else {
-            Log::info('Path Pilot: Drawer disabled - skipping UI scripts but keeping tracking active');
-        }
+        wp_localize_script(
+            'path-pilot-interactivity',
+            'PathPilotStatus',
+            [
+                'ready' => $ready,
+                'dev_mode' => $dev_mode,
+                'insights_only' => $insights_only,
+                'show_drawer' => $show_drawer,
+                'cta_text' => $cta_text,
+                'recommend_label' => $recommend_label,
+                'chat_label' => $chat_label,
+                'is_pro' =>Path_Pilot::is_pro(),
+                'has_valid_api_key' => $has_valid_api_key,
+                'chat_enabled' => $chat_enabled,
+                'icon_css_url' => plugins_url('assets/css/path-pilot-icons.css', $main_plugin_file),
+                'nonce' => wp_create_nonce('wp_rest'),
+            ]
+        );
     }
 
     // Get most common page 2 hops before goal page (for basic recommendations)
