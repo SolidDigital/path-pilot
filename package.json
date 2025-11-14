@@ -1,0 +1,23 @@
+{
+  "name": "path-pilot",
+  "version": "1.0.0",
+  "description": "=== Path Pilot ===\r Requires at least: 6.0\r Tested up to: 6.8.3\r Requires PHP: 7.4\r Stable tag: 1.1.0\r License: GPLv2 or later\r License URI: https://www.gnu.org/licenses/gpl-2.0.html\r Tags: analytics, conversion optimization, cro, user engagement, ai",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build:pp": "rollup -c"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@fullhuman/postcss-purgecss": "^7.0.2",
+    "@rollup/plugin-commonjs": "^29.0.0",
+    "@rollup/plugin-node-resolve": "^16.0.3",
+    "@rollup/plugin-terser": "^0.4.4",
+    "cssnano": "^7.1.2",
+    "postcss": "^8.5.6",
+    "rollup": "^4.53.2",
+    "rollup-plugin-postcss": "^4.0.2"
+  }
+}

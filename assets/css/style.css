@@ -495,7 +495,7 @@ body .pp-drawer a:not(.pp-footer-link):active {
 }
 .pp-sidebar-brand {
   width: 48px;
-  height: 48px;
+  height: 34px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -573,7 +573,9 @@ body .pp-drawer a:not(.pp-footer-link):active {
   color: #fff;
   padding: 12px 20px 0 20px;
   height: 100vh;
-  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  overflow-y: hidden; /* outer panel never scrolls; inner sections handle their own scroll */
   position: relative; /* anchor panel close button */
   /* Start slightly hidden and slid under the rail */
   opacity: 0;
@@ -587,6 +589,28 @@ body .pp-drawer a:not(.pp-footer-link):active {
   opacity: 1;
   transform: translateX(0);
   pointer-events: auto;
+}
+
+/* Generic tab root takes remaining height inside panel */
+.pp-tab-root {
+  flex: 1 1 auto;
+}
+
+/* Recommendations tab: allow its content to scroll internally */
+.pp-tab-root.pp-tab-recommendations {
+  overflow-y: auto;
+}
+
+/* Layout for Search tab (chat): keep separator above and chat block pinned
+   towards the bottom while chat history scrolls inside its own container */
+.pp-tab-root.pp-tab-search {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+.pp-tab-root.pp-tab-search .pp-drawer-chat {
+  margin-top: auto;
+  margin-bottom: 16px;
 }
 
 /* Panel close button (top-right) */

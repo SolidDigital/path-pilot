@@ -211,18 +211,16 @@
     recSection.appendChild(recList);
     panel.appendChild(recSection);
 
-    // Page summary (placeholder for now)
+    // Page summary tab root (content managed by its controller / plugin)
     const summarySection = document.createElement('div');
     summarySection.className = 'pp-tab-root pp-tab-summary';
     summarySection.style.display = 'none';
-    summarySection.innerHTML = '<div style="color:#aaa;font-size:0.9rem;">Page summary coming soon.</div>';
     panel.appendChild(summarySection);
 
-    // Search (placeholder for now)
+    // Search tab root (Pro chat plugs into this container)
     const searchSection = document.createElement('div');
     searchSection.className = 'pp-tab-root pp-tab-search';
     searchSection.style.display = 'none';
-    searchSection.innerHTML = '<div style="color:#aaa;font-size:0.9rem;">Search coming soon.</div>';
     panel.appendChild(searchSection);
 
     // Map sections by tab id for pluggable use
@@ -395,6 +393,22 @@
 
     function collapseSidebar() {
       if (!isExpanded) return;
+
+      // If focus is inside the sidebar (e.g., on the close button),
+      // move focus out before hiding it from assistive tech.
+      try {
+        const activeEl = document.activeElement;
+        if (activeEl && sidebar.contains(activeEl)) {
+          // Prefer focusing the brand button; fall back to body.
+          const fallbackTarget = sidebar.querySelector('.pp-sidebar-brand') || document.body;
+          if (fallbackTarget && typeof fallbackTarget.focus === 'function') {
+            fallbackTarget.focus();
+          }
+        }
+      } catch (e) {
+        // Ignore focus errors
+      }
+
       isExpanded = false;
       sidebar.classList.remove('expanded');
       sidebar.classList.add('collapsed');
@@ -412,7 +426,9 @@
           tab.button.classList.toggle('is-active', isActive);
         }
         if (tab.section) {
-          tab.section.style.display = isActive ? 'block' : 'none';
+          // For active tabs, rely on CSS-defined display (flex/block).
+          // For inactive tabs, hide via inline style.
+          tab.section.style.display = isActive ? '' : 'none';
         }
       });
       const tabMeta = tabs.find(t => t.id === tabId);

@@ -454,13 +454,26 @@ class Path_Pilot_Shared {
         $recommend_label = get_option('path_pilot_recommend_label', 'Recommended for you:');
         $chat_label = get_option('path_pilot_chat_label', 'Path Pilot');
 
-        // Get the main plugin file path
-        $main_plugin_file = dirname(dirname(dirname(__FILE__))) . '/path-pilot-pro.php';
+        // Get the main plugin file path (free plugin)
+        $main_plugin_file = dirname(dirname(dirname(__FILE__))) . '/path-pilot.php';
 
-        // Enqueue CSS
+        // Decide whether to use dev (unbundled) assets or bundled dist assets.
+        // When dev mode is enabled, we load the original index.js + style.css
+        // for easier debugging. Otherwise, we load the optimized pp.js / pp.css
+        // from assets/dist.
+        $use_dev_assets = $dev_mode;
+
+        if ($use_dev_assets) {
+            // Dev: use original stylesheet
+            $styles_url = plugins_url('assets/css/style.css', $main_plugin_file);
+        } else {
+            // Prod: use bundled CSS (pp.css) from assets/dist
+            $styles_url = plugins_url('assets/dist/pp.css', $main_plugin_file);
+        }
+
         wp_enqueue_style(
             self::SLUG . '-styles',
-            plugins_url('assets/css/style.css', $main_plugin_file),
+            $styles_url,
             [],
             PATH_PILOT_VERSION
         );
@@ -490,11 +503,16 @@ class Path_Pilot_Shared {
         );
         Log::info('Path Pilot: wp_localize_script result = ' . ($localize_result ? 'success' : 'failed'));
 
-        // Always enqueue UI/interactivity; the script itself will respect the
-        // insights_only / show_drawer flags and no-op when the drawer is disabled.
-        Log::info('Path Pilot: Enqueuing index.js script...');
-        $script_url = plugins_url('scripts/index.js', $main_plugin_file);
-        Log::info('Path Pilot: Script URL = ' . $script_url);
+        // Enqueue UI/interactivity script. Switch between bundled and dev
+        // assets based on the same $use_dev_assets flag.
+        if ($use_dev_assets) {
+            Log::info('Path Pilot: Enqueuing dev index.js script...');
+            $script_url = plugins_url('scripts/index.js', $main_plugin_file);
+        } else {
+            Log::info('Path Pilot: Enqueuing bundled pp.js script from assets/dist...');
+            $script_url = plugins_url('assets/dist/pp.js', $main_plugin_file);
+        }
+        Log::info('Path Pilot: Interactivity script URL = ' . $script_url);
 
         wp_enqueue_script(
             'path-pilot-interactivity',
