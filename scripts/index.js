@@ -26,11 +26,18 @@
             '<line x1="15" y1="15" x2="20" y2="20" stroke="currentColor" stroke-width="2" stroke-linecap="round" />' +
           '</svg>'
         );
-      case 'dockRight': // drawer closer
+      case 'dockRight': // drawer closer (desktop)
         return (
           '<svg class="pp-icon" viewBox="0 0 24 24" aria-hidden="true">' +
             '<rect x="4" y="5" width="16" height="14" rx="1.5" ry="1.5" fill="none" stroke="currentColor" stroke-width="2" />' +
             '<rect x="13" y="5" width="7" height="14" fill="currentColor" />' +
+          '</svg>'
+        );
+      case 'close': // mobile close icon
+        return (
+          '<svg class="pp-icon" viewBox="0 0 24 24" aria-hidden="true">' +
+            '<line x1="6" y1="6" x2="18" y2="18" stroke="currentColor" stroke-width="2" stroke-linecap="round" />' +
+            '<line x1="18" y1="6" x2="6" y2="18" stroke="currentColor" stroke-width="2" stroke-linecap="round" />' +
           '</svg>'
         );
       default:
@@ -98,6 +105,17 @@
     }
 
     // --- Sidebar state ---
+    function isMobileViewport() {
+      if (typeof window === 'undefined') return false;
+      if (window.matchMedia) {
+        try {
+          return window.matchMedia('(max-width: 900px)').matches;
+        } catch (e) {
+          // fall through
+        }
+      }
+      return window.innerWidth <= 900;
+    }
     let isExpanded = false;
     let activeTabId = null;
     const DRAWER_STORAGE_KEY = 'path_pilot_drawer_state';
@@ -115,6 +133,12 @@
     function persistDrawerState() {
       try {
         if (!window.localStorage) return;
+        // On mobile, do not persist open state so the panel always
+        // starts collapsed on each page load.
+        if (isMobileViewport()) {
+          localStorage.removeItem(DRAWER_STORAGE_KEY);
+          return;
+        }
         const state = {
           open: isExpanded,
           tab: activeTabId || null
@@ -126,22 +150,33 @@
     }
 
     // --- Tab configuration (pluggable) ---
+    // Free version should only expose the Site Navigation tab.
+    // Pro adds Page Summary and Search (chat) tabs.
+    const hasProFeatures =
+      !!(window.PathPilotPro) ||
+      !!(window.PathPilotStatus && (window.PathPilotStatus.has_pro || window.PathPilotStatus.is_pro));
+
     const TAB_DEFS = [
       {
         id: 'recommendations',
         label: 'Site navigation',
         icon: 'compass',
       },
-      {
-        id: 'summary',
-        label: 'Page summary',
-        icon: 'info',
-      },
-      {
-        id: 'search',
-        label: 'Search',
-        icon: 'search',
-      },
+      // Conditionally include Pro-only tabs
+      ...(hasProFeatures
+        ? [
+            {
+              id: 'summary',
+              label: 'Page summary',
+              icon: 'info',
+            },
+            {
+              id: 'search',
+              label: 'Search',
+              icon: 'search',
+            },
+          ]
+        : []),
     ];
 
     // --- Sidebar Container (always visible on the left) ---
@@ -193,7 +228,8 @@
     panelClose.type = 'button';
     panelClose.className = 'pp-panel-close';
     panelClose.setAttribute('aria-label', 'Close Path Pilot panel');
-    panelClose.innerHTML = ppIcon('dockRight');
+    // Desktop uses dockRight icon; mobile uses X/close icon
+    panelClose.innerHTML = isMobileViewport() ? ppIcon('close') : ppIcon('dockRight');
     panel.appendChild(panelClose);
 
     // Panel header title (changes with active tab)
@@ -447,7 +483,8 @@
         renderRecommendations([]);
       });
     }
-    // Default view shows recs when panel first expands
+    // Default view: start loading recommendations as soon as Path Pilot initializes
+    fetchRecommendations();
 
     // --- Summary tab logic ---
     let summaryLoaded = false;
@@ -584,11 +621,6 @@
       sidebar.classList.add('expanded');
       sidebar.setAttribute('aria-hidden', 'false');
       document.body.classList.add('pp-sidebar-open');
-      // Load data on first open
-      if (!panel.dataset.loaded) {
-        fetchRecommendations();
-        panel.dataset.loaded = '1';
-      }
       persistDrawerState();
     }
 
@@ -616,6 +648,15 @@
       sidebar.setAttribute('aria-hidden', 'true');
       document.body.classList.remove('pp-sidebar-open');
       activeTabId = null;
+      // Clear active visuals and hide tab sections when collapsed
+      tabs.forEach(tab => {
+        if (tab.button) {
+          tab.button.classList.remove('is-active');
+        }
+        if (tab.section) {
+          tab.section.style.display = 'none';
+        }
+      });
       persistDrawerState();
     }
 
@@ -674,8 +715,8 @@
       }
     });
 
-    // --- Restore persisted state on load ---
-    const savedState = loadDrawerState();
+    // --- Restore persisted state on load (desktop only) ---
+    const savedState = isMobileViewport() ? null : loadDrawerState();
     if (savedState && savedState.open) {
       const fallbackId = tabs.length ? tabs[0].id : null;
       const tabId = savedState.tab && tabs.some(t => t.id === savedState.tab)
