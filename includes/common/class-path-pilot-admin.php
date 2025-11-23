@@ -471,6 +471,12 @@ class Path_Pilot_Admin {
         update_option('path_pilot_cta_text', sanitize_text_field($_POST['path_pilot_cta_text'] ?? 'Need a hand?'));
         update_option('path_pilot_recommend_label', sanitize_text_field($_POST['path_pilot_recommend_label'] ?? 'Recommended for you:'));
 
+        // Save ignored user roles
+        $ignored_user_roles = isset($_POST['path_pilot_ignored_user_roles']) && is_array($_POST['path_pilot_ignored_user_roles'])
+            ? array_map('sanitize_text_field', $_POST['path_pilot_ignored_user_roles'])
+            : [];
+        update_option('path_pilot_ignored_user_roles', $ignored_user_roles);
+
         // Handle API key separately: only update if a non-empty value is provided in the POST data
         $new_api_key = sanitize_text_field($_POST['path_pilot_api_key'] ?? '');
         if (!empty($new_api_key)) {
@@ -478,6 +484,7 @@ class Path_Pilot_Admin {
         }
         // Save minimum hops
         $min_hops = isset($_POST['path_pilot_min_hops']) ? max(1, min(10, absint($_POST['path_pilot_min_hops']))) : 3;
+        update_option('path_pilot_min_hops', $min_hops);
 
         // Handle the toggle switch - we get "1" when checked, nothing when unchecked
         $insights_only = isset($_POST['path_pilot_insights_only']) && $_POST['path_pilot_insights_only'] === '1';
@@ -491,10 +498,11 @@ class Path_Pilot_Admin {
             : [];
 
         // Use the helper function which includes validation and logging
-                    $saved_content_types = Path_Pilot_Shared::set_allowed_content_types($submitted_content_types);
+        $saved_content_types = Path_Pilot_Shared::set_allowed_content_types($submitted_content_types);
 
         // Log what was saved for debugging
         Log::info('Path Pilot Settings: Saved content types - submitted: [' . implode(', ', $submitted_content_types) . '], final: [' . implode(', ', $saved_content_types) . ']');
+        Log::info('Path Pilot Settings: Saved ignored roles: [' . implode(', ', $ignored_user_roles) . ']');
 
         // Always redirect after processing forms to avoid resubmission on refresh
         $redirect_url = add_query_arg([
