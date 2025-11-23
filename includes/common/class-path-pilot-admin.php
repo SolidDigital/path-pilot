@@ -477,11 +477,6 @@ class Path_Pilot_Admin {
             : [];
         update_option('path_pilot_ignored_user_roles', $ignored_user_roles);
 
-        // Handle API key separately: only update if a non-empty value is provided in the POST data
-        $new_api_key = sanitize_text_field($_POST['path_pilot_api_key'] ?? '');
-        if (!empty($new_api_key)) {
-            update_option('path_pilot_api_key', $new_api_key);
-        }
         // Save minimum hops
         $min_hops = isset($_POST['path_pilot_min_hops']) ? max(1, min(10, absint($_POST['path_pilot_min_hops']))) : 3;
         update_option('path_pilot_min_hops', $min_hops);
@@ -503,6 +498,9 @@ class Path_Pilot_Admin {
         // Log what was saved for debugging
         Log::info('Path Pilot Settings: Saved content types - submitted: [' . implode(', ', $submitted_content_types) . '], final: [' . implode(', ', $saved_content_types) . ']');
         Log::info('Path Pilot Settings: Saved ignored roles: [' . implode(', ', $ignored_user_roles) . ']');
+
+        // Allow Pro plugin to save its settings
+        do_action('path_pilot_save_extra_settings', $_POST);
 
         // Always redirect after processing forms to avoid resubmission on refresh
         $redirect_url = add_query_arg([
