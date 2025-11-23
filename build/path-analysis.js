@@ -567,15 +567,23 @@ const PathAnalysis = () => {
       }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("p", {
         children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("strong", {
           children: "Path"
-        }), " = The path taken to Lorem Ipsum is simply dummy text of the printing and typesetting industry."]
+        }), " = The pages visited in the order visited by the user before conversion."]
       }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("p", {
         children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("strong", {
           children: "Path Steps"
-        }), " = The path taken to Lorem Ipsum is simply dummy text of the printing and typesetting industry."]
+        }), " = The number of pages visited before the conversion."]
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("p", {
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("strong", {
+          children: "Count"
+        }), " = The number of users that have taken this path over the last 30 days for the free version and across all time for the ", /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("a", {
+          target: "_blank",
+          href: "https://pathpilot.app/pro/",
+          children: "premium version"
+        }), "."]
       }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("p", {
         children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("strong", {
           children: "Path Last Taken"
-        }), " = The path taken to Lorem Ipsum is simply dummy text of the printing and typesetting industry."]
+        }), " = The last time the path was taken by a user either within 30 days for the free version or across all time for the premium version."]
       })]
     })]
   });

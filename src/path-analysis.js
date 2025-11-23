@@ -285,9 +285,10 @@ const PathAnalysis = () => {
 
             <div className="pp-clarification">
                 <h3>Need clarification?</h3>
-                <p><strong>Path</strong> = The path taken to Lorem Ipsum is simply dummy text of the printing and typesetting industry.</p>
-                <p><strong>Path Steps</strong> = The path taken to Lorem Ipsum is simply dummy text of the printing and typesetting industry.</p>
-                <p><strong>Path Last Taken</strong> = The path taken to Lorem Ipsum is simply dummy text of the printing and typesetting industry.</p>
+                <p><strong>Path</strong> = The pages visited in the order visited by the user before conversion.</p>
+                <p><strong>Path Steps</strong> = The number of pages visited before the conversion.</p>
+                <p><strong>Count</strong> = The number of users that have taken this path over the last 30 days for the free version and across all time for the <a target='_blank' href='https://pathpilot.app/pro/'>premium version</a>.</p>
+                <p><strong>Path Last Taken</strong> = The last time the path was taken by a user either within 30 days for the free version or across all time for the premium version.</p>
             </div>
         </div>
     );

@@ -17,6 +17,11 @@ $all_post_types = get_post_types(['public' => true], 'objects');
 // Remove attachment and nav_menu_item as they're not suitable for recommendations
 unset($all_post_types['attachment']);
 unset($all_post_types['nav_menu_item']);
+
+// Get user roles
+global $wp_roles;
+$all_roles = $wp_roles->get_names();
+$ignored_roles = get_option('path_pilot_ignored_user_roles', ['administrator']);
 ?>
 
 <div class="pp-home-section pp-margin-bottom pp-content-types-section">
@@ -62,6 +67,40 @@ unset($all_post_types['nav_menu_item']);
         </div>
         <div style="margin-top: 14px; padding: 8px 12px; background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 4px; font-size: 0.9rem; color: #856404;">
             <strong>Note:</strong> At least one content type must be selected. Changes will affect future recommendations and AI responses.
+        </div>
+    </div>
+</div>
+
+<div class="pp-home-section pp-margin-bottom pp-ignored-roles-section">
+    <h3 class="pp-section-heading"><i class="emoji-no-entry icon-pilot-icon"></i> Ignored User Roles</h3>
+    <div class="pp-home-protip">
+        <i class="icon-pilot-icon"></i>
+        <strong>Pro Tip:</strong> Select user roles that should be excluded from tracking. This is useful for filtering out activity from admins, editors, or other internal users.
+    </div>
+    <div class="pp-content-types-container" style="margin-top: 18px; background: #fff; border: 1px solid #e5e5e5; border-radius: 10px; box-shadow: 0 1px 4px rgba(0,0,0,0.03); padding: 18px 20px; max-width: 600px;">
+        <div style="margin-bottom: 12px; color: #666; font-size: 0.95rem;">
+            Choose user roles to exclude from tracking:
+        </div>
+        <div class="pp-content-types-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px;">
+            <?php foreach ($all_roles as $role_slug => $role_name): ?>
+                <?php
+                $is_checked = in_array($role_slug, $ignored_roles);
+                ?>
+                <div class="pp-content-type-item" style="background: #f9f9f9; padding: 12px 14px; border-radius: 6px; border: 2px solid <?php echo $is_checked ? '#1976d2' : '#e0e0e0'; ?>;">
+                    <label style="display: flex; align-items: flex-start; gap: 10px; cursor: pointer; font-weight: 500;">
+                        <input type="checkbox"
+                               name="path_pilot_ignored_user_roles[]"
+                               value="<?php echo esc_attr($role_slug); ?>"
+                               <?php checked($is_checked); ?>
+                               style="margin-top: 2px;">
+                        <div>
+                            <div style="font-size: 1rem; margin-bottom: 2px;">
+                                <?php echo esc_html($role_name); ?>
+                            </div>
+                        </div>
+                    </label>
+                </div>
+            <?php endforeach; ?>
         </div>
     </div>
 </div>
