@@ -278,8 +278,9 @@ const PathAnalysis = () => {
     };
     const renderArrow = key => {
       return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("span", {
-        className: "dashicons dashicons-arrow-right-alt",
+        className: "dashicons dashicons-arrow-right-alt2",
         style: {
+          fontSize: '22px',
           margin: '0 2px',
           color: '#9ca3af',
           opacity: 0.5
@@ -288,11 +289,22 @@ const PathAnalysis = () => {
     };
     const renderEllipsis = key => {
       return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("span", {
-        className: "dashicons dashicons-ellipsis",
         style: {
-          margin: '0 2px',
-          color: '#9ca3af'
-        }
+          display: 'inline-flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          backgroundColor: '#f0f0f0',
+          borderRadius: '4px',
+          padding: '2px 6px 0',
+          margin: '0 2px'
+        },
+        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("span", {
+          className: "dashicons dashicons-ellipsis",
+          style: {
+            color: '#9ca3af',
+            fontSize: '16px'
+          }
+        })
       }, key);
     };
     if (path.length >= 8) {
