@@ -215,7 +215,7 @@ const PathAnalysis = () => {
                         {site_url.replace(/https?:\/\//, '')}&nbsp;&nbsp;&nbsp;Showing paths for the last&nbsp;<strong>30 days</strong>
                     </p>
                 </div>
-                <Button isPrimary style={{background: '#DAE7E5', fontSize: "0.9rem", border: 'none', borderRadius: '8px', padding: '12px 12px 12px 12px'}}>
+                <Button isPrimary style={{background: 'none', fontSize: "0.9rem", border: 'none', borderRadius: '8px', padding: '12px 12px 12px 12px'}}>
                     <img src={plugin_url + 'assets/images/icons/path-pilot-disc-icon.svg'} alt="Goal Paths Icon" style={{marginRight: '5px', width: '16px', height: '16px', verticalAlign: 'text-bottom'}} />
                     &nbsp;{totalPaths} Goal Paths
                 </Button>
