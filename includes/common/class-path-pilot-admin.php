@@ -502,14 +502,15 @@ class Path_Pilot_Admin {
         Log::info('Path Pilot Settings: Saved content types - submitted: [' . implode(', ', $submitted_content_types) . '], final: [' . implode(', ', $saved_content_types) . ']');
         Log::info('Path Pilot Settings: Saved ignored roles: [' . implode(', ', $ignored_user_roles) . ']');
 
-        // Allow Pro plugin to save its settings
-        do_action('path_pilot_save_extra_settings', $_POST);
+        // Allow Pro plugin to save its settings and alter the redirect
+        $redirect_args = [
+            'page'    => 'path-pilot-settings',
+            'updated' => 'true',
+        ];
+        $redirect_args = apply_filters('path_pilot_alter_save_redirect_args', $redirect_args, $_POST);
 
         // Always redirect after processing forms to avoid resubmission on refresh
-        $redirect_url = add_query_arg([
-            'page' => 'path-pilot-settings',
-            'updated' => 'true',
-        ], admin_url('admin.php'));
+        $redirect_url = add_query_arg($redirect_args, admin_url('admin.php'));
 
         wp_safe_redirect($redirect_url);
         exit;
