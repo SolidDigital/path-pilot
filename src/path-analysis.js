@@ -101,20 +101,18 @@ const PathAnalysis = () => {
             const iconUrl = step.is_home ? `${plugin_url}assets/images/icons/house.svg` : `${plugin_url}assets/images/icons/web-page.svg`;
             if (isLast) {
                 return (
-                    <a href={step.permalink} target="_blank" key={key} style={{textDecoration: 'none'}}
+                    <a key={key} style={{textDecoration: 'none'}}
                        onMouseEnter={(e) => handleMouseEnter(e, step)}
                        onMouseLeave={handleMouseLeave}
-                       onClick={(e) => e.stopPropagation()}
                     >
                         {step.permalink.length > maxPermalinkLength ? step.permalink.substring(0, maxPermalinkLength) + '...' : step.permalink}
                     </a>
                 );
             }
             return (
-                <a href={step.permalink} target="_blank" key={key} style={{textDecoration: 'none'}}
+                <a key={key} style={{textDecoration: 'none'}}
                    onMouseEnter={(e) => handleMouseEnter(e, step)}
                    onMouseLeave={handleMouseLeave}
-                   onClick={(e) => e.stopPropagation()}
                 >
                     <img src={iconUrl} style={{margin: '0 2px', width: '14px', height: '14px', verticalAlign: 'text-bottom'}} />
                 </a>
@@ -248,7 +246,13 @@ const PathAnalysis = () => {
                                         <ol style={{margin: '10px 0 10px 20px'}}>
                                             {row.path.map((step, stepIndex) => (
                                                 <li key={stepIndex} style={{marginBottom: '5px'}}>
-                                                    &nbsp;&nbsp;&nbsp;<a href={step.permalink} target="_blank">
+                                                    &nbsp;&nbsp;&nbsp;<a
+                                                        href={step.permalink}
+                                                        target="_blank"
+                                                        onMouseEnter={(e) => handleMouseEnter(e, step)}
+                                                        onMouseLeave={handleMouseLeave}
+                                                        onClick={(e) => e.stopPropagation()}
+                                                    >
                                                         {step.permalink.replace(site_url, '')}
                                                     </a>
                                                 </li>

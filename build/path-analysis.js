@@ -245,26 +245,20 @@ const PathAnalysis = () => {
       const iconUrl = step.is_home ? `${plugin_url}assets/images/icons/house.svg` : `${plugin_url}assets/images/icons/web-page.svg`;
       if (isLast) {
         return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("a", {
-          href: step.permalink,
-          target: "_blank",
           style: {
             textDecoration: 'none'
           },
           onMouseEnter: e => handleMouseEnter(e, step),
           onMouseLeave: handleMouseLeave,
-          onClick: e => e.stopPropagation(),
           children: step.permalink.length > maxPermalinkLength ? step.permalink.substring(0, maxPermalinkLength) + '...' : step.permalink
         }, key);
       }
       return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("a", {
-        href: step.permalink,
-        target: "_blank",
         style: {
           textDecoration: 'none'
         },
         onMouseEnter: e => handleMouseEnter(e, step),
         onMouseLeave: handleMouseLeave,
-        onClick: e => e.stopPropagation(),
         children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("img", {
           src: iconUrl,
           style: {
@@ -490,6 +484,9 @@ const PathAnalysis = () => {
                     children: ["\xA0\xA0\xA0", /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("a", {
                       href: step.permalink,
                       target: "_blank",
+                      onMouseEnter: e => handleMouseEnter(e, step),
+                      onMouseLeave: handleMouseLeave,
+                      onClick: e => e.stopPropagation(),
                       children: step.permalink.replace(site_url, '')
                     })]
                   }, stepIndex))
