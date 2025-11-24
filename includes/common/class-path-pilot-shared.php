@@ -7,6 +7,7 @@ if (!defined('ABSPATH')) exit;
 
 // Register the action to enqueue icon font on the frontend
 add_action('wp_enqueue_scripts', [__NAMESPACE__ . '\\Path_Pilot_Shared', 'enqueue_icon_font_frontend']);
+add_filter('path_pilot_should_track_user', [__NAMESPACE__ . '\\Path_Pilot_Shared', 'filter_should_track_user_by_role']);
 
 class Path_Pilot_Shared {
     // --- Constants ---
@@ -164,6 +165,10 @@ class Path_Pilot_Shared {
 	public static function handle_event( $request ) {
 		global $wpdb;
 
+        if (!apply_filters('path_pilot_should_track_user', true)) {
+            return new \WP_REST_Response(['success' => true, 'message' => 'User role excluded from tracking.'], 200);
+        }
+
 		// Start PHP session if not already started
 		if (session_status() === PHP_SESSION_NONE) {
 			session_start();
@@ -318,6 +323,11 @@ class Path_Pilot_Shared {
 
     public static function handle_rec_click($request) {
         global $wpdb;
+
+        if (!apply_filters('path_pilot_should_track_user', true)) {
+            return new \WP_REST_Response(['ok' => true, 'message' => 'User role excluded from tracking.'], 200);
+        }
+
         $params = $request->get_json_params();
         $session_id = sanitize_text_field($params['session_id'] ?? self::get_session_id());
         $page_id = intval($params['page_id'] ?? 0);
@@ -468,7 +478,7 @@ class Path_Pilot_Shared {
         // Always enqueue tracking script
         wp_enqueue_script(
             self::SLUG . '-tracking',
-            plugins_url('scripts/tracking.js', $main_plugin_file),
+            plugins_url('assets/scripts/tracking.js', $main_plugin_file),
             [],
             PATH_PILOT_VERSION,
             false // Load in header instead of footer
@@ -494,7 +504,7 @@ class Path_Pilot_Shared {
         // If drawer is disabled, we skip the UI but keep tracking active
         if ($show_drawer) {
             Log::info('Path Pilot: Enqueuing index.js script...');
-            $script_url = plugins_url('scripts/index.js', $main_plugin_file);
+            $script_url = plugins_url('assets/scripts/index.js', $main_plugin_file);
             Log::info('Path Pilot: Script URL = ' . $script_url);
 
             wp_enqueue_script(
@@ -603,6 +613,11 @@ class Path_Pilot_Shared {
      */
     public static function track_goal_completion($session_id) {
         global $wpdb;
+
+        if (!apply_filters('path_pilot_should_track_user', true)) {
+            return false;
+        }
+
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
@@ -731,6 +746,9 @@ class Path_Pilot_Shared {
      */
     public static function track_event($session_id, $event_type, $page_id = null, $extra = []) {
         global $wpdb;
+        if (!apply_filters('path_pilot_should_track_user', true)) {
+            return;
+        }
         $row = array_merge([
             'session_id' => $session_id,
             'event_type' => $event_type,
@@ -761,5 +779,25 @@ class Path_Pilot_Shared {
             wp_safe_redirect(admin_url('admin.php?page=path-pilot-settings'));
             exit;
         }
+    }
+
+    public static function filter_should_track_user_by_role($should_track) {
+        if ($should_track === false) {
+            return false;
+        }
+
+        if (is_user_logged_in()) {
+            $ignored_roles = get_option('path_pilot_ignored_user_roles', ['administrator']);
+            if (!empty($ignored_roles)) {
+                $user = wp_get_current_user();
+                $roles = (array) $user->roles;
+
+                if (array_intersect($roles, $ignored_roles)) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
     }
 }

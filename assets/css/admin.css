@@ -184,11 +184,11 @@ a {
   .container {
     padding: 0 8px;
   }
-  
+
   .row {
     flex-direction: column;
   }
-  
+
   .col-lg-6 {
     max-width: 100%;
     flex: 0 0 100%;
@@ -199,15 +199,15 @@ a {
   .pp-header {
     top: 46px; /* Adjust for the WP admin bar on smaller screens */
   }
-  
+
   .pp-home-flex {
     flex-direction: column;
   }
-  
+
   .pp-home-section {
     width: 100%;
   }
-  
+
   .pp-home-stats {
     flex-direction: column;
   }
@@ -219,7 +219,7 @@ a {
     top: 0;
     flex-wrap: wrap;
   }
-  
+
   .pp-header-actions {
     margin-top: 10px;
     width: 100%;
@@ -369,7 +369,6 @@ body.path-pilot_page_path-pilot-reports #wpfooter {
 /* Path Pilot Admin Styles */
 
 .pp-admin-wrap {
-  background: #fff;
   margin-left: -20px;
   margin-right: 0;
   padding: 0;
@@ -706,16 +705,16 @@ body.folded .pp-admin-wrap {
   .pp-content .container, .pp-content .row {
     flex-direction: column;
   }
-  
+
   .pp-content .col-lg-6 {
     width: 100%;
   }
-  
+
   .pp-content .pp-header {
     flex-direction: column;
     align-items: flex-start;
   }
-  
+
   .pp-content .pp-header-right {
     margin-top: 15px;
     width: 100%;
@@ -727,15 +726,15 @@ body.folded .pp-admin-wrap {
   .pp-content .pp-home-flex {
     flex-direction: column;
   }
-  
+
   .pp-content .pp-home-section {
     width: 100%;
   }
-  
+
   .pp-content .pp-header {
     padding: 15px;
   }
-  
+
   .pp-content .pp-header-actions {
     flex-direction: column;
     align-items: flex-start;
@@ -852,7 +851,7 @@ body.folded .pp-admin-wrap {
 }
 
 .pp-content .pp-temp-warmer {
-  color: #ff4800; 
+  color: #ff4800;
 }
 
 .pp-content .pp-temp-warmer .pp-temp-indicator-bar {
@@ -1307,6 +1306,50 @@ body.folded .pp-admin-wrap {
 .pp-goal-pages-selected-box .pp-goal-selected-list li span {
   font-size: 0.8rem !important;
 }
+
+.pp-content .wp-list-table {
+    border-radius: 8px;
+    overflow: hidden; /* Ensures rounded corners are visible */
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    border-color: #FFF;
+    padding: 2rem;
+}
+
+.wp-list-table tbody {
+    background-color: #fff;
+}
+
+.wp-list-table tbody tr:hover {
+    background-color: #f5f5f5; /* A subtle light gray */
+    cursor: pointer; /* Ensure cursor changes on hover */
+}
+
+.pp-clarification {
+    background-color: rgba(210, 210, 210, 0.2);
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    padding: 20px; /* Adding some padding for better visual */
+    margin-top: 20px; /* Adding some top margin */
+}
+
+.path-pilot-expanded-row ol {
+    counter-reset: item;
+    margin-left: 0;
+    padding-left: 0;
+}
+.path-pilot-expanded-row li {
+    display: block;
+    margin-bottom: .5em;
+    margin-left: 2em;
+}
+.path-pilot-expanded-row li::before {
+    display: inline-block;
+    content: counter(item) " ";
+    counter-increment: item;
+    width: 2em;
+    margin-left: -2.8em;
+}
+
 
 /* Loading Spinner Animation */
 @keyframes spin {

@@ -7,6 +7,9 @@ if (!defined('ABSPATH')) exit;
 class Path_Pilot_Admin {
 
     public function __construct() {
+        add_action('path_pilot_render_settings_save_overlay', [__NAMESPACE__ . '\\Path_Pilot_Common_UI', 'render_save_overlay']);
+        add_action('path_pilot_render_common_settings', [__NAMESPACE__ . '\\Path_Pilot_Common_UI', 'render_common_settings']);
+
         add_action('admin_enqueue_scripts', [$this, 'enqueue_admin_css']);
         add_action('admin_enqueue_scripts', [$this, 'enqueue_admin_js']);
         add_action('admin_enqueue_scripts', [$this, 'enqueue_icon_font']);
@@ -53,11 +56,6 @@ class Path_Pilot_Admin {
      */
     public function admin_menu() {
         error_log('Path Pilot Admin: admin_menu called.');
-        // If Pro version is active, this free plugin should not register any menu pages
-        if (Path_Pilot::is_pro()) {
-            error_log('Path Pilot Admin: Pro is active, exiting admin_menu early.');
-            return;
-        }
 
         // Use a CSS class for the icon instead of SVG
         $menu_icon = 'dashicons-admin-site'; // Temporarily use dashicons until our font is ready
@@ -83,6 +81,15 @@ class Path_Pilot_Admin {
             array($this, 'render_admin_page')        // Callback
         );
 
+        add_submenu_page(
+            'path-pilot',
+            'Path Pilot Path Analysis',
+            'Path Analysis',
+            'manage_options',
+            'path-pilot-path-analysis',
+            array($this, 'render_path_analysis_page')
+        );
+
         // Create the analytics page regardless of whether tables exist
         // We'll show appropriate messages inside the page
         add_submenu_page(
@@ -94,17 +101,18 @@ class Path_Pilot_Admin {
             array($this, 'render_analytics_page')
         );
 
-        add_submenu_page(
-            'path-pilot',                            // Parent slug
-            'Path Pilot Settings',                   // Page title
-            'Settings',                              // Menu title
-            'manage_options',                        // Capability
-            'path-pilot-settings',                   // Menu slug
-            array($this, 'render_settings_page')     // Callback
-        );
 
         // Add the upgrade link as a submenu item
         if (!Path_Pilot::is_pro()) {
+            add_submenu_page(
+                'path-pilot',                            // Parent slug
+                'Path Pilot Settings',                   // Page title
+                'Settings',                              // Menu title
+                'manage_options',                        // Capability
+                'path-pilot-settings',                   // Menu slug
+                array($this, 'render_settings_page')     // Callback
+            );
+
             add_submenu_page(
                 'path-pilot',
                 'Upgrade to Pro',
@@ -378,14 +386,14 @@ class Path_Pilot_Admin {
     public function enqueue_admin_css($hook) {
         wp_register_style(
             'path-pilot-admin-style',
-            plugins_url('../admin/admin.css', dirname(__FILE__)),
+            plugins_url('../assets/css/admin.css', dirname(__FILE__)),
             [],
             PATH_PILOT_VERSION
         );
 
         wp_register_style(
             'path-pilot-menu-style',
-            plugins_url('../admin/menu.css', dirname(__FILE__)),
+            plugins_url('../assets/css/menu.css', dirname(__FILE__)),
             [],
             PATH_PILOT_VERSION
         );
@@ -405,9 +413,43 @@ class Path_Pilot_Admin {
     public function enqueue_admin_js($hook) {
         // Only load on Path Pilot admin pages
         if ($this->is_path_pilot_screen()) {
-            wp_enqueue_script('chart-js', plugins_url('../admin/chart.js', dirname(__FILE__)), [], '4.5.0', true);
-            wp_enqueue_script('path-pilot-chart-loader', plugins_url('../admin/chart-loader.js', dirname(__FILE__)), ['chart-js'], PATH_PILOT_VERSION, true);
-            wp_enqueue_script('path-pilot-settings', plugins_url('../admin/settings.js', dirname(__FILE__)), [], PATH_PILOT_VERSION, true);
+            wp_enqueue_script('chart-js', plugins_url('../assets/scripts/chart.js', dirname(__FILE__)), [], '4.5.0', true);
+            wp_enqueue_script('path-pilot-chart-loader', plugins_url('../assets/scripts/chart-loader.js', dirname(__FILE__)), ['chart-js'], PATH_PILOT_VERSION, true);
+            wp_enqueue_script('path-pilot-settings', plugins_url('../assets/scripts/settings.js', dirname(__FILE__)), [], PATH_PILOT_VERSION, true);
+
+            if ('path-pilot_page_path-pilot-path-analysis' === $hook) {
+                $asset_path = plugin_dir_path(dirname(dirname(__FILE__))) . 'build//path-analysis.asset.php';
+                $dependencies = ['wp-element', 'wp-components', 'wp-i18n'];
+                $version = PATH_PILOT_VERSION;
+
+                if (file_exists($asset_path)) {
+                    $asset_file = include($asset_path);
+                    $dependencies = array_merge($dependencies, $asset_file['dependencies']);
+                    $version = $asset_file['version'];
+                }
+                error_log(print_r($dependencies, true));
+                wp_enqueue_script('path-pilot-path-analysis', plugins_url('../build/path-analysis.js', dirname(__FILE__)), $dependencies, PATH_PILOT_VERSION, true);
+
+                // Prepare and localize data for the path analysis script
+                $path_data = $this->get_path_analysis_data();
+                wp_localize_script('path-pilot-path-analysis', 'pathPilotPathData', [
+                    'paths' => $path_data['paths'],
+                    'total_paths' => $path_data['total_paths'],
+                    'paged' => $path_data['paged'],
+                    'items_per_page' => $path_data['items_per_page'],
+                    'site_url' => get_site_url(),
+                    'sort_by' => $path_data['sort_by'],
+                    'sort_order' => $path_data['sort_order'],
+                    'plugin_url' => plugin_dir_url(dirname(__DIR__)),
+                    'site_icon_url' => get_site_icon_url(),
+                ]);
+
+                wp_add_inline_style('path-pilot-admin-style', '
+                    .path-pilot-path-analysis .wp-list-table td, .path-pilot-path-analysis .wp-list-table th { border-bottom: 1px solid #e7e7e7; }
+                    .path-pilot-path-analysis .wp-list-table th { background-color: #fff; border-bottom-width: 2px; }
+                    .path-pilot-path-analysis .wp-list-table td { padding: 12px 10px; }
+                ');
+            }
         }
     }
 
@@ -432,17 +474,19 @@ class Path_Pilot_Admin {
         update_option('path_pilot_cta_text', sanitize_text_field($_POST['path_pilot_cta_text'] ?? 'Need a hand?'));
         update_option('path_pilot_recommend_label', sanitize_text_field($_POST['path_pilot_recommend_label'] ?? 'Recommended for you:'));
 
-        // Handle API key separately: only update if a non-empty value is provided in the POST data
-        $new_api_key = sanitize_text_field($_POST['path_pilot_api_key'] ?? '');
-        if (!empty($new_api_key)) {
-            update_option('path_pilot_api_key', $new_api_key);
-        }
+        // Save ignored user roles
+        $ignored_user_roles = isset($_POST['path_pilot_ignored_user_roles']) && is_array($_POST['path_pilot_ignored_user_roles'])
+            ? array_map('sanitize_text_field', $_POST['path_pilot_ignored_user_roles'])
+            : [];
+        update_option('path_pilot_ignored_user_roles', $ignored_user_roles);
+
         // Save minimum hops
         $min_hops = isset($_POST['path_pilot_min_hops']) ? max(1, min(10, absint($_POST['path_pilot_min_hops']))) : 3;
+        update_option('path_pilot_min_hops', $min_hops);
 
         // Handle the toggle switch - we get "1" when checked, nothing when unchecked
         $insights_only = isset($_POST['path_pilot_insights_only']) && $_POST['path_pilot_insights_only'] === '1';
-        
+
         // Save insights_only directly (true = hide drawer, false = show drawer)
         update_option('path_pilot_insights_only', $insights_only);
 
@@ -452,16 +496,21 @@ class Path_Pilot_Admin {
             : [];
 
         // Use the helper function which includes validation and logging
-                    $saved_content_types = Path_Pilot_Shared::set_allowed_content_types($submitted_content_types);
+        $saved_content_types = Path_Pilot_Shared::set_allowed_content_types($submitted_content_types);
 
         // Log what was saved for debugging
         Log::info('Path Pilot Settings: Saved content types - submitted: [' . implode(', ', $submitted_content_types) . '], final: [' . implode(', ', $saved_content_types) . ']');
+        Log::info('Path Pilot Settings: Saved ignored roles: [' . implode(', ', $ignored_user_roles) . ']');
+
+        // Allow Pro plugin to save its settings and alter the redirect
+        $redirect_args = [
+            'page'    => 'path-pilot-settings',
+            'updated' => 'true',
+        ];
+        $redirect_args = apply_filters('path_pilot_alter_save_redirect_args', $redirect_args, $_POST);
 
         // Always redirect after processing forms to avoid resubmission on refresh
-        $redirect_url = add_query_arg([
-            'page' => 'path-pilot-settings',
-            'updated' => 'true',
-        ], admin_url('admin.php'));
+        $redirect_url = add_query_arg($redirect_args, admin_url('admin.php'));
 
         wp_safe_redirect($redirect_url);
         exit;
@@ -704,6 +753,128 @@ class Path_Pilot_Admin {
 
         // Include the footer
         include_once(plugin_dir_path(dirname(__DIR__)) . 'admin/common/footer.php');
+    }
+
+    /**
+     * Render path analysis page
+     */
+    public function render_path_analysis_page() {
+        // Include admin CSS
+        wp_enqueue_style('path-pilot-admin-style');
+
+        // Wrapper with proper CSS classes to match layout
+        echo '<div class="pp-admin-wrap"><div class="pp-content">';
+
+        do_action('path_pilot_show_pro_status_message');
+
+        if (!class_exists('Path_Pilot\\Path_Pilot_Path_Analysis')) {
+            require_once(plugin_dir_path(dirname(__DIR__)) . 'includes/common/class-path-pilot-path-analysis.php');
+        }
+        $path_analysis_page = new \Path_Pilot\Path_Pilot_Path_Analysis();
+        $path_analysis_page->render_page_content();
+
+        echo '</div></div>'; // Close pp-content and pp-admin-wrap
+
+        // Include the footer
+        include_once(plugin_dir_path(dirname(__DIR__)) . 'admin/common/footer.php');
+    }
+
+    public function get_path_analysis_data() {
+        global $wpdb;
+        $default_items_per_page = 20;
+        $table_name = $wpdb->prefix . 'path_pilot_visit_paths';
+
+        // Get pagination parameters
+        $paged = isset($_GET['paged']) ? absint($_GET['paged']) : 1;
+        $items_per_page = isset($_GET['items']) ? absint($_GET['items']) : $default_items_per_page;
+        $offset = ($paged - 1) * $items_per_page;
+
+        // Get sorting parameters
+        $sort_by = isset($_GET['sort_by']) ? sanitize_key($_GET['sort_by']) : 'count';
+        $sort_order = isset($_GET['sort_order']) ? strtoupper(sanitize_key($_GET['sort_order'])) : 'DESC';
+
+        // Validate sort_order
+        if (!in_array($sort_order, ['ASC', 'DESC'])) {
+            $sort_order = 'DESC';
+        }
+
+        // Query to get total number of unique paths
+        $total_paths = $wpdb->get_var("SELECT COUNT(DISTINCT paths) FROM {$table_name}");
+
+        $order_by_clause = 'count DESC';
+        if ($sort_by === 'steps') {
+            $order_by_clause = "JSON_LENGTH(paths) $sort_order";
+        } elseif ($sort_by === 'count') {
+            $order_by_clause = "count $sort_order";
+        } elseif ($sort_by === 'last_taken') {
+            $order_by_clause = "last_taken $sort_order";
+        }
+
+        // Query to get unique paths for the current page
+        $results = $wpdb->get_results($wpdb->prepare("
+            SELECT paths, COUNT(*) as count, MAX(created_at) as last_taken
+            FROM {$table_name}
+            GROUP BY paths
+            ORDER BY $order_by_clause
+            LIMIT %d OFFSET %d
+        ", $items_per_page, $offset));
+
+        $path_data = [];
+        $home_page_id = (int) get_option('page_on_front');
+        foreach ($results as $row) {
+            $path_ids = json_decode($row->paths);
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                continue; // Skip if JSON is invalid
+            }
+
+            $path_details = [];
+            foreach ($path_ids as $post_id) {
+                $post = get_post($post_id);
+                if ($post) {
+                    $post_type_obj = get_post_type_object($post->post_type);
+                    $post_type_name = $post_type_obj ? $post_type_obj->labels->singular_name : $post->post_type;
+
+                    $terms_list = [];
+                    $taxonomies = get_object_taxonomies($post, 'objects');
+                    foreach ($taxonomies as $taxonomy_slug => $taxonomy) {
+                        $terms = get_the_terms($post_id, $taxonomy_slug);
+                        if (!empty($terms) && !is_wp_error($terms)) {
+                            foreach ($terms as $term) {
+                                $terms_list[] = $taxonomy->labels->singular_name . ': ' . $term->name;
+                            }
+                        }
+                    }
+
+                    $path_details[] = [
+                        'id' => $post_id,
+                        'title' => $post->post_title,
+                        'permalink' => str_replace(home_url(), '', get_permalink($post_id)),
+                        'is_home' => $post_id === $home_page_id,
+                        'post_type' => $post_type_name,
+                        'taxonomies' => $terms_list,
+                    ];
+                }
+            }
+
+            $path_data[] = [
+                'path' => $path_details,
+                'count' => $row->count,
+                'steps' => count($path_ids),
+                'last_taken' => human_time_diff(strtotime($row->last_taken), current_time('timestamp')) . ' ago',
+            ];
+        }
+
+        error_log('Path Pilot Debug: Found ' . count($results) . ' path results.');
+        error_log('Path Pilot Debug: Path data: ' . print_r($path_data, true));
+
+        return [
+            'paths' => $path_data,
+            'total_paths' => (int) $total_paths,
+            'paged' => $paged,
+            'items_per_page' => $items_per_page,
+            'sort_by' => $sort_by,
+            'sort_order' => $sort_order,
+        ];
     }
 
     /**

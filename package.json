@@ -1,0 +1,13 @@
+{
+  "name": "path-pilot",
+  "version": "1.0.0",
+  "description": "Path Pilot WordPress Plugin",
+  "private": true,
+  "scripts": {
+    "build": "wp-scripts build src/path-analysis.js --output-path=build",
+    "start": "wp-scripts start src/path-analysis.js --output-path=build"
+  },
+  "devDependencies": {
+    "@wordpress/scripts": "*"
+  }
+}

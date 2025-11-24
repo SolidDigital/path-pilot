@@ -1,5 +1,6 @@
 .claude/settings.local.json
 .idea
+/design
+/logs
 /node_modules
-/build
-
+*.log
