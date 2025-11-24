@@ -69,7 +69,7 @@ const PathAnalysis = () => {
         const icon = (sortOrder.toLowerCase() === 'asc' && isSorted) ? 'dashicons-arrow-up' : 'dashicons-arrow-down';
 
         return (
-            <th scope="col" className="manage-column" onClick={() => handleSort(column)} style={{ cursor: 'pointer' }}>
+            <th scope="col" className="manage-column" onClick={() => handleSort(column)} style={{ cursor: 'pointer', fontWeight: isSorted ? 'bold' : 'normal' }}>
                 {children}
                 <span className={`dashicons ${icon}`} style={{ marginLeft: '5px', color: isSorted ? 'black' : '#9ca3af' }}></span>
             </th>
@@ -236,9 +236,9 @@ const PathAnalysis = () => {
                                 <td>
                                     {renderPathIcons(row.path)}
                                 </td>
-                                <td>{row.steps}</td>
-                                <td>{row.count}</td>
-                                <td><img src={`${plugin_url}assets/images/icons/calendar.svg`} style={{marginRight: '5px', width: '12px', height: '13px', verticalAlign: 'text-bottom'}} />&nbsp;{row.last_taken}</td>
+                                <td style={{ fontWeight: sortBy === 'steps' ? 'bold' : 'normal' }}>{row.steps}</td>
+                                <td style={{ fontWeight: sortBy === 'count' ? 'bold' : 'normal' }}>{row.count}</td>
+                                <td style={{ fontWeight: sortBy === 'last_taken' ? 'bold' : 'normal' }}><img src={`${plugin_url}assets/images/icons/calendar.svg`} style={{marginRight: '5px', width: '12px', height: '13px', verticalAlign: 'text-bottom'}} />&nbsp;{row.last_taken}</td>
                             </tr>
                             {expandedRow === index && (
                                 <tr className="path-pilot-expanded-row">

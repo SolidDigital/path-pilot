@@ -205,7 +205,8 @@ const PathAnalysis = () => {
       className: "manage-column",
       onClick: () => handleSort(column),
       style: {
-        cursor: 'pointer'
+        cursor: 'pointer',
+        fontWeight: isSorted ? 'bold' : 'normal'
       },
       children: [children, /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("span", {
         className: `dashicons ${icon}`,
@@ -455,10 +456,19 @@ const PathAnalysis = () => {
               children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("td", {
                 children: renderPathIcons(row.path)
               }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("td", {
+                style: {
+                  fontWeight: sortBy === 'steps' ? 'bold' : 'normal'
+                },
                 children: row.steps
               }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("td", {
+                style: {
+                  fontWeight: sortBy === 'count' ? 'bold' : 'normal'
+                },
                 children: row.count
               }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("td", {
+                style: {
+                  fontWeight: sortBy === 'last_taken' ? 'bold' : 'normal'
+                },
                 children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("img", {
                   src: `${plugin_url}assets/images/icons/calendar.svg`,
                   style: {
