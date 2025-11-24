@@ -7,6 +7,9 @@ if (!defined('ABSPATH')) exit;
 class Path_Pilot_Admin {
 
     public function __construct() {
+        add_action('path_pilot_render_settings_save_overlay', [__NAMESPACE__ . '\\Path_Pilot_Common_UI', 'render_save_overlay']);
+        add_action('path_pilot_render_common_settings', [__NAMESPACE__ . '\\Path_Pilot_Common_UI', 'render_common_settings']);
+
         add_action('admin_enqueue_scripts', [$this, 'enqueue_admin_css']);
         add_action('admin_enqueue_scripts', [$this, 'enqueue_admin_js']);
         add_action('admin_enqueue_scripts', [$this, 'enqueue_icon_font']);
