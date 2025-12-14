@@ -120,7 +120,7 @@ const PathAnalysis = () => {
         };
 
         const renderArrow = (key) => {
-            return <span key={key} className="dashicons dashicons-arrow-right-alt2" style={{fontSize: '22px', margin: '0 2px', color: '#9ca3af', opacity: 0.5}}></span>;
+            return <span key={key} className="dashicons dashicons-arrow-right-alt2" style={{fontSize: '12px', margin: '2px 2px', color: '#9ca3af', opacity: 0.5}}></span>;
         };
 
         const renderEllipsis = (key) => {

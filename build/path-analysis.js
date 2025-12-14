@@ -275,8 +275,8 @@ const PathAnalysis = () => {
       return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("span", {
         className: "dashicons dashicons-arrow-right-alt2",
         style: {
-          fontSize: '22px',
-          margin: '0 2px',
+          fontSize: '12px',
+          margin: '2px 2px',
           color: '#9ca3af',
           opacity: 0.5
         }
