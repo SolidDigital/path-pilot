@@ -125,16 +125,13 @@ const PathAnalysis = () => {
 
         const renderEllipsis = (key) => {
             return (
-                <span key={key} style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    backgroundColor: '#f0f0f0',
-                    borderRadius: '4px',
-                    padding: '2px 6px 0',
-                    margin: '0 2px'
-                }}>
-                    <span className="dashicons dashicons-ellipsis" style={{ color: '#9ca3af', fontSize: '16px' }}></span>
+                    <span key={key} style={{
+                        backgroundColor: '#dfdfdf',
+                        borderRadius: '4px',
+                        padding: '0',
+                        margin: '0 2px'
+                    }}>
+                        <span className="dashicons dashicons-ellipsis" style={{ color: '#9ca3af', fontSize: '10px', verticalAlign: 'text-bottom' }}></span>
                 </span>
             );
         }

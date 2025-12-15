@@ -285,19 +285,17 @@ const PathAnalysis = () => {
     const renderEllipsis = key => {
       return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("span", {
         style: {
-          display: 'inline-flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          backgroundColor: '#f0f0f0',
+          backgroundColor: '#dfdfdf',
           borderRadius: '4px',
-          padding: '2px 6px 0',
+          padding: '0',
           margin: '0 2px'
         },
         children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("span", {
           className: "dashicons dashicons-ellipsis",
           style: {
             color: '#9ca3af',
-            fontSize: '16px'
+            fontSize: '10px',
+            verticalAlign: 'text-bottom'
           }
         })
       }, key);

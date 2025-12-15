@@ -1320,7 +1320,7 @@ body.folded .pp-admin-wrap {
 }
 
 .wp-list-table tbody tr:hover {
-    background-color: #f5f5f5; /* A subtle light gray */
+    background-color: #fafafa; /* A subtle light gray */
     cursor: pointer; /* Ensure cursor changes on hover */
 }
 
@@ -1357,7 +1357,12 @@ body.folded .pp-admin-wrap {
   100% { transform: rotate(360deg); }
 }
 
-.pp-content .dashicons::before {
+.pp-content .dashicons.dashicons-arrow-right-alt2::before {
     display: inline-block;
     vertical-align: middle;
 }
+
+.pp-content .dashicons.dashicons-ellipsis {
+    height: 13px;
+}
+
