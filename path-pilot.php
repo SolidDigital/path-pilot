@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Path Pilot
  * Description: Modern WordPress plugin for smart recommendations and analytics.
- * Version: 1.3.1
+ * Version: 1.3.2
  * Author: Solid Digital
  * Author URI: https://www.soliddigital.com
  * Text Domain: path-pilot
@@ -12,7 +12,7 @@
 namespace Path_Pilot;
 
 if (!defined('ABSPATH')) exit;
-define('PATH_PILOT_VERSION', '1.3.1');
+define('PATH_PILOT_VERSION', '1.3.2');
 
 // This is the FREE version. Pro features are only available in the Pro build.
 
